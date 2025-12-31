@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>牙科圖像映射器 - Phase 1 測試</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .controls {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-success {
+      background: #4caf50;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #45a049;
+    }
+
+    .toggle-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .image-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f9f9f9;
+      border-radius: 8px;
+      overflow: auto;
+      max-height: 600px;
+    }
+
+    .image-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dental-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .overlay-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: crosshair;
+    }
+
+    .results {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      min-height: 300px;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+
+    .result-item {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .result-item.success {
+      border-left-color: #4caf50;
+    }
+
+    .result-item.error {
+      border-left-color: #f44336;
+    }
+
+    .result-item.info {
+      border-left-color: #2196f3;
+    }
+
+    .result-header {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .result-content {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .status-loading {
+      background: #ff9800;
+      animation: pulse 1s infinite;
+    }
+
+    .status-ready {
+      background: #4caf50;
+    }
+
+    .status-error {
+      background: #f44336;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .debug-info {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #333;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+    }
+
+    .debug-line {
+      margin-bottom: 5px;
+      padding: 3px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🦷 牙科圖像映射器</h1>
+      <p>Phase 1 - 基礎設施 (DentalImageMapper 功能測試)</p>
+    </header>
+
+    <div class="content">
+      <!-- 左側：圖像和控制 -->
+      <div class="section">
+        <h2>📸 圖像查看器</h2>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>🦷 選擇牙齒類型</label>
+            <div class="button-group">
+              <button class="btn-primary" id="permanentBtn">永久牙</button>
+              <button class="btn-secondary" id="primaryBtn">乳牙</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>⚙️ 調試選項</label>
+            <div class="toggle-switch">
+              <label class="switch">
+                <input type="checkbox" id="debugToggle">
+                <span class="slider"></span>
+              </label>
+              <span>啟用調試模式</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>🎨 顯示點擊區域</label>
+            <div class="toggle-switch">
+              <label class="switch">
+                <input type="checkbox" id="visualizeToggle" checked>
+                <span class="slider"></span>
+              </label>
+              <span>可視化座標</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>🛠️ 操作</label>
+            <div class="button-group">
+              <button class="btn-secondary" id="clearBtn">清除標記</button>
+              <button class="btn-success" id="reloadBtn">重新加載</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="image-container">
+          <div class="image-wrapper">
+            <img id="dentalImage" class="dental-image" alt="牙齒圖像">
+            <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-number" id="toothCount">-</div>
+          <div class="stat-label">顆牙齒</div>
+        </div>
+      </div>
+
+      <!-- 右側：結果和調試 -->
+      <div class="section">
+        <h2>📋 點擊結果</h2>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>✅ 系統狀態</label>
+            <div>
+              <span class="status-indicator" id="statusIndicator"></span>
+              <span id="statusText">正在加載...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="results" id="resultsList">
+          <div class="result-item info">
+            <div class="result-header">📌 說明</div>
+            <div class="result-content">
+              1. 點擊左側牙齒圖像上的任何牙齒<br>
+              2. 系統會識別牙齒編號和信心度<br>
+              3. 結果會顯示在此區域<br>
+              4. 啟用調試模式查看詳細信息
+            </div>
+          </div>
+        </div>
+
+        <h2>🐛 調試信息</h2>
+        <div class="debug-info" id="debugLog">
+          <div class="debug-line">[等待中] 初始化 DentalImageMapper...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 載入 DentalImageMapper -->
+  <script src="assets/scripts/dental-image-mapper.js"></script>
+
+  <script>
+    // 全域變數
+    let mapper = null;
+    let currentType = 'permanent';
+    let debugMode = false;
+    let visualizeMode = true;
+    const resultsList = document.getElementById('resultsList');
+    const debugLog = document.getElementById('debugLog');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    const dentalImage = document.getElementById('dentalImage');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const ctx = overlayCanvas.getContext('2d');
+
+    // 日誌系統
+    function addDebugLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString('zh-Hant');
+      const line = document.createElement('div');
+      line.className = 'debug-line';
+      line.textContent = `[${timestamp}] ${message}`;
+      debugLog.appendChild(line);
+      debugLog.scrollTop = debugLog.scrollHeight;
+
+      if (debugMode) {
+        console.log(`[${type.toUpperCase()}] ${message}`);
+      }
+    }
+
+    // 清除調試日誌
+    function clearDebugLog() {
+      debugLog.innerHTML = '';
+    }
+
+    // 新增結果項
+    function addResult(tooth, clickX, clickY) {
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item success';
+      resultItem.innerHTML = `
+        <div class="result-header">
+          ✅ 牙齒 #${tooth.toothId} - ${tooth.nameCh}
+        </div>
+        <div class="result-content">
+          <strong>編號系統:</strong><br>
+          - Universal: ${tooth.number}<br>
+          - FDI: ${tooth.fdi}<br>
+          <strong>信息:</strong><br>
+          - 類型: ${tooth.name}<br>
+          - 象限: ${tooth.quadrant}<br>
+          - 牙齒分類: ${tooth.type}<br>
+          <strong>檢測信息:</strong><br>
+          - 點擊座標: (${Math.round(clickX)}, ${Math.round(clickY)})<br>
+          - 信心度: ${(tooth.confidence * 100).toFixed(1)}%<br>
+          - 距離: ${tooth.distance.toFixed(1)}px
+        </div>
+      `;
+      resultsList.insertBefore(resultItem, resultsList.firstChild);
+
+      // 限制顯示的結果數量
+      while (resultsList.children.length > 10) {
+        resultsList.removeChild(resultsList.lastChild);
+      }
+    }
+
+    // 新增錯誤結果
+    function addErrorResult(x, y) {
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item error';
+      resultItem.innerHTML = `
+        <div class="result-header">
+          ✗ 未識別到牙齒
+        </div>
+        <div class="result-content">
+          點擊座標: (${Math.round(x)}, ${Math.round(y)})<br>
+          <small>提示: 點擊牙齒圖像上的任何牙齒位置</small>
+        </div>
+      `;
+      resultsList.insertBefore(resultItem, resultsList.firstChild);
+    }
+
+    // 設置系統狀態
+    function setStatus(text, type = 'ready') {
+      statusText.textContent = text;
+      statusIndicator.className = 'status-indicator';
+      if (type === 'loading') {
+        statusIndicator.classList.add('status-loading');
+      } else if (type === 'ready') {
+        statusIndicator.classList.add('status-ready');
+      } else if (type === 'error') {
+        statusIndicator.classList.add('status-error');
+      }
+    }
+
+    // 更新牙齒計數
+    function updateToothCount() {
+      const teeth = mapper.getAllTeeth(currentType);
+      document.getElementById('toothCount').textContent = teeth.length;
+    }
+
+    // 重繪可視化
+    function redrawVisualization() {
+      if (!visualizeMode) {
+        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+        return;
+      }
+
+      mapper.visualizeClickAreas(overlayCanvas, currentType, {
+        showLabels: true,
+        fillColor: 'rgba(102, 126, 234, 0.1)',
+        strokeColor: '#667eea',
+        lineWidth: 2,
+        textColor: '#667eea',
+        fontSize: 12
+      });
+    }
+
+    // 初始化
+    async function initialize() {
+      addDebugLog('開始初始化系統...', 'info');
+      setStatus('正在加載...', 'loading');
+
+      try {
+        // 創建 mapper 實例
+        mapper = new DentalImageMapper({
+          coordinatesUrl: '/data/dental-coordinates.json',
+          debug: debugMode
+        });
+
+        addDebugLog('DentalImageMapper 實例已建立', 'info');
+
+        // 加載座標數據
+        addDebugLog('正在加載座標映射數據...', 'info');
+        const success = await mapper.loadCoordinates();
+
+        if (!success) {
+          throw new Error('座標數據加載失敗');
+        }
+
+        addDebugLog('✓ 座標數據加載完成', 'success');
+
+        // 設置圖像
+        loadImage(currentType);
+
+        // 監聽 mapper 事件
+        mapper.on('toothSelected', (tooth) => {
+          addDebugLog(`識別到牙齒 #${tooth.toothId} (信心度: ${(tooth.confidence * 100).toFixed(1)}%)`, 'success');
+        });
+
+        mapper.on('clickOutside', () => {
+          addDebugLog('點擊位置未在任何牙齒區域內', 'info');
+        });
+
+        // 設置系統狀態
+        setStatus('系統就緒', 'ready');
+        addDebugLog('系統初始化完成，準備就緒！', 'success');
+        updateToothCount();
+
+      } catch (error) {
+        setStatus('初始化失敗: ' + error.message, 'error');
+        addDebugLog(`✗ 初始化失敗: ${error.message}`, 'error');
+        console.error('初始化錯誤:', error);
+      }
+    }
+
+    // 加載圖像
+    function loadImage(type) {
+      const filename = type === 'permanent' ? 'permanteeth.png' : 'primaryteeth.png';
+      const imagePath = `/assets/images/teeth/${filename}`;
+
+      addDebugLog(`正在加載圖像: ${filename}...`, 'info');
+
+      dentalImage.onload = function() {
+        // 設置 canvas 尺寸與圖像相同
+        overlayCanvas.width = dentalImage.naturalWidth;
+        overlayCanvas.height = dentalImage.naturalHeight;
+
+        // 調整顯示尺寸
+        const containerWidth = dentalImage.parentElement.clientWidth;
+        const scale = containerWidth / dentalImage.naturalWidth;
+        overlayCanvas.style.width = (overlayCanvas.width * scale) + 'px';
+        overlayCanvas.style.height = (overlayCanvas.height * scale) + 'px';
+
+        addDebugLog(`✓ 圖像已加載 (${dentalImage.naturalWidth}x${dentalImage.naturalHeight})`, 'success');
+
+        updateToothCount();
+        redrawVisualization();
+      };
+
+      dentalImage.onerror = function() {
+        addDebugLog(`✗ 無法加載圖像: ${imagePath}`, 'error');
+      };
+
+      dentalImage.src = imagePath;
+    }
+
+    // 處理圖像點擊
+    function handleImageClick(e) {
+      if (!mapper || !mapper.isLoaded) {
+        addDebugLog('系統未準備好，無法處理點擊', 'error');
+        return;
+      }
+
+      const rect = dentalImage.getBoundingClientRect();
+      const scale = dentalImage.naturalWidth / dentalImage.width;
+      const x = (e.clientX - rect.left) * scale;
+      const y = (e.clientY - rect.top) * scale;
+
+      addDebugLog(`點擊位置: (${Math.round(x)}, ${Math.round(y)})`, 'info');
+
+      const tooth = mapper.getToothAtPosition(x, y, currentType);
+
+      if (tooth) {
+        addResult(tooth, x, y);
+        // 突顯牙齒
+        mapper.highlightTooth(overlayCanvas, tooth.toothId, currentType, {
+          fillColor: 'rgba(76, 175, 80, 0.3)',
+          strokeColor: '#4caf50',
+          lineWidth: 3
+        });
+      } else {
+        addErrorResult(x, y);
+      }
+    }
+
+    // 事件監聽器
+    document.getElementById('permanentBtn').addEventListener('click', () => {
+      currentType = 'permanent';
+      loadImage('permanent');
+      redrawVisualization();
+      resultsList.innerHTML = '<div class="result-item info"><div class="result-header">📌 已切換到永久牙</div></div>';
+      addDebugLog('已切換到永久牙系統', 'info');
+      updateToothCount();
+    });
+
+    document.getElementById('primaryBtn').addEventListener('click', () => {
+      currentType = 'primary';
+      loadImage('primary');
+      redrawVisualization();
+      resultsList.innerHTML = '<div class="result-item info"><div class="result-header">📌 已切換到乳牙</div></div>';
+      addDebugLog('已切換到乳牙系統', 'info');
+      updateToothCount();
+    });
+
+    document.getElementById('debugToggle').addEventListener('change', (e) => {
+      debugMode = e.target.checked;
+      addDebugLog(debugMode ? '✓ 調試模式已啟用' : '✗ 調試模式已禁用', 'info');
+    });
+
+    document.getElementById('visualizeToggle').addEventListener('change', (e) => {
+      visualizeMode = e.target.checked;
+      redrawVisualization();
+      addDebugLog(visualizeMode ? '✓ 座標可視化已啟用' : '✗ 座標可視化已禁用', 'info');
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      redrawVisualization();
+      addDebugLog('已清除所有標記', 'info');
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', () => {
+      clearDebugLog();
+      resultsList.innerHTML = '';
+      initialize();
+    });
+
+    dentalImage.addEventListener('click', handleImageClick);
+
+    // 初始化系統
+    initialize();
+  </script>
+</body>
+</html>

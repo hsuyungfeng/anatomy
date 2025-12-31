@@ -1,0 +1,1059 @@
+/* ================================================
+   醫療結構化病歷輸入系統 - 主樣式
+   ================================================ */
+
+/* ===== CSS 變數定義 ===== */
+:root {
+  /* 顏色方案 */
+  --color-primary: #0066cc;
+  --color-primary-hover: #0052a3;
+  --color-secondary: #6c757d;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+
+  /* 解剖系統顏色 */
+  --color-teeth: #ffd700;
+  --color-eye: #87ceeb;
+  --color-body: #ff6b9d;
+
+  /* 背景色 */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-dark: #e9ecef;
+
+  /* 文字色 */
+  --color-text-primary: #212529;
+  --color-text-secondary: #6c757d;
+  --color-text-light: #f8f9fa;
+
+  /* 邊框色 */
+  --color-border: #dee2e6;
+  --color-border-dark: #adb5bd;
+
+  /* 間距 */
+  --spacing-unit: 8px;
+  --spacing-xs: calc(var(--spacing-unit) * 0.5);
+  --spacing-sm: var(--spacing-unit);
+  --spacing-md: calc(var(--spacing-unit) * 2);
+  --spacing-lg: calc(var(--spacing-unit) * 3);
+  --spacing-xl: calc(var(--spacing-unit) * 4);
+  --spacing-xxl: calc(var(--spacing-unit) * 6);
+
+  /* 尺寸 */
+  --size-header-height: 80px;
+  --size-tab-height: 50px;
+  --size-border-radius: 4px;
+  --size-border-radius-lg: 8px;
+
+  /* 響應式斷點 */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+
+  /* 排版 */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-size-base: 14px;
+  --font-size-sm: 12px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-title: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* 陰影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+  /* 過渡 */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+
+  /* Z-index 層級 */
+  --z-index-base: 1;
+  --z-index-dropdown: 100;
+  --z-index-modal-overlay: 1000;
+  --z-index-modal: 1001;
+  --z-index-notification: 2000;
+}
+
+/* ===== 全局樣式 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+  overflow: hidden;
+}
+
+/* ===== 佈局 ===== */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.app__header {
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  height: var(--size-header-height);
+  z-index: var(--z-index-base);
+}
+
+.app__header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--spacing-lg);
+}
+
+.app__branding {
+  flex: 1;
+}
+
+.app__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.app__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.app__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-bottom: var(--spacing-sm);
+  transition: color var(--transition-fast);
+}
+
+.app__back-link:hover {
+  color: var(--color-primary-hover);
+}
+
+.app__controls {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.app__language-switcher {
+  display: flex;
+  gap: var(--spacing-xs);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--size-border-radius);
+}
+
+.language-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--size-border-radius);
+  transition: all var(--transition-fast);
+}
+
+.language-btn:hover {
+  background-color: var(--color-bg-dark);
+}
+
+.language-btn--active {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+/* ===== 系統標籤頁 ===== */
+.system-tabs {
+  display: flex;
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
+  height: var(--size-tab-height);
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-lg);
+  overflow-x: auto;
+}
+
+.system-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.system-tab:hover {
+  color: var(--color-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+.system-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.system-tab__icon {
+  font-size: var(--font-size-lg);
+}
+
+/* ===== 牙齒子標籤頁 ===== */
+.teeth-sub-tabs {
+  display: none;
+  flex-shrink: 0;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  height: var(--size-tab-height);
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-lg);
+}
+
+.teeth-sub-tabs--visible {
+  display: flex;
+}
+
+.teeth-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.teeth-tab:hover {
+  color: var(--color-primary);
+  background-color: var(--color-bg-primary);
+}
+
+.teeth-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.teeth-tab__label {
+  font-size: var(--font-size-base);
+}
+
+/* ===== 主內容區域 ===== */
+.app__main {
+  display: flex;
+  flex: 1;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  overflow: hidden;
+  background-color: var(--color-bg-secondary);
+}
+
+/* 圖像區域 */
+.image-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--size-border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.image-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+.image-viewer {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  cursor: crosshair;
+}
+
+.image-canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+.image-toolbar__group {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.zoom-level {
+  min-width: 50px;
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+}
+
+.image-help {
+  padding: var(--spacing-md);
+  background-color: #e7f3ff;
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: #0066cc;
+}
+
+/* 病歷區域 */
+.record-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--size-border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.record-tabs {
+  display: flex;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0;
+  gap: 0;
+}
+
+.record-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.record-tab:hover {
+  background-color: var(--color-bg-dark);
+  color: var(--color-primary);
+}
+
+.record-tab--active {
+  color: var(--color-primary);
+  background-color: var(--color-bg-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.record-tab__label {
+  white-space: nowrap;
+}
+
+/* 病歷面板 */
+.record-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  display: none;
+}
+
+.record-panel--active {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text-secondary);
+}
+
+.empty-state__text {
+  text-align: center;
+}
+
+/* ===== 按鈕樣式 ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--size-border-radius);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.btn--secondary:hover {
+  background-color: #5a6268;
+  box-shadow: var(--shadow-md);
+}
+
+.btn--danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.btn--danger:hover {
+  background-color: #c82333;
+  box-shadow: var(--shadow-md);
+}
+
+.btn--icon {
+  padding: var(--spacing-sm);
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.btn--icon:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== 其他組件 ===== */
+.record-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.record-actions .btn {
+  width: 100%;
+}
+
+.ocr-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ocr-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.ocr-file-input {
+  padding: var(--spacing-md);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--size-border-radius-lg);
+  cursor: pointer;
+}
+
+.ocr-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.ocr-progress__bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-bg-dark);
+  border-radius: var(--size-border-radius);
+  overflow: hidden;
+}
+
+.ocr-progress__fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  width: 0;
+  transition: width var(--transition-base);
+}
+
+/* ===== 響應式設計 ===== */
+
+/* 桌面設計（1024px+） */
+@media (min-width: 1024px) {
+  .app__main {
+    flex-direction: row;
+    gap: var(--spacing-lg);
+  }
+
+  .image-section {
+    flex: 2;
+  }
+
+  .record-section {
+    flex: 1;
+    max-width: 350px;
+  }
+
+  .modal {
+    max-width: 600px;
+  }
+}
+
+/* 平板設計（768px - 1023px） */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app__main {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .image-section {
+    min-height: 500px;
+  }
+
+  .record-section {
+    min-height: 300px;
+  }
+
+  .system-tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .modal {
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+}
+
+/* 平板到桌面的過渡 */
+@media (max-width: 1024px) {
+  .app__main {
+    flex-direction: column;
+  }
+
+  .image-section,
+  .record-section {
+    flex: 1;
+  }
+
+  .record-section {
+    max-width: 100%;
+  }
+}
+
+/* 平板設計 */
+@media (max-width: 768px) {
+  :root {
+    --font-size-base: 13px;
+    --size-header-height: 70px;
+    --size-tab-height: 45px;
+  }
+
+  .app__header-content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .app__branding h1 {
+    font-size: var(--font-size-lg);
+  }
+
+  .app__branding p {
+    font-size: var(--font-size-sm);
+  }
+
+  .app__controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .system-tabs {
+    padding: 0 var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .system-tab {
+    padding: var(--spacing-md) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .system-tab__icon {
+    font-size: 18px;
+  }
+
+  .system-tab__label {
+    font-size: 11px;
+  }
+
+  .app__main {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    flex-direction: column;
+  }
+
+  .record-section {
+    max-width: 100%;
+    min-height: 250px;
+  }
+
+  .record-panel {
+    max-height: 300px;
+  }
+
+  .image-toolbar {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .zoom-button-group button {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .disease-item label {
+    font-size: 13px;
+  }
+}
+
+/* 手機設計（480px以下） */
+@media (max-width: 480px) {
+  :root {
+    --font-size-base: 13px;
+    --font-size-title: 18px;
+    --size-header-height: 60px;
+  }
+
+  .app {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app__header {
+    height: 60px;
+    padding: var(--spacing-md) 0;
+  }
+
+  .app__header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .app__branding {
+    flex: 1;
+  }
+
+  .app__branding h1 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .app__branding p {
+    display: none;
+  }
+
+  .language-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .system-tabs {
+    height: 45px;
+    padding: 0 var(--spacing-sm);
+    gap: 0;
+  }
+
+  .system-tab {
+    padding: 0 var(--spacing-md);
+    flex: 1;
+    font-size: 11px;
+  }
+
+  .system-tab__icon {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+
+  .system-tab__label {
+    display: none;
+  }
+
+  .app__main {
+    flex-direction: column;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    height: calc(100vh - 120px);
+  }
+
+  .image-section {
+    flex: 1;
+    min-height: 250px;
+  }
+
+  .image-help {
+    display: none;
+  }
+
+  .record-section {
+    flex: 0.5;
+    min-height: 150px;
+  }
+
+  .record-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .record-tab {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .record-tab__label {
+    display: none;
+  }
+
+  .record-tab i {
+    margin-right: 2px;
+  }
+
+  .image-toolbar {
+    padding: var(--spacing-xs);
+    gap: var(--spacing-xs);
+  }
+
+  .zoom-button-group button {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .zoom-level {
+    font-size: 12px;
+    min-width: 40px;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .btn--icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .record-actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .record-actions .btn {
+    width: 100%;
+  }
+
+  .modal {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+    transform: translateY(100%) scale(1);
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .modal[aria-hidden="false"] {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal__header {
+    padding: 12px 16px;
+  }
+
+  .modal__title {
+    font-size: 16px;
+  }
+
+  .modal__content {
+    padding: 12px 16px;
+    max-height: calc(100vh - 120px);
+  }
+
+  .modal__footer {
+    padding: 8px 16px;
+  }
+
+  .modal__button {
+    flex: 1;
+    min-width: auto;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .disease-form__search {
+    position: sticky;
+    top: 0;
+  }
+
+  .disease-search-input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .disease-item {
+    padding: 6px;
+  }
+
+  .disease-item label {
+    font-size: 12px;
+  }
+
+  .disease-item--sub label {
+    font-size: 11px;
+  }
+
+  .disease-form__notes {
+    gap: 6px;
+  }
+
+  .disease-notes-input {
+    min-height: 60px;
+    font-size: 13px;
+  }
+
+  .severity-options {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* ===== 疾病時間軸樣式 ===== */
+.disease-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+}
+
+.disease-timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+}
+
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  padding: 12px 0;
+  position: relative;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 10px;
+  top: 20px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border: 3px solid var(--color-primary);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.timeline-item--latest .timeline-marker {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(52, 144, 220, 0.2);
+}
+
+.timeline-content {
+  flex: 1;
+  margin-left: 40px;
+  background-color: var(--color-bg-secondary);
+  border-radius: 8px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--color-primary);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.timeline-location {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.timeline-diseases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.disease-tag {
+  display: inline-block;
+  background-color: #e8f4f8;
+  color: var(--color-primary);
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(52, 144, 220, 0.3);
+}
+
+.timeline-notes {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timeline-notes strong {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.timeline-notes p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-dark);
+  line-height: 1.5;
+}
+
+/* ===== 列印樣式 ===== */
+@media print {
+  .app__header,
+  .system-tabs,
+  .record-actions,
+  .image-toolbar {
+    display: none;
+  }
+
+  .app__main {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .image-section,
+  .record-section {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}

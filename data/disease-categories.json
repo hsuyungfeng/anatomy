@@ -1,0 +1,213 @@
+{
+  "anatomicalSystems": [
+    {
+      "systemId": "teeth",
+      "systemName": "牙齒系統",
+      "systemNameEn": "Teeth/Gums",
+      "color": "#ffd700",
+      "imageId": "allteeth",
+      "diseases": [
+        {
+          "id": "K00",
+          "icd10": "K00",
+          "name": "牙齒發育及萌發疾患",
+          "nameEn": "Disorders of tooth development and eruption"
+        },
+        {
+          "id": "K01",
+          "icd10": "K01",
+          "name": "埋伏牙",
+          "nameEn": "Embedded teeth"
+        },
+        {
+          "id": "K02",
+          "icd10": "K02",
+          "name": "牙根齲齒",
+          "nameEn": "Dental root caries"
+        },
+        {
+          "id": "K03",
+          "icd10": "K03",
+          "name": "牙齒硬組織其他疾病",
+          "nameEn": "Other diseases of hard tissues of teeth"
+        },
+        {
+          "id": "K04",
+          "icd10": "K04",
+          "name": "齒髓性急性根尖牙周組織炎",
+          "nameEn": "Acute apical periodontitis of pulpal origin"
+        },
+        {
+          "id": "K05",
+          "icd10": "K05",
+          "name": "齒齦炎及牙周疾病",
+          "nameEn": "Gingivitis and periodontal diseases"
+        },
+        {
+          "id": "K06",
+          "icd10": "K06",
+          "name": "牙齦腫大",
+          "nameEn": "Gingival enlargement"
+        },
+        {
+          "id": "K08",
+          "icd10": "K08",
+          "name": "牙齒及支持性構造其他疾患",
+          "nameEn": "Other disorders of teeth and supporting structures"
+        }
+      ]
+    },
+    {
+      "systemId": "eye",
+      "systemName": "眼睛系統",
+      "systemNameEn": "Eyes",
+      "color": "#87ceeb",
+      "imageId": "eye-3d",
+      "diseases": [
+        {
+          "id": "conjunctivitis",
+          "name": "結膜炎",
+          "nameEn": "Conjunctivitis",
+          "subcategories": [
+            {"id": "viral", "name": "病毒性結膜炎", "nameEn": "Viral Conjunctivitis"},
+            {"id": "bacterial", "name": "細菌性結膜炎", "nameEn": "Bacterial Conjunctivitis"},
+            {"id": "allergic", "name": "過敏性結膜炎", "nameEn": "Allergic Conjunctivitis"}
+          ]
+        },
+        {
+          "id": "corneal_ulcer",
+          "name": "角膜潰瘍",
+          "nameEn": "Corneal Ulcer",
+          "subcategories": []
+        },
+        {
+          "id": "cataract",
+          "name": "白內障",
+          "nameEn": "Cataract",
+          "subcategories": [
+            {"id": "nuclear", "name": "核性白內障", "nameEn": "Nuclear Cataract"},
+            {"id": "cortical", "name": "皮質白內障", "nameEn": "Cortical Cataract"},
+            {"id": "posterior_subcapsular", "name": "後囊下白內障", "nameEn": "Posterior Subcapsular"}
+          ]
+        },
+        {
+          "id": "glaucoma",
+          "name": "青光眼",
+          "nameEn": "Glaucoma",
+          "subcategories": [
+            {"id": "open_angle", "name": "開角型青光眼", "nameEn": "Open-Angle Glaucoma"},
+            {"id": "closed_angle", "name": "閉角型青光眼", "nameEn": "Closed-Angle Glaucoma"}
+          ]
+        },
+        {
+          "id": "refractive_error",
+          "name": "屈光不正",
+          "nameEn": "Refractive Error",
+          "subcategories": [
+            {"id": "myopia", "name": "近視", "nameEn": "Myopia"},
+            {"id": "hyperopia", "name": "遠視", "nameEn": "Hyperopia"},
+            {"id": "astigmatism", "name": "散光", "nameEn": "Astigmatism"}
+          ]
+        },
+        {
+          "id": "dry_eye",
+          "name": "乾眼症",
+          "nameEn": "Dry Eye Syndrome",
+          "subcategories": []
+        },
+        {
+          "id": "age_related_macular_degeneration",
+          "name": "年齡相關性黃斑變性",
+          "nameEn": "Age-Related Macular Degeneration",
+          "subcategories": [
+            {"id": "dry_amd", "name": "乾性 AMD", "nameEn": "Dry AMD"},
+            {"id": "wet_amd", "name": "濕性 AMD", "nameEn": "Wet AMD"}
+          ]
+        },
+        {
+          "id": "retinal_detachment",
+          "name": "視網膜脫離",
+          "nameEn": "Retinal Detachment",
+          "subcategories": []
+        }
+      ]
+    },
+    {
+      "systemId": "body",
+      "systemName": "身體系統",
+      "systemNameEn": "Body",
+      "color": "#ff6b9d",
+      "imageId": "allbodywithtext",
+      "diseases": [
+        {
+          "id": "laceration",
+          "name": "撕裂傷",
+          "nameEn": "Laceration",
+          "subcategories": []
+        },
+        {
+          "id": "bruise",
+          "name": "瘀傷",
+          "nameEn": "Bruise",
+          "subcategories": []
+        },
+        {
+          "id": "burn",
+          "name": "燒傷",
+          "nameEn": "Burn",
+          "subcategories": [
+            {"id": "first_degree", "name": "一度燒傷", "nameEn": "First Degree"},
+            {"id": "second_degree", "name": "二度燒傷", "nameEn": "Second Degree"},
+            {"id": "third_degree", "name": "三度燒傷", "nameEn": "Third Degree"}
+          ]
+        },
+        {
+          "id": "fracture",
+          "name": "骨折",
+          "nameEn": "Fracture",
+          "subcategories": []
+        },
+        {
+          "id": "abrasion",
+          "name": "擦傷",
+          "nameEn": "Abrasion",
+          "subcategories": []
+        },
+        {
+          "id": "edema",
+          "name": "浮腫",
+          "nameEn": "Edema",
+          "subcategories": []
+        },
+        {
+          "id": "erythema",
+          "name": "紅斑",
+          "nameEn": "Erythema",
+          "subcategories": []
+        },
+        {
+          "id": "tenderness",
+          "name": "壓痛",
+          "nameEn": "Tenderness",
+          "subcategories": []
+        },
+        {
+          "id": "scar",
+          "name": "疤痕",
+          "nameEn": "Scar",
+          "subcategories": []
+        },
+        {
+          "id": "rash",
+          "name": "皮疹",
+          "nameEn": "Rash",
+          "subcategories": [
+            {"id": "maculopapular", "name": "斑丘疹", "nameEn": "Maculopapular"},
+            {"id": "vesicular", "name": "水皰疹", "nameEn": "Vesicular"},
+            {"id": "pustular", "name": "膿皰疹", "nameEn": "Pustular"}
+          ]
+        }
+      ]
+    }
+  ]
+}

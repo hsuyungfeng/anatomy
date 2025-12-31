@@ -1,0 +1,441 @@
+/* ================================================
+   模態視窗樣式模組
+   ================================================ */
+
+/* 模態背景覆蓋 */
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#modal-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* 模態視窗容器 */
+#disease-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+#disease-modal[aria-hidden="false"] {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* 模態頭部 */
+.modal__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.modal__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  flex: 1;
+}
+
+.modal__subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0 0;
+  width: 100%;
+}
+
+/* 模態關閉按鈕 */
+.modal__close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+}
+
+.modal__close:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+/* 模態内容 */
+.modal__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 位置信息區塊 */
+#modal-location {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(66, 165, 245, 0.1) 100%);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 4px;
+}
+
+#modal-location p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 疾病表單區塊 */
+.modal__form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 表單標題區 */
+.disease-form__header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.disease-form__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.disease-form__hint {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+/* 疾病分類樣式 */
+.disease-form__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 200px;
+}
+
+/* 疾病項目列表 */
+.disease-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.disease-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.disease-item:hover {
+  background: #f5f5f5;
+}
+
+.disease-item input[type="checkbox"] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+
+.disease-item label {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+/* 嚴重程度選擇 */
+/* 療程摘要表單區域 */
+.disease-form__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.disease-form__notes label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.treatment-notes-input {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.treatment-notes-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.1);
+}
+
+.treatment-notes-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* 模態頁腳 */
+.modal__footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal__button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+#modal-cancel-btn {
+  background: var(--color-input-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+#modal-cancel-btn:hover {
+  background: var(--color-hover);
+  border-color: var(--color-text-secondary);
+}
+
+#modal-save-btn {
+  background: var(--color-primary);
+  color: white;
+}
+
+#modal-save-btn:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
+}
+
+#modal-save-btn:active {
+  transform: translateY(1px);
+}
+
+#modal-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 空狀態樣式 */
+.disease-list-empty {
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+/* 加載狀態 */
+.modal__loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.modal__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 10px;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+  #disease-modal {
+    width: 95%;
+    max-height: 95vh;
+    max-width: 100%;
+  }
+
+  .modal__header {
+    padding: 16px 20px;
+    gap: 8px;
+  }
+
+  .modal__title {
+    font-size: 16px;
+  }
+
+  .modal__content {
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .modal__footer {
+    padding: 12px 20px;
+  }
+
+  .modal__button {
+    flex: 1;
+    min-width: 80px;
+  }
+
+  .severity-options {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  #disease-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(100%) scale(1);
+    border-radius: 12px 12px 0 0;
+    max-height: 80vh;
+  }
+
+  #disease-modal[aria-hidden="false"] {
+    transform: translateY(0) scale(1);
+  }
+
+  #modal-overlay {
+    transition: background 0.3s ease;
+  }
+
+  .modal__header {
+    padding: 12px 16px;
+  }
+
+  .modal__title {
+    font-size: 14px;
+  }
+
+  .modal__content {
+    padding: 12px 16px;
+  }
+
+  .modal__footer {
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .modal__button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* 打印樣式 */
+@media print {
+  #modal-overlay,
+  #disease-modal {
+    display: none !important;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  #disease-modal {
+    background: var(--color-surface);
+  }
+
+  .modal__header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .disease-form__header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .disease-form__title {
+    color: white;
+  }
+
+  .disease-form__hint {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .disease-item label {
+    color: white;
+  }
+
+  .disease-form__severity label {
+    color: white;
+  }
+
+  .modal__footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  #modal-cancel-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  #modal-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

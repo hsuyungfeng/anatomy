@@ -1,0 +1,373 @@
+{
+  "systems": [
+    {
+      "id": "universal",
+      "name": "Universal Numbering System",
+      "nameZh": "通用編號系統",
+      "region": "North America",
+      "description": "美國牙科協會標準編號系統，成人牙齒 1-32，兒童牙齒 A-T",
+      "teeth": [
+        {
+          "number": 1,
+          "name": "Right Upper Third Molar",
+          "nameZh": "右上第三臼齒",
+          "position": "upper-right",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 18,
+          "palmer": "┐8"
+        },
+        {
+          "number": 2,
+          "name": "Right Upper Second Molar",
+          "nameZh": "右上第二臼齒",
+          "position": "upper-right",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 17,
+          "palmer": "┐7"
+        },
+        {
+          "number": 3,
+          "name": "Right Upper First Molar",
+          "nameZh": "右上第一臼齒",
+          "position": "upper-right",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 16,
+          "palmer": "┐6"
+        },
+        {
+          "number": 4,
+          "name": "Right Upper First Premolar",
+          "nameZh": "右上第一前臼齒",
+          "position": "upper-right",
+          "type": "premolar",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 15,
+          "palmer": "┐5"
+        },
+        {
+          "number": 5,
+          "name": "Right Upper Second Premolar",
+          "nameZh": "右上第二前臼齒",
+          "position": "upper-right",
+          "type": "premolar",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 14,
+          "palmer": "┐4"
+        },
+        {
+          "number": 6,
+          "name": "Right Upper Canine",
+          "nameZh": "右上尖牙",
+          "position": "upper-right",
+          "type": "canine",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 13,
+          "palmer": "┐3"
+        },
+        {
+          "number": 7,
+          "name": "Right Upper Lateral Incisor",
+          "nameZh": "右上側門牙",
+          "position": "upper-right",
+          "type": "incisor",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 12,
+          "palmer": "┐2"
+        },
+        {
+          "number": 8,
+          "name": "Right Upper Central Incisor",
+          "nameZh": "右上中門牙",
+          "position": "upper-right",
+          "type": "incisor",
+          "arch": "maxilla",
+          "quadrant": 1,
+          "fdi": 11,
+          "palmer": "┐1"
+        },
+        {
+          "number": 9,
+          "name": "Left Upper Central Incisor",
+          "nameZh": "左上中門牙",
+          "position": "upper-left",
+          "type": "incisor",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 21,
+          "palmer": "┌1"
+        },
+        {
+          "number": 10,
+          "name": "Left Upper Lateral Incisor",
+          "nameZh": "左上側門牙",
+          "position": "upper-left",
+          "type": "incisor",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 22,
+          "palmer": "┌2"
+        },
+        {
+          "number": 11,
+          "name": "Left Upper Canine",
+          "nameZh": "左上尖牙",
+          "position": "upper-left",
+          "type": "canine",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 23,
+          "palmer": "┌3"
+        },
+        {
+          "number": 12,
+          "name": "Left Upper First Premolar",
+          "nameZh": "左上第一前臼齒",
+          "position": "upper-left",
+          "type": "premolar",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 24,
+          "palmer": "┌4"
+        },
+        {
+          "number": 13,
+          "name": "Left Upper Second Premolar",
+          "nameZh": "左上第二前臼齒",
+          "position": "upper-left",
+          "type": "premolar",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 25,
+          "palmer": "┌5"
+        },
+        {
+          "number": 14,
+          "name": "Left Upper First Molar",
+          "nameZh": "左上第一臼齒",
+          "position": "upper-left",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 26,
+          "palmer": "┌6"
+        },
+        {
+          "number": 15,
+          "name": "Left Upper Second Molar",
+          "nameZh": "左上第二臼齒",
+          "position": "upper-left",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 27,
+          "palmer": "┌7"
+        },
+        {
+          "number": 16,
+          "name": "Left Upper Third Molar",
+          "nameZh": "左上第三臼齒",
+          "position": "upper-left",
+          "type": "molar",
+          "arch": "maxilla",
+          "quadrant": 2,
+          "fdi": 28,
+          "palmer": "┌8"
+        },
+        {
+          "number": 17,
+          "name": "Left Lower Third Molar",
+          "nameZh": "左下第三臼齒",
+          "position": "lower-left",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 38,
+          "palmer": "└8"
+        },
+        {
+          "number": 18,
+          "name": "Left Lower Second Molar",
+          "nameZh": "左下第二臼齒",
+          "position": "lower-left",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 37,
+          "palmer": "└7"
+        },
+        {
+          "number": 19,
+          "name": "Left Lower First Molar",
+          "nameZh": "左下第一臼齒",
+          "position": "lower-left",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 36,
+          "palmer": "└6"
+        },
+        {
+          "number": 20,
+          "name": "Left Lower First Premolar",
+          "nameZh": "左下第一前臼齒",
+          "position": "lower-left",
+          "type": "premolar",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 35,
+          "palmer": "└5"
+        },
+        {
+          "number": 21,
+          "name": "Left Lower Second Premolar",
+          "nameZh": "左下第二前臼齒",
+          "position": "lower-left",
+          "type": "premolar",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 34,
+          "palmer": "└4"
+        },
+        {
+          "number": 22,
+          "name": "Left Lower Canine",
+          "nameZh": "左下尖牙",
+          "position": "lower-left",
+          "type": "canine",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 33,
+          "palmer": "└3"
+        },
+        {
+          "number": 23,
+          "name": "Left Lower Lateral Incisor",
+          "nameZh": "左下側門牙",
+          "position": "lower-left",
+          "type": "incisor",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 32,
+          "palmer": "└2"
+        },
+        {
+          "number": 24,
+          "name": "Left Lower Central Incisor",
+          "nameZh": "左下中門牙",
+          "position": "lower-left",
+          "type": "incisor",
+          "arch": "mandible",
+          "quadrant": 3,
+          "fdi": 31,
+          "palmer": "└1"
+        },
+        {
+          "number": 25,
+          "name": "Right Lower Central Incisor",
+          "nameZh": "右下中門牙",
+          "position": "lower-right",
+          "type": "incisor",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 41,
+          "palmer": "┘1"
+        },
+        {
+          "number": 26,
+          "name": "Right Lower Lateral Incisor",
+          "nameZh": "右下側門牙",
+          "position": "lower-right",
+          "type": "incisor",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 42,
+          "palmer": "┘2"
+        },
+        {
+          "number": 27,
+          "name": "Right Lower Canine",
+          "nameZh": "右下尖牙",
+          "position": "lower-right",
+          "type": "canine",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 43,
+          "palmer": "┘3"
+        },
+        {
+          "number": 28,
+          "name": "Right Lower First Premolar",
+          "nameZh": "右下第一前臼齒",
+          "position": "lower-right",
+          "type": "premolar",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 44,
+          "palmer": "┘4"
+        },
+        {
+          "number": 29,
+          "name": "Right Lower Second Premolar",
+          "nameZh": "右下第二前臼齒",
+          "position": "lower-right",
+          "type": "premolar",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 45,
+          "palmer": "┘5"
+        },
+        {
+          "number": 30,
+          "name": "Right Lower First Molar",
+          "nameZh": "右下第一臼齒",
+          "position": "lower-right",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 46,
+          "palmer": "┘6"
+        },
+        {
+          "number": 31,
+          "name": "Right Lower Second Molar",
+          "nameZh": "右下第二臼齒",
+          "position": "lower-right",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 47,
+          "palmer": "┘7"
+        },
+        {
+          "number": 32,
+          "name": "Right Lower Third Molar",
+          "nameZh": "右下第三臼齒",
+          "position": "lower-right",
+          "type": "molar",
+          "arch": "mandible",
+          "quadrant": 4,
+          "fdi": 48,
+          "palmer": "┘8"
+        }
+      ]
+    },
+    {
+      "id": "fdi",
+      "name": "FDI Two-Digit System",
+      "nameZh": "FDI 兩位數編號系統",
+      "region": "International",
+      "description": "國際牙科聯盟標準編號系統，第一位代表象限，第二位代表牙齒位置",
+      "notes": "第一位：1=右上，2=左上，3=左下，4=右下；第二位：1-8 從中線向後"
+    }
+  ]
+}

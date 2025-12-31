@@ -1,0 +1,242 @@
+{
+  "systems": [
+    {
+      "id": "teeth",
+      "name": "牙齒系統",
+      "nameEn": "Teeth/Gums",
+      "description": "牙齒和牙齦的解剖結構與疾病記錄",
+      "descriptionEn": "Anatomical structures and disease documentation for teeth and gums",
+      "icon": "🦷",
+      "color": "#ffd700",
+      "imageIds": [
+        "allteeth",
+        "upperteeth",
+        "lowerteeth",
+        "permanteeth",
+        "primaryteeth",
+        "3dteeth"
+      ],
+      "locations": [
+        {"id": "tooth-1", "number": 1, "name": "右上第三臼齒", "nameEn": "Upper Right Third Molar", "system": "universal", "fdi": 18, "position": "upper-right"},
+        {"id": "tooth-2", "number": 2, "name": "右上第二臼齒", "nameEn": "Upper Right Second Molar", "system": "universal", "fdi": 17, "position": "upper-right"},
+        {"id": "tooth-3", "number": 3, "name": "右上第一臼齒", "nameEn": "Upper Right First Molar", "system": "universal", "fdi": 16, "position": "upper-right"},
+        {"id": "tooth-4", "number": 4, "name": "右上第二小臼齒", "nameEn": "Upper Right Second Premolar", "system": "universal", "fdi": 15, "position": "upper-right"},
+        {"id": "tooth-5", "number": 5, "name": "右上第一小臼齒", "nameEn": "Upper Right First Premolar", "system": "universal", "fdi": 14, "position": "upper-right"},
+        {"id": "tooth-6", "number": 6, "name": "右上犬齒", "nameEn": "Upper Right Canine", "system": "universal", "fdi": 13, "position": "upper-right"},
+        {"id": "tooth-7", "number": 7, "name": "右上側門牙", "nameEn": "Upper Right Lateral Incisor", "system": "universal", "fdi": 12, "position": "upper-right"},
+        {"id": "tooth-8", "number": 8, "name": "右上中門牙", "nameEn": "Upper Right Central Incisor", "system": "universal", "fdi": 11, "position": "upper-right"},
+        {"id": "tooth-9", "number": 9, "name": "左上中門牙", "nameEn": "Upper Left Central Incisor", "system": "universal", "fdi": 21, "position": "upper-left"},
+        {"id": "tooth-10", "number": 10, "name": "左上側門牙", "nameEn": "Upper Left Lateral Incisor", "system": "universal", "fdi": 22, "position": "upper-left"},
+        {"id": "tooth-11", "number": 11, "name": "左上犬齒", "nameEn": "Upper Left Canine", "system": "universal", "fdi": 23, "position": "upper-left"},
+        {"id": "tooth-12", "number": 12, "name": "左上第一小臼齒", "nameEn": "Upper Left First Premolar", "system": "universal", "fdi": 24, "position": "upper-left"},
+        {"id": "tooth-13", "number": 13, "name": "左上第二小臼齒", "nameEn": "Upper Left Second Premolar", "system": "universal", "fdi": 25, "position": "upper-left"},
+        {"id": "tooth-14", "number": 14, "name": "左上第一臼齒", "nameEn": "Upper Left First Molar", "system": "universal", "fdi": 26, "position": "upper-left"},
+        {"id": "tooth-15", "number": 15, "name": "左上第二臼齒", "nameEn": "Upper Left Second Molar", "system": "universal", "fdi": 27, "position": "upper-left"},
+        {"id": "tooth-16", "number": 16, "name": "左上第三臼齒", "nameEn": "Upper Left Third Molar", "system": "universal", "fdi": 28, "position": "upper-left"},
+        {"id": "tooth-17", "number": 17, "name": "左下第三臼齒", "nameEn": "Lower Left Third Molar", "system": "universal", "fdi": 38, "position": "lower-left"},
+        {"id": "tooth-18", "number": 18, "name": "左下第二臼齒", "nameEn": "Lower Left Second Molar", "system": "universal", "fdi": 37, "position": "lower-left"},
+        {"id": "tooth-19", "number": 19, "name": "左下第一臼齒", "nameEn": "Lower Left First Molar", "system": "universal", "fdi": 36, "position": "lower-left"},
+        {"id": "tooth-20", "number": 20, "name": "左下第二小臼齒", "nameEn": "Lower Left Second Premolar", "system": "universal", "fdi": 35, "position": "lower-left"},
+        {"id": "tooth-21", "number": 21, "name": "左下第一小臼齒", "nameEn": "Lower Left First Premolar", "system": "universal", "fdi": 34, "position": "lower-left"},
+        {"id": "tooth-22", "number": 22, "name": "左下犬齒", "nameEn": "Lower Left Canine", "system": "universal", "fdi": 33, "position": "lower-left"},
+        {"id": "tooth-23", "number": 23, "name": "左下側門牙", "nameEn": "Lower Left Lateral Incisor", "system": "universal", "fdi": 32, "position": "lower-left"},
+        {"id": "tooth-24", "number": 24, "name": "左下中門牙", "nameEn": "Lower Left Central Incisor", "system": "universal", "fdi": 31, "position": "lower-left"},
+        {"id": "tooth-25", "number": 25, "name": "右下中門牙", "nameEn": "Lower Right Central Incisor", "system": "universal", "fdi": 41, "position": "lower-right"},
+        {"id": "tooth-26", "number": 26, "name": "右下側門牙", "nameEn": "Lower Right Lateral Incisor", "system": "universal", "fdi": 42, "position": "lower-right"},
+        {"id": "tooth-27", "number": 27, "name": "右下犬齒", "nameEn": "Lower Right Canine", "system": "universal", "fdi": 43, "position": "lower-right"},
+        {"id": "tooth-28", "number": 28, "name": "右下第一小臼齒", "nameEn": "Lower Right First Premolar", "system": "universal", "fdi": 44, "position": "lower-right"},
+        {"id": "tooth-29", "number": 29, "name": "右下第二小臼齒", "nameEn": "Lower Right Second Premolar", "system": "universal", "fdi": 45, "position": "lower-right"},
+        {"id": "tooth-30", "number": 30, "name": "右下第一臼齒", "nameEn": "Lower Right First Molar", "system": "universal", "fdi": 46, "position": "lower-right"},
+        {"id": "tooth-31", "number": 31, "name": "右下第二臼齒", "nameEn": "Lower Right Second Molar", "system": "universal", "fdi": 47, "position": "lower-right"},
+        {"id": "tooth-32", "number": 32, "name": "右下第三臼齒", "nameEn": "Lower Right Third Molar", "system": "universal", "fdi": 48, "position": "lower-right"}
+      ],
+      "orderingSystem": "teeth"
+    },
+    {
+      "id": "primary_teeth",
+      "name": "乳齒系統",
+      "nameEn": "Primary/Deciduous Teeth",
+      "description": "乳齒和乳齦的解剖結構與疾病記錄",
+      "descriptionEn": "Anatomical structures and disease documentation for primary teeth",
+      "icon": "🦷",
+      "color": "#ffb347",
+      "imageIds": [
+        "primaryteeth",
+        "decidiuous",
+        "mixedteeth"
+      ],
+      "locations": [
+        {"id": "primary-A", "number": "A", "name": "右上第二乳臼齒", "nameEn": "Upper Right Second Primary Molar", "system": "primary", "position": "upper-right"},
+        {"id": "primary-B", "number": "B", "name": "右上第一乳臼齒", "nameEn": "Upper Right First Primary Molar", "system": "primary", "position": "upper-right"},
+        {"id": "primary-C", "number": "C", "name": "右上乳犬齒", "nameEn": "Upper Right Primary Canine", "system": "primary", "position": "upper-right"},
+        {"id": "primary-D", "number": "D", "name": "右上側乳門牙", "nameEn": "Upper Right Primary Lateral Incisor", "system": "primary", "position": "upper-right"},
+        {"id": "primary-E", "number": "E", "name": "右上中乳門牙", "nameEn": "Upper Right Primary Central Incisor", "system": "primary", "position": "upper-right"},
+        {"id": "primary-F", "number": "F", "name": "左上中乳門牙", "nameEn": "Upper Left Primary Central Incisor", "system": "primary", "position": "upper-left"},
+        {"id": "primary-G", "number": "G", "name": "左上側乳門牙", "nameEn": "Upper Left Primary Lateral Incisor", "system": "primary", "position": "upper-left"},
+        {"id": "primary-H", "number": "H", "name": "左上乳犬齒", "nameEn": "Upper Left Primary Canine", "system": "primary", "position": "upper-left"},
+        {"id": "primary-I", "number": "I", "name": "左上第一乳臼齒", "nameEn": "Upper Left First Primary Molar", "system": "primary", "position": "upper-left"},
+        {"id": "primary-J", "number": "J", "name": "左上第二乳臼齒", "nameEn": "Upper Left Second Primary Molar", "system": "primary", "position": "upper-left"},
+        {"id": "primary-K", "number": "K", "name": "左下第二乳臼齒", "nameEn": "Lower Left Second Primary Molar", "system": "primary", "position": "lower-left"},
+        {"id": "primary-L", "number": "L", "name": "左下第一乳臼齒", "nameEn": "Lower Left First Primary Molar", "system": "primary", "position": "lower-left"},
+        {"id": "primary-M", "number": "M", "name": "左下乳犬齒", "nameEn": "Lower Left Primary Canine", "system": "primary", "position": "lower-left"},
+        {"id": "primary-N", "number": "N", "name": "左下側乳門牙", "nameEn": "Lower Left Primary Lateral Incisor", "system": "primary", "position": "lower-left"},
+        {"id": "primary-O", "number": "O", "name": "左下中乳門牙", "nameEn": "Lower Left Primary Central Incisor", "system": "primary", "position": "lower-left"},
+        {"id": "primary-P", "number": "P", "name": "右下中乳門牙", "nameEn": "Lower Right Primary Central Incisor", "system": "primary", "position": "lower-right"},
+        {"id": "primary-Q", "number": "Q", "name": "右下側乳門牙", "nameEn": "Lower Right Primary Lateral Incisor", "system": "primary", "position": "lower-right"},
+        {"id": "primary-R", "number": "R", "name": "右下乳犬齒", "nameEn": "Lower Right Primary Canine", "system": "primary", "position": "lower-right"},
+        {"id": "primary-S", "number": "S", "name": "右下第一乳臼齒", "nameEn": "Lower Right First Primary Molar", "system": "primary", "position": "lower-right"},
+        {"id": "primary-T", "number": "T", "name": "右下第二乳臼齒", "nameEn": "Lower Right Second Primary Molar", "system": "primary", "position": "lower-right"}
+      ],
+      "orderingSystem": "primary_teeth"
+    },
+    {
+      "id": "eye",
+      "name": "眼睛系統",
+      "nameEn": "Eyes",
+      "description": "眼睛的解剖結構與眼科疾病記錄",
+      "descriptionEn": "Anatomical structures and ophthalmic disease documentation",
+      "icon": "👁️",
+      "color": "#87ceeb",
+      "imageIds": [
+        "eye-3d",
+        "eyefunctions"
+      ],
+      "locations": [
+        {
+          "id": "right-eye",
+          "name": "右眼",
+          "nameEn": "Right Eye"
+        },
+        {
+          "id": "right-eye-cornea",
+          "name": "右眼角膜",
+          "nameEn": "Right Eye Cornea"
+        },
+        {
+          "id": "right-eye-iris",
+          "name": "右眼虹膜",
+          "nameEn": "Right Eye Iris"
+        },
+        {
+          "id": "right-eye-lens",
+          "name": "右眼晶狀體",
+          "nameEn": "Right Eye Lens"
+        },
+        {
+          "id": "right-eye-retina",
+          "name": "右眼視網膜",
+          "nameEn": "Right Eye Retina"
+        },
+        {
+          "id": "left-eye",
+          "name": "左眼",
+          "nameEn": "Left Eye"
+        },
+        {
+          "id": "left-eye-cornea",
+          "name": "左眼角膜",
+          "nameEn": "Left Eye Cornea"
+        },
+        {
+          "id": "left-eye-iris",
+          "name": "左眼虹膜",
+          "nameEn": "Left Eye Iris"
+        },
+        {
+          "id": "left-eye-lens",
+          "name": "左眼晶狀體",
+          "nameEn": "Left Eye Lens"
+        },
+        {
+          "id": "left-eye-retina",
+          "name": "左眼視網膜",
+          "nameEn": "Left Eye Retina"
+        }
+      ],
+      "orderingSystem": "location"
+    },
+    {
+      "id": "body",
+      "name": "身體系統",
+      "nameEn": "Body",
+      "description": "身體表面和內臟器官的解剖位置與疾病記錄",
+      "descriptionEn": "Anatomical locations of body surface and organs with disease documentation",
+      "icon": "🫀",
+      "color": "#ff6b9d",
+      "imageIds": [
+        "allbodywithtext",
+        "bodysurface",
+        "femalebody",
+        "regionbodytext"
+      ],
+      "locations": [
+        {
+          "id": "head",
+          "name": "頭部",
+          "nameEn": "Head"
+        },
+        {
+          "id": "neck",
+          "name": "頸部",
+          "nameEn": "Neck"
+        },
+        {
+          "id": "shoulder",
+          "name": "肩膀",
+          "nameEn": "Shoulder"
+        },
+        {
+          "id": "chest",
+          "name": "胸部",
+          "nameEn": "Chest"
+        },
+        {
+          "id": "abdomen",
+          "name": "腹部",
+          "nameEn": "Abdomen"
+        },
+        {
+          "id": "back",
+          "name": "背部",
+          "nameEn": "Back"
+        },
+        {
+          "id": "arm",
+          "name": "手臂",
+          "nameEn": "Arm"
+        },
+        {
+          "id": "forearm",
+          "name": "前臂",
+          "nameEn": "Forearm"
+        },
+        {
+          "id": "hand",
+          "name": "手",
+          "nameEn": "Hand"
+        },
+        {
+          "id": "thigh",
+          "name": "大腿",
+          "nameEn": "Thigh"
+        },
+        {
+          "id": "knee",
+          "name": "膝蓋",
+          "nameEn": "Knee"
+        },
+        {
+          "id": "shin",
+          "name": "小腿",
+          "nameEn": "Shin"
+        },
+        {
+          "id": "foot",
+          "name": "腳",
+          "nameEn": "Foot"
+        }
+      ],
+      "orderingSystem": "location"
+    }
+  ]
+}

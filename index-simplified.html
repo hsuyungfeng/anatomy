@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="簡化醫療病歷標註系統">
+  <title>醫療病歷標註系統</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #0066cc;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0052a3;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+    }
+
+    .canvas-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    canvas {
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      flex: 1;
+      cursor: crosshair;
+      background: #fafafa;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .zoom-controls {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .zoom-controls button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .panel-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #666;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .annotation-item {
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 3px solid #0066cc;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .annotation-item-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .annotation-item-content {
+      color: #666;
+      font-size: 11px;
+    }
+
+    .annotation-item-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .annotation-item-actions button {
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      border: none;
+      background: #eee;
+      border-radius: 3px;
+      transition: 0.2s;
+    }
+
+    .annotation-item-actions button:hover {
+      background: #ddd;
+    }
+
+    .annotation-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .empty-state {
+      color: #999;
+      font-size: 12px;
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-footer button {
+      flex: 1;
+    }
+
+    .severity-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .severity-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0;
+    }
+
+    input[type="radio"] {
+      cursor: pointer;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4caf50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease-out;
+      z-index: 2000;
+    }
+
+    .notification.error {
+      background: #f44336;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .controls {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div>
+        <h1>🏥 醫療病歷標註</h1>
+        <p style="color: #999; font-size: 12px; margin-top: 4px;">點擊圖像位置進行標註</p>
+      </div>
+      <div class="controls">
+        <button class="btn btn-secondary" id="exportBtn">
+          <i class="fas fa-download"></i> 匯出
+        </button>
+        <button class="btn btn-danger" id="clearBtn">
+          <i class="fas fa-trash"></i> 清空
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main">
+      <!-- Canvas Area -->
+      <div class="canvas-section">
+        <div class="canvas-header">
+          <span style="font-weight: 500;">圖像標註區域</span>
+          <span id="locationInfo" style="font-size: 12px; color: #999;">點擊位置: --</span>
+        </div>
+        <canvas id="annotationCanvas" width="800" height="600"></canvas>
+        <div class="toolbar">
+          <div class="zoom-controls">
+            <button class="btn btn-secondary" id="zoomInBtn" title="放大">
+              <i class="fas fa-search-plus"></i>
+            </button>
+            <button class="btn btn-secondary" id="zoomResetBtn" title="重置">
+              <i class="fas fa-redo"></i>
+            </button>
+            <button class="btn btn-secondary" id="zoomOutBtn" title="縮小">
+              <i class="fas fa-search-minus"></i>
+            </button>
+            <span id="zoomLevel" style="margin-left: 10px; font-size: 12px; color: #999;">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Quick Info -->
+        <div class="panel">
+          <div class="panel-title">
+            <i class="fas fa-info-circle"></i> 快速信息
+          </div>
+          <div style="font-size: 12px;">
+            <div style="margin-bottom: 8px;">
+              <span style="color: #999;">標註數:</span>
+              <strong id="annotationCount">0</strong>
+            </div>
+            <div>
+              <span style="color: #999;">患者 ID:</span>
+              <input type="text" id="patientId" placeholder="可選">
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Add -->
+        <div class="panel">
+          <div class="panel-title">
+            <i class="fas fa-plus-circle"></i> 快速添加
+          </div>
+          <div style="font-size: 12px;">
+            <div class="form-group">
+              <label>位置名稱</label>
+              <input type="text" id="quickLocation" placeholder="如: 左上門牙">
+            </div>
+            <div class="form-group">
+              <label>疾病</label>
+              <input type="text" id="quickDisease" placeholder="如: 齲齒">
+            </div>
+            <button class="btn btn-primary" id="quickAddBtn" style="width: 100%;">
+              添加標註
+            </button>
+          </div>
+        </div>
+
+        <!-- Annotations List -->
+        <div class="panel">
+          <div class="panel-title">
+            <i class="fas fa-list"></i> 標註列表
+          </div>
+          <div class="annotation-list" id="annotationList">
+            <div class="empty-state">暫無標註</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Adding Annotation -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>新增病歷標註</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>位置信息</label>
+          <input type="text" id="modalLocation" readonly style="background: #f5f5f5;">
+        </div>
+        <div class="form-group">
+          <label>疾病名稱</label>
+          <input type="text" id="modalDisease" placeholder="例: 齲齒、牙周病">
+        </div>
+        <div class="form-group">
+          <label>嚴重程度</label>
+          <div class="severity-options">
+            <label>
+              <input type="radio" name="severity" value="mild"> 輕度
+            </label>
+            <label>
+              <input type="radio" name="severity" value="moderate" checked> 中度
+            </label>
+            <label>
+              <input type="radio" name="severity" value="severe"> 重度
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>備註</label>
+          <textarea id="modalNotes" placeholder="補充說明..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modalCancel">取消</button>
+        <button class="btn btn-primary" id="modalSave">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 簡化版應用 ==========
+    class SimpleAnnotationApp {
+      constructor() {
+        this.canvas = document.getElementById('annotationCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.annotations = [];
+        this.zoom = 1;
+        this.panX = 0;
+        this.panY = 0;
+        this.lastClickPos = null;
+
+        // 占位圖像 (灰色背景)
+        this.imageLoaded = false;
+
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.render();
+        this.loadFromStorage();
+      }
+
+      setupEventListeners() {
+        // Canvas
+        this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+        this.canvas.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
+
+        // Buttons
+        document.getElementById('zoomInBtn').addEventListener('click', () => this.zoomIn());
+        document.getElementById('zoomResetBtn').addEventListener('click', () => this.resetZoom());
+        document.getElementById('zoomOutBtn').addEventListener('click', () => this.zoomOut());
+
+        // Modal
+        document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalCancel').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalSave').addEventListener('click', () => this.saveAnnotation());
+
+        // Quick Add
+        document.getElementById('quickAddBtn').addEventListener('click', () => this.quickAdd());
+
+        // Actions
+        document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
+        document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+      }
+
+      handleCanvasClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        this.lastClickPos = { x, y };
+        document.getElementById('locationInfo').textContent = `位置: (${Math.round(x)}, ${Math.round(y)})`;
+
+        this.openModal();
+      }
+
+      handleZoom(e) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newZoom = Math.max(0.5, Math.min(4, this.zoom * delta));
+        if (newZoom !== this.zoom) {
+          this.zoom = newZoom;
+          this.updateZoomDisplay();
+          this.render();
+        }
+      }
+
+      zoomIn() {
+        this.zoom = Math.min(4, this.zoom * 1.2);
+        this.updateZoomDisplay();
+        this.render();
+      }
+
+      zoomOut() {
+        this.zoom = Math.max(0.5, this.zoom * 0.8);
+        this.updateZoomDisplay();
+        this.render();
+      }
+
+      resetZoom() {
+        this.zoom = 1;
+        this.panX = 0;
+        this.panY = 0;
+        this.updateZoomDisplay();
+        this.render();
+      }
+
+      updateZoomDisplay() {
+        document.getElementById('zoomLevel').textContent = `${Math.round(this.zoom * 100)}%`;
+      }
+
+      render() {
+        // 清空畫布
+        this.ctx.fillStyle = '#f5f5f5';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // 繪製網格背景
+        this.drawGrid();
+
+        // 應用縮放和平移
+        this.ctx.save();
+        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.scale(this.zoom, this.zoom);
+        this.ctx.translate(-this.canvas.width / 2 + this.panX, -this.canvas.height / 2 + this.panY);
+
+        // 繪製標註點
+        this.annotations.forEach((anno, idx) => {
+          this.drawAnnotation(anno, idx);
+        });
+
+        this.ctx.restore();
+      }
+
+      drawGrid() {
+        const gridSize = 50;
+        this.ctx.strokeStyle = '#e0e0e0';
+        this.ctx.lineWidth = 0.5;
+
+        for (let i = 0; i < this.canvas.width; i += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(i, 0);
+          this.ctx.lineTo(i, this.canvas.height);
+          this.ctx.stroke();
+        }
+
+        for (let i = 0; i < this.canvas.height; i += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, i);
+          this.ctx.lineTo(this.canvas.width, i);
+          this.ctx.stroke();
+        }
+      }
+
+      drawAnnotation(anno, idx) {
+        const x = anno.x;
+        const y = anno.y;
+        const radius = 8 / this.zoom;
+
+        // 圓點
+        this.ctx.fillStyle = '#0066cc';
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // 邊框
+        this.ctx.strokeStyle = 'white';
+        this.ctx.lineWidth = 2 / this.zoom;
+        this.ctx.stroke();
+
+        // 標號
+        this.ctx.fillStyle = '#0066cc';
+        this.ctx.font = `${12 / this.zoom}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(idx + 1, x, y);
+      }
+
+      openModal() {
+        document.getElementById('modalLocation').value = `(${Math.round(this.lastClickPos.x)}, ${Math.round(this.lastClickPos.y)})`;
+        document.getElementById('modalDisease').value = '';
+        document.getElementById('modalNotes').value = '';
+        document.querySelector('input[name="severity"]:checked').checked = false;
+        document.querySelector('input[name="severity"][value="moderate"]').checked = true;
+        document.getElementById('modal').classList.add('active');
+      }
+
+      closeModal() {
+        document.getElementById('modal').classList.remove('active');
+      }
+
+      saveAnnotation() {
+        const disease = document.getElementById('modalDisease').value.trim();
+        const severity = document.querySelector('input[name="severity"]:checked').value;
+        const notes = document.getElementById('modalNotes').value.trim();
+
+        if (!disease) {
+          this.showNotification('請輸入疾病名稱', 'error');
+          return;
+        }
+
+        this.annotations.push({
+          x: this.lastClickPos.x,
+          y: this.lastClickPos.y,
+          location: document.getElementById('modalLocation').value,
+          disease,
+          severity,
+          notes,
+          timestamp: new Date().toISOString()
+        });
+
+        this.updateAnnotationList();
+        this.saveToStorage();
+        this.closeModal();
+        this.render();
+        this.showNotification('標註已保存');
+      }
+
+      quickAdd() {
+        const location = document.getElementById('quickLocation').value.trim();
+        const disease = document.getElementById('quickDisease').value.trim();
+
+        if (!location || !disease) {
+          this.showNotification('請輸入位置和疾病', 'error');
+          return;
+        }
+
+        this.annotations.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          location,
+          disease,
+          severity: 'moderate',
+          notes: '',
+          timestamp: new Date().toISOString()
+        });
+
+        document.getElementById('quickLocation').value = '';
+        document.getElementById('quickDisease').value = '';
+        this.updateAnnotationList();
+        this.saveToStorage();
+        this.render();
+        this.showNotification('快速標註已添加');
+      }
+
+      updateAnnotationList() {
+        const list = document.getElementById('annotationList');
+        const count = document.getElementById('annotationCount');
+
+        count.textContent = this.annotations.length;
+
+        if (this.annotations.length === 0) {
+          list.innerHTML = '<div class="empty-state">暫無標註</div>';
+          return;
+        }
+
+        list.innerHTML = this.annotations.map((anno, idx) => `
+          <div class="annotation-item">
+            <div class="annotation-item-title">#${idx + 1} ${anno.location}</div>
+            <div class="annotation-item-content">
+              疾病: <strong>${anno.disease}</strong><br>
+              程度: ${this.getSeverityText(anno.severity)}<br>
+              ${anno.notes ? '備註: ' + anno.notes : ''}
+            </div>
+            <div class="annotation-item-actions">
+              <button onclick="app.editAnnotation(${idx})">編輯</button>
+              <button onclick="app.deleteAnnotation(${idx})">刪除</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      editAnnotation(idx) {
+        const anno = this.annotations[idx];
+        document.getElementById('modalLocation').value = anno.location;
+        document.getElementById('modalDisease').value = anno.disease;
+        document.getElementById('modalNotes').value = anno.notes;
+        document.querySelector(`input[name="severity"][value="${anno.severity}"]`).checked = true;
+
+        this.lastClickPos = { x: anno.x, y: anno.y };
+        this.deleteAnnotation(idx);
+        this.openModal();
+      }
+
+      deleteAnnotation(idx) {
+        this.annotations.splice(idx, 1);
+        this.updateAnnotationList();
+        this.saveToStorage();
+        this.render();
+      }
+
+      exportData() {
+        const patientId = document.getElementById('patientId').value || '未指定';
+        const data = {
+          patientId,
+          exportDate: new Date().toLocaleString('zh-Hant'),
+          annotations: this.annotations
+        };
+
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `medical-record-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.showNotification('已匯出為 JSON');
+      }
+
+      clearAll() {
+        if (confirm('確認清空所有標註？此操作無法復原。')) {
+          this.annotations = [];
+          this.updateAnnotationList();
+          this.saveToStorage();
+          this.render();
+          this.showNotification('已清空所有標註');
+        }
+      }
+
+      saveToStorage() {
+        localStorage.setItem('annotations', JSON.stringify(this.annotations));
+      }
+
+      loadFromStorage() {
+        const data = localStorage.getItem('annotations');
+        if (data) {
+          this.annotations = JSON.parse(data);
+          this.updateAnnotationList();
+          this.render();
+        }
+      }
+
+      getSeverityText(severity) {
+        const map = { mild: '輕度', moderate: '中度', severe: '重度' };
+        return map[severity] || severity;
+      }
+
+      showNotification(message, type = 'success') {
+        const notif = document.createElement('div');
+        notif.className = `notification ${type === 'error' ? 'error' : ''}`;
+        notif.textContent = message;
+        document.body.appendChild(notif);
+
+        setTimeout(() => {
+          notif.style.animation = 'slideIn 0.3s ease-out reverse';
+          setTimeout(() => notif.remove(), 300);
+        }, 3000);
+      }
+    }
+
+    // 應用启動
+    const app = new SimpleAnnotationApp();
+  </script>
+</body>
+</html>

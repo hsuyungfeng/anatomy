@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="醫療結構化病歷輸入系統 - 使用圖像標註和結構化表單記錄患者狀況">
+  <meta name="keywords" content="病歷,解剖,標註,醫療記錄,結構化,OCR">
+
+  <title>醫療結構化病歷輸入系統</title>
+
+  <!-- 基礎樣式 -->
+  <link rel="stylesheet" href="assets/styles/main.css">
+  <link rel="stylesheet" href="assets/styles/annotator.css">
+  <link rel="stylesheet" href="assets/styles/modal.css">
+
+  <!-- Font Awesome 圖標 (可選) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- 主容器 -->
+  <div id="app" class="app">
+    <!-- 頁頭 -->
+    <header class="app__header">
+      <div class="app__header-content">
+        <div class="app__branding">
+          <h1 class="app__title" data-en="Medical Record System">
+            醫療結構化病歷輸入系統
+          </h1>
+          <p class="app__subtitle" data-en="Anatomical Annotation & Structured Documentation">
+            解剖標註與結構化文檔
+          </p>
+        </div>
+
+        <div class="app__controls">
+          <!-- 語言切換 -->
+          <div class="app__language-switcher">
+            <button
+              class="language-btn language-btn--active"
+              data-lang="zh"
+              aria-label="中文"
+              title="繁體中文">
+              中
+            </button>
+            <button
+              class="language-btn"
+              data-lang="en"
+              aria-label="English"
+              title="English">
+              EN
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 系統選擇標籤頁 -->
+    <nav class="system-tabs" role="tablist" aria-label="解剖系統選擇">
+      <button
+        class="system-tab system-tab--active"
+        role="tab"
+        aria-selected="true"
+        aria-controls="system-teeth"
+        data-system="teeth"
+        data-en="Teeth/Gums">
+        <span class="system-tab__icon">🦷</span>
+        <span class="system-tab__label">牙齒系統</span>
+      </button>
+
+      <button
+        class="system-tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="system-eye"
+        data-system="eye"
+        data-en="Eyes">
+        <span class="system-tab__icon">👁️</span>
+        <span class="system-tab__label">眼睛系統</span>
+      </button>
+
+      <button
+        class="system-tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="system-body"
+        data-system="body"
+        data-en="Body">
+        <span class="system-tab__icon">🫀</span>
+        <span class="system-tab__label">身體系統</span>
+      </button>
+    </nav>
+
+    <!-- 主內容區域 -->
+    <main class="app__main">
+      <!-- 左側：圖像區域 -->
+      <section class="image-section" aria-label="圖像標註區域">
+        <!-- 牙齒子標籤頁 (僅在牙齒系統中顯示) -->
+        <nav class="teeth-sub-tabs" id="teeth-sub-tabs" role="tablist" aria-label="牙齒系統選擇">
+          <button
+            class="teeth-tab teeth-tab--active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="teeth-permanent"
+            data-teeth-type="permanent"
+            data-en="Permanent Teeth">
+            <span class="teeth-tab__label">永久齒</span>
+          </button>
+          <button
+            class="teeth-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="teeth-primary"
+            data-teeth-type="primary"
+            data-en="Primary Teeth">
+            <span class="teeth-tab__label">乳齒</span>
+          </button>
+        </nav>
+
+        <div class="image-container">
+          <div class="image-viewer" id="image-viewer">
+            <canvas
+              id="image-canvas"
+              class="image-canvas"
+              aria-label="解剖圖像，點擊進行標註">
+            </canvas>
+          </div>
+
+          <!-- 圖像控制工具欄 -->
+          <div class="image-toolbar">
+            <div class="image-toolbar__group">
+              <button
+                id="zoom-in-btn"
+                class="btn btn--icon"
+                aria-label="放大圖像"
+                data-en="Zoom In"
+                title="放大 (Scroll up)">
+                <i class="fas fa-search-plus"></i>
+              </button>
+
+              <button
+                id="zoom-reset-btn"
+                class="btn btn--icon"
+                aria-label="重置縮放"
+                data-en="Reset"
+                title="重置為 100%">
+                <i class="fas fa-redo"></i>
+              </button>
+
+              <button
+                id="zoom-out-btn"
+                class="btn btn--icon"
+                aria-label="縮小圖像"
+                data-en="Zoom Out"
+                title="縮小 (Scroll down)">
+                <i class="fas fa-search-minus"></i>
+              </button>
+            </div>
+
+            <div class="image-toolbar__group">
+              <span class="zoom-level" id="zoom-level">100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 幫助文本 -->
+        <div class="image-help" role="complementary">
+          <p class="image-help__text" data-en="Click on the image to add a disease record">
+            💡 點擊圖像標註位置，填入疾病資訊
+          </p>
+        </div>
+      </section>
+
+      <!-- 右側：病歷列表和操作 -->
+      <aside class="record-section" aria-label="病歷管理區域">
+        <!-- 標籤頁：僅病歷列表 -->
+        <div class="record-tabs" role="tablist" aria-label="病歷操作">
+          <button
+            class="record-tab record-tab--active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="record-list"
+            data-tab="list"
+            data-en="Records">
+            <i class="fas fa-list"></i>
+            <span class="record-tab__label">病歷列表</span>
+          </button>
+        </div>
+
+        <!-- 病歷列表面板 -->
+        <div id="record-list" class="record-panel record-panel--active" role="tabpanel">
+          <div class="record-list" id="record-list-container">
+            <div class="empty-state">
+              <p class="empty-state__text" data-en="No records yet. Click on the image to add.">
+                尚無病歷記錄。點擊圖像開始標註。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部操作按鈕 -->
+        <div class="record-actions">
+          <button
+            class="btn btn--secondary"
+            id="export-text-btn"
+            data-en="Export Text">
+            <i class="fas fa-file-alt"></i>
+            <span>匯出文字</span>
+          </button>
+
+          <button
+            class="btn btn--danger"
+            id="clear-records-btn"
+            data-en="Clear">
+            <i class="fas fa-trash"></i>
+            <span>清空</span>
+          </button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- 疾病記錄模態視窗 -->
+  <div id="modal-overlay"></div>
+  <div id="disease-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal__header">
+      <h2 id="modal-title" class="modal__title" data-en="Add Disease Record">
+        新增疾病記錄
+      </h2>
+      <button
+        class="modal__close"
+        aria-label="關閉"
+        data-en="Close">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal__content">
+      <!-- 位置信息 -->
+      <div id="modal-location">
+        <!-- 由 JavaScript 動態填充 -->
+      </div>
+
+      <!-- 疾病表單 -->
+      <div id="disease-form-container"></div>
+    </div>
+
+    <div class="modal__footer">
+      <button
+        class="btn btn--secondary"
+        id="modal-cancel-btn"
+        data-en="Cancel">
+        取消
+      </button>
+      <button
+        class="btn btn--primary"
+        id="modal-save-btn"
+        data-en="Save">
+        儲存
+      </button>
+    </div>
+  </div>
+
+  <!-- Tesseract.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6"></script>
+
+  <!-- JavaScript 模組 -->
+  <script src="assets/scripts/utils.js"></script>
+  <script src="assets/scripts/image-annotator.js"></script>
+  <script src="assets/scripts/disease-form.js"></script>
+  <script src="assets/scripts/ocr-handler.js"></script>
+  <script src="assets/scripts/disease-data-migration.js"></script>
+  <script src="assets/scripts/record-manager.js"></script>
+  <script src="assets/scripts/disease-visualization.js"></script>
+  <script src="assets/scripts/main.js"></script>
+</body>
+</html>

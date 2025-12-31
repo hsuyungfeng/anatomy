@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="詳細病歷編輯 - 醫療結構化病歷輸入系統">
+
+  <title>詳細病歷編輯 - 醫療結構化病歷輸入系統</title>
+
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="stylesheet" href="../assets/styles/annotator.css">
+  <link rel="stylesheet" href="../assets/styles/modal.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- 頁頭 -->
+    <header class="app__header">
+      <div class="app__header-content">
+        <div class="app__branding">
+          <a href="../index.html" class="app__back-link" aria-label="返回主頁">
+            <i class="fas fa-arrow-left"></i>
+            <span data-en="Back">返回</span>
+          </a>
+          <h1 class="app__title" data-en="Medical Record Details">
+            詳細病歷編輯
+          </h1>
+        </div>
+
+        <div class="app__controls">
+          <div class="app__language-switcher">
+            <button
+              class="language-btn language-btn--active"
+              data-lang="zh"
+              aria-label="中文">
+              中
+            </button>
+            <button
+              class="language-btn"
+              data-lang="en"
+              aria-label="English">
+              EN
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="app__main">
+      <!-- 左側：系統和圖像選擇 -->
+      <section class="record-editor__left">
+        <div class="system-selector">
+          <h2 class="system-selector__title" data-en="Select System">
+            選擇解剖系統
+          </h2>
+
+          <div class="system-selector__list" id="system-list">
+            <!-- 由 JavaScript 動態生成 -->
+          </div>
+        </div>
+
+        <div class="image-selector">
+          <h2 class="image-selector__title" data-en="Select Image">
+            選擇圖像
+          </h2>
+
+          <div class="image-selector__list" id="image-list">
+            <!-- 由 JavaScript 動態生成 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 中間：圖像顯示 -->
+      <section class="record-editor__center">
+        <div class="image-container">
+          <div class="image-viewer" id="image-viewer">
+            <canvas
+              id="image-canvas"
+              class="image-canvas"
+              aria-label="解剖圖像，點擊進行標註">
+            </canvas>
+          </div>
+
+          <div class="image-toolbar">
+            <div class="image-toolbar__group">
+              <button
+                id="zoom-in-btn"
+                class="btn btn--icon"
+                aria-label="放大圖像">
+                <i class="fas fa-search-plus"></i>
+              </button>
+              <button
+                id="zoom-reset-btn"
+                class="btn btn--icon"
+                aria-label="重置縮放">
+                <i class="fas fa-redo"></i>
+              </button>
+              <button
+                id="zoom-out-btn"
+                class="btn btn--icon"
+                aria-label="縮小圖像">
+                <i class="fas fa-search-minus"></i>
+              </button>
+            </div>
+            <span class="zoom-level" id="zoom-level">100%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右側：標註列表 -->
+      <section class="record-editor__right">
+        <h2 class="annotations-title" data-en="Annotations">
+          標註列表
+        </h2>
+
+        <div class="annotations-list" id="annotations-list">
+          <div class="empty-state">
+            <p class="empty-state__text" data-en="No annotations yet">
+              尚無標註
+            </p>
+          </div>
+        </div>
+
+        <div class="record-editor__actions">
+          <button
+            class="btn btn--secondary"
+            id="save-record-btn"
+            data-en="Save Record">
+            <i class="fas fa-save"></i>
+            <span>保存病歷</span>
+          </button>
+
+          <button
+            class="btn btn--secondary"
+            id="print-btn"
+            data-en="Print">
+            <i class="fas fa-print"></i>
+            <span>列印</span>
+          </button>
+
+          <button
+            class="btn btn--danger"
+            id="delete-record-btn"
+            data-en="Delete">
+            <i class="fas fa-trash"></i>
+            <span>刪除</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 病歷詳情模態視窗 -->
+  <div id="annotation-detail-modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title" data-en="Edit Annotation">編輯標註</h2>
+        <button class="modal__close" aria-label="關閉">✕</button>
+      </div>
+
+      <div class="modal__body" id="annotation-detail-form">
+        <!-- 由 JavaScript 動態生成 -->
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn--secondary" id="detail-cancel-btn" data-en="Cancel">取消</button>
+        <button class="btn btn--primary" id="detail-save-btn" data-en="Save">儲存</button>
+        <button class="btn btn--danger" id="detail-delete-btn" data-en="Delete">刪除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 疾病記錄模態視窗 -->
+  <div id="modal-overlay"></div>
+  <div id="disease-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal__header">
+      <h2 id="modal-title" class="modal__title" data-en="Add Disease Record">
+        新增疾病記錄
+      </h2>
+      <button
+        class="modal__close"
+        aria-label="關閉"
+        data-en="Close">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal__content">
+      <!-- 位置信息 -->
+      <div id="modal-location">
+        <!-- 由 JavaScript 動態填充 -->
+      </div>
+
+      <!-- 疾病表單 -->
+      <div id="disease-form-container"></div>
+    </div>
+
+    <div class="modal__footer">
+      <button
+        class="btn btn--secondary"
+        id="modal-cancel-btn"
+        data-en="Cancel">
+        取消
+      </button>
+      <button
+        class="btn btn--primary"
+        id="modal-save-btn"
+        data-en="Save">
+        儲存
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6"></script>
+
+  <script src="../assets/scripts/utils.js"></script>
+  <script src="../assets/scripts/image-annotator.js"></script>
+  <script src="../assets/scripts/disease-form.js"></script>
+  <script src="../assets/scripts/ocr-handler.js"></script>
+  <script src="../assets/scripts/disease-data-migration.js"></script>
+  <script src="../assets/scripts/record-manager.js"></script>
+</body>
+</html>
