@@ -48,6 +48,17 @@ class ImageAnnotator {
     // 圖像點擊事件 - 在 canvas 和容器上都添加監聽
     if (this.imageElement) {
       this.imageElement.addEventListener('click', (e) => this.handleImageClick(e));
+      // 添加 mousedown + mouseup 組合，作為 click 的備選方案
+      let mouseDownOnCanvas = false;
+      this.imageElement.addEventListener('mousedown', () => {
+        mouseDownOnCanvas = true;
+      });
+      this.imageElement.addEventListener('mouseup', (e) => {
+        if (mouseDownOnCanvas) {
+          this.handleImageClick(e);
+        }
+        mouseDownOnCanvas = false;
+      });
       this.imageElement.style.cursor = 'crosshair';
     }
 
@@ -202,7 +213,10 @@ class ImageAnnotator {
    * @param {MouseEvent} event - 滑鼠事件
    */
   handleImageClick(event) {
-    if (!this.isImageLoaded) return;
+    if (!this.isImageLoaded) {
+      console.warn('圖像尚未加載完成');
+      // 如果圖像未加載但仍然嘗試點擊，仍然繼續處理以支持快速點擊
+    }
 
     const rect = this.imageElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
