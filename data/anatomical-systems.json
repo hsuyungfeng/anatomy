@@ -9,10 +9,10 @@
       "icon": "🦷",
       "color": "#ffd700",
       "imageIds": [
+        "permanteeth",
         "allteeth",
         "upperteeth",
         "lowerteeth",
-        "permanteeth",
         "primaryteeth",
         "3dteeth"
       ],

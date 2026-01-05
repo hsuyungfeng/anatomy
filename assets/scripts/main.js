@@ -299,7 +299,9 @@ class MedicalRecordApp {
       this.currentImageId = imageId;
 
       // 構建圖像路徑
-      const imagePath = `assets/images/${systemId}/${imageId}.png`;
+      // 牙齒系統統一使用 teeth 資料夾
+      const imageFolder = (systemId === 'teeth' || systemId === 'primary_teeth') ? 'teeth' : systemId;
+      const imagePath = `assets/images/${imageFolder}/${imageId}.png`;
 
       // 加載圖像
       await this.annotator.loadImage(imagePath);
