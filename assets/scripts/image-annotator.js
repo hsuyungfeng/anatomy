@@ -45,13 +45,22 @@ class ImageAnnotator {
    * 設置事件監聽
    */
   setupEventListeners() {
-    // 圖像點擊事件
+    // 圖像點擊事件 - 在 canvas 和容器上都添加監聽
     if (this.imageElement) {
       this.imageElement.addEventListener('click', (e) => this.handleImageClick(e));
+      this.imageElement.style.cursor = 'crosshair';
     }
 
-    // 縮放事件
+    // 縮放事件及容器點擊事件
     if (this.containerElement) {
+      // 容器點擊事件（備選方案）
+      this.containerElement.addEventListener('click', (e) => {
+        // 確保點擊目標是 canvas
+        if (e.target === this.imageElement || this.imageElement.contains(e.target)) {
+          this.handleImageClick(e);
+        }
+      });
+
       this.containerElement.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
       // 使用節流優化 mousemove 事件
       this.containerElement.addEventListener('mousemove',
