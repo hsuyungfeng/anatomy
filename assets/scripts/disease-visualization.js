@@ -49,7 +49,7 @@ class DiseaseVisualizationManager {
       svgContainer.style.position = 'absolute';
       svgContainer.style.top = '0';
       svgContainer.style.left = '0';
-      svgContainer.style.pointerEvents = 'auto';
+      svgContainer.style.pointerEvents = 'none';
       svgContainer.style.zIndex = '10';
 
       // 获取图像查看器容器
@@ -197,6 +197,7 @@ class DiseaseVisualizationManager {
     line.setAttribute('class', `disease-line disease-line--${diseaseId}`);
     line.setAttribute('data-disease', diseaseId);
     line.style.cursor = 'pointer';
+    line.style.pointerEvents = 'auto';
 
     // 添加鼠標交互
     line.addEventListener('mouseenter', () => {
@@ -234,6 +235,7 @@ class DiseaseVisualizationManager {
     bg.setAttribute('rx', '4');
     bg.setAttribute('opacity', '0.9');
     bg.setAttribute('class', `disease-label-bg disease-label-bg--${diseaseId}`);
+    bg.style.pointerEvents = 'auto';
 
     // 文字
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
