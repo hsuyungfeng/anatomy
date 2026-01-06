@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>牙齒檢測調試工具</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h1 { color: #2c3e50; }
+    #canvas-container { margin: 20px 0; text-align: center; }
+    #test-canvas { border: 2px solid #3498db; cursor: crosshair; background: #fafafa; }
+    .log { margin: 5px 0; padding: 10px; border-left: 4px solid #3498db; background: #ecf0f1; font-family: monospace; font-size: 13px; }
+    .log.error { border-left-color: #e74c3c; background: #fadbd8; }
+    .log.success { border-left-color: #2ecc71; background: #d5f4e6; }
+    .log.warning { border-left-color: #f39c12; background: #fef5e7; }
+    #status { padding: 15px; background: #3498db; color: white; border-radius: 4px; margin-bottom: 20px; }
+    button { padding: 10px 20px; margin: 5px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #2980b9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🦷 牙齒檢測調試工具</h1>
+    <div id="status">正在初始化...</div>
+
+    <div>
+      <button onclick="testLoadCoordinates()">1️⃣ 測試座標數據加載</button>
+      <button onclick="testClickDetection()">2️⃣ 測試點擊檢測（點擊 canvas）</button>
+      <button onclick="clearLogs()">清除日誌</button>
+    </div>
+
+    <div id="canvas-container">
+      <canvas id="test-canvas" width="800" height="372"></canvas>
+      <p style="color: #7f8c8d;">點擊 canvas 測試牙齒檢測</p>
+    </div>
+
+    <div id="log-container"></div>
+  </div>
+
+  <script src="assets/scripts/dental-image-mapper.js"></script>
+  <script>
+    const logContainer = document.getElementById('log-container');
+    const statusDiv = document.getElementById('status');
+    const canvas = document.getElementById('test-canvas');
+    let mapper = null;
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = 'log ' + type;
+      div.innerHTML = message;
+      logContainer.appendChild(div);
+      console.log(message);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function clearLogs() {
+      logContainer.innerHTML = '';
+    }
+
+    function updateStatus(message, isError = false) {
+      statusDiv.textContent = message;
+      statusDiv.style.background = isError ? '#e74c3c' : '#2ecc71';
+    }
+
+    async function testLoadCoordinates() {
+      clearLogs();
+      log('📥 開始測試座標數據加載...', 'info');
+
+      // 初始化 DentalImageMapper
+      mapper = new DentalImageMapper({
+        coordinatesUrl: '/data/dental-coordinates.json',
+        debug: true
+      });
+
+      log(`🔗 座標數據 URL: <strong>/data/dental-coordinates.json</strong>`, 'info');
+
+      const success = await mapper.loadCoordinates();
+
+      if (success) {
+        log('✅ <strong>座標數據加載成功！</strong>', 'success');
+        log(`📊 isLoaded 狀態: <strong>${mapper.isLoaded}</strong>`, success ? 'success' : 'error');
+
+        if (mapper.permanentTeeth) {
+          const teethCount = Object.keys(mapper.permanentTeeth).length;
+          log(`🦷 永久牙數量: <strong>${teethCount}</strong> 顆`, 'success');
+
+          // 顯示前 3 顆牙齒的數據
+          const firstThree = Object.entries(mapper.permanentTeeth).slice(0, 3);
+          firstThree.forEach(([id, data]) => {
+            log(`   牙齒 #${id}: ${data.nameCh} (FDI: ${data.fdi}) at (${data.x}, ${data.y}) radius=${data.radius}`, 'info');
+          });
+        }
+
+        updateStatus('✅ DentalImageMapper 已就緒，點擊 canvas 測試檢測');
+      } else {
+        log('❌ <strong>座標數據加載失敗</strong>', 'error');
+        log('⚠️ 請檢查：', 'warning');
+        log('   1. 文件路徑是否正確: /data/dental-coordinates.json', 'warning');
+        log('   2. 是否使用 HTTP 服務器運行（不能使用 file:// 協議）', 'warning');
+        log('   3. 瀏覽器控制台（F12）的 Network 標籤頁中查看請求狀態', 'warning');
+        updateStatus('❌ 座標數據加載失敗', true);
+      }
+    }
+
+    function testClickDetection() {
+      if (!mapper || !mapper.isLoaded) {
+        log('❌ 請先運行「測試座標數據加載」', 'error');
+        return;
+      }
+      log('👆 請點擊 canvas 測試牙齒檢測...', 'info');
+    }
+
+    // Canvas 點擊事件
+    canvas.addEventListener('click', (e) => {
+      if (!mapper || !mapper.isLoaded) {
+        log('❌ DentalImageMapper 未加載，無法檢測', 'error');
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      log(`<hr>📍 新的點擊檢測`, 'info');
+      log(`   點擊位置 (顯示座標): <strong>(${clickX.toFixed(1)}, ${clickY.toFixed(1)})</strong>`, 'info');
+
+      // 座標轉換
+      const naturalWidth = 1313;
+      const naturalHeight = 610;
+      const canvasDisplayWidth = canvas.offsetWidth;
+      const canvasDisplayHeight = canvas.offsetHeight;
+
+      log(`   Canvas 尺寸: <strong>${canvasDisplayWidth} x ${canvasDisplayHeight}</strong>`, 'info');
+      log(`   原始圖像尺寸: <strong>${naturalWidth} x ${naturalHeight}</strong>`, 'info');
+
+      const scaleX = canvasDisplayWidth / naturalWidth;
+      const scaleY = canvasDisplayHeight / naturalHeight;
+
+      log(`   縮放因子: <strong>scaleX=${scaleX.toFixed(4)}, scaleY=${scaleY.toFixed(4)}</strong>`, 'info');
+
+      const adjustedX = clickX / scaleX;
+      const adjustedY = clickY / scaleY;
+
+      log(`   轉換後座標 (原始尺寸): <strong>(${adjustedX.toFixed(1)}, ${adjustedY.toFixed(1)})</strong>`, 'info');
+
+      // 檢測牙齒
+      const toothInfo = mapper.getToothAtPosition(adjustedX, adjustedY, 'permanent');
+
+      if (toothInfo) {
+        log(`<br>✅ <strong>檢測成功！</strong>`, 'success');
+        log(`   🦷 牙齒: <strong>${toothInfo.nameCh}</strong>`, 'success');
+        log(`   🏷️ FDI 編號: <strong>${toothInfo.fdi}</strong>`, 'success');
+        log(`   📈 信心度: <strong>${(toothInfo.confidence * 100).toFixed(1)}%</strong>`, 'success');
+        log(`   📏 距離: <strong>${toothInfo.distance.toFixed(1)} px</strong> (半徑: ${toothInfo.radius} px)`, 'success');
+        updateStatus(`✅ 檢測到：${toothInfo.nameCh} (FDI: ${toothInfo.fdi})`);
+      } else {
+        log(`<br>❌ <strong>未檢測到牙齒</strong>`, 'error');
+        log(`⚠️ 可能原因：`, 'warning');
+        log(`   1. 點擊位置不在任何牙齒的檢測半徑內`, 'warning');
+        log(`   2. 座標轉換計算有誤`, 'warning');
+        log(`   3. 座標數據中該位置沒有定義牙齒`, 'warning');
+        updateStatus('❌ 未檢測到牙齒');
+      }
+    });
+
+    // 自動運行第一個測試
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        testLoadCoordinates();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
