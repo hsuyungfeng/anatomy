@@ -12,6 +12,7 @@ class MedicalRecordApp {
     this.diseaseForm = null;
     this.ocrHandler = null;
     this.diseaseVisualizer = null; // 疾病可視化管理器
+    this.dentalMapper = null; // 牙齒圖像映射器
 
     this.currentSystemId = 'teeth';
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
@@ -110,6 +111,21 @@ class MedicalRecordApp {
       imageElement: $('#image-canvas'),
       containerElement: $('#image-viewer'),
       systemId: this.currentSystemId
+    });
+
+    // 牙齒圖像映射器
+    this.dentalMapper = new DentalImageMapper({
+      coordinatesUrl: '/data/dental-coordinates.json',
+      debug: true  // 開發階段啟用，生產環境改為 false
+    });
+
+    // 預加載座標數據
+    this.dentalMapper.loadCoordinates().then(success => {
+      if (success) {
+        console.log('✓ 牙齒座標數據加載成功');
+      } else {
+        console.error('✗ 牙齒座標數據加載失敗');
+      }
     });
 
     // 病歷管理器
@@ -367,54 +383,108 @@ class MedicalRecordApp {
   }
 
   /**
-   * 根據點擊位置推斷牙齒位置
+   * 使用 DentalImageMapper 精確識別牙齒位置
    * @param {object} position - 點擊位置 {x, y}
-   * @param {object} system - 系統信息
-   * @returns {string} 牙齒名稱
+   * @returns {object|null} 牙齒資訊或 null
    */
-  detectToothPosition(position, system) {
-    if (!system || !system.locations) return null;
+  detectToothPosition(position) {
+    // 僅處理牙齒系統
+    if (this.currentSystemId !== 'teeth' && this.currentSystemId !== 'primary_teeth') {
+      return null;
+    }
 
-    // 獲取圖像容器以確定相對位置
+    // 檢查 DentalImageMapper 是否已加載
+    if (!this.dentalMapper || !this.dentalMapper.isLoaded) {
+      console.warn('DentalImageMapper 尚未加載，使用備選方法');
+      return this.detectToothPositionFallback(position);
+    }
+
     const canvas = document.getElementById('image-canvas');
     if (!canvas) return null;
 
-    // 計算相對位置比例
-    const imageWidth = canvas.width || canvas.offsetWidth;
-    const imageHeight = canvas.height || canvas.offsetHeight;
+    // 取得原始圖像的實際尺寸
+    // canvas 顯示寬度和高度基於容器大小
+    let naturalWidth = 1313;   // 預設永久齒圖像寬度
+    let naturalHeight = 610;   // 預設永久齒圖像高度
 
-    const relativeX = position.x / imageWidth;
-    const relativeY = position.y / imageHeight;
-
-    // 基於相對位置推斷牙齒位置
-    let position_type = '';
-
-    // 上下判斷
-    if (relativeY < 0.5) {
-      position_type = 'upper';
-    } else {
-      position_type = 'lower';
+    // 嘗試從 ImageAnnotator 實例中獲取原始圖像尺寸
+    if (this.annotator && this.annotator.imageData) {
+      naturalWidth = this.annotator.imageData.naturalWidth || naturalWidth;
+      naturalHeight = this.annotator.imageData.naturalHeight || naturalHeight;
     }
 
-    // 左右判斷
-    if (relativeX < 0.5) {
-      position_type += '-left';
-    } else {
-      position_type += '-right';
+    // canvas 顯示寬度和高度（考慮 zoom 和 pan）
+    const canvasDisplayWidth = canvas.offsetWidth;
+    const canvasDisplayHeight = canvas.offsetHeight;
+
+    // 計算縮放因子：顯示寬度 / 原始寬度
+    const scaleX = canvasDisplayWidth / naturalWidth;
+    const scaleY = canvasDisplayHeight / naturalHeight;
+
+    // 將點擊坐標從顯示寬度轉換回原始圖像寬度
+    const adjustedPos = {
+      x: position.x / scaleX,
+      y: position.y / scaleY
+    };
+
+    if (this.dentalMapper.debug) {
+      console.log('[detectToothPosition] 坐標轉換：');
+      console.log('  - 原始圖像尺寸:', { w: naturalWidth, h: naturalHeight });
+      console.log('  - Canvas 顯示尺寸:', { w: canvasDisplayWidth.toFixed(0), h: canvasDisplayHeight.toFixed(0) });
+      console.log('  - 點擊座標 (顯示寬度):', { x: position.x.toFixed(1), y: position.y.toFixed(1) });
+      console.log('  - 縮放因子:', { scaleX: scaleX.toFixed(3), scaleY: scaleY.toFixed(3) });
+      console.log('  - 轉換後 (原始寬度):', { x: adjustedPos.x.toFixed(1), y: adjustedPos.y.toFixed(1) });
     }
 
-    // 找到對應的牙齒（簡單的區域映射）
-    const matchingTeeth = system.locations.filter(loc =>
-      loc.position && loc.position === position_type
+    // 根據當前牙齒類型選擇座標集
+    const teethType = this.currentSystemId === 'primary_teeth' ? 'primary' : 'permanent';
+
+    // 使用 DentalImageMapper 識別牙齒
+    const toothInfo = this.dentalMapper.getToothAtPosition(
+      adjustedPos.x,
+      adjustedPos.y,
+      teethType
     );
 
-    if (matchingTeeth.length > 0) {
-      // 返回該區域的第一顆牙齒作為示例
-      const tooth = matchingTeeth[Math.floor(Math.random() * matchingTeeth.length)];
-      return tooth.name;
+    if (toothInfo) {
+      return {
+        name: toothInfo.nameCh,           // 中文名稱
+        nameEn: toothInfo.name,           // 英文名稱
+        fdi: toothInfo.fdi,               // FDI 編號
+        number: toothInfo.number,         // Universal 編號
+        confidence: toothInfo.confidence, // 信心度（0-1）
+        type: toothInfo.type,             // 牙齒類型
+        quadrant: toothInfo.quadrant      // 象限
+      };
     }
 
     return null;
+  }
+
+  /**
+   * 備選方法：當 DentalImageMapper 不可用時使用
+   * @param {object} position - 點擊位置
+   * @returns {object|null} 基本位置信息
+   */
+  detectToothPositionFallback(position) {
+    const canvas = document.getElementById('image-canvas');
+    if (!canvas) return null;
+
+    const relativeX = position.x / (canvas.width || canvas.offsetWidth);
+    const relativeY = position.y / (canvas.height || canvas.offsetHeight);
+
+    let quadrantName = '';
+    if (relativeY < 0.5) {
+      quadrantName = relativeX < 0.5 ? '右上' : '左上';
+    } else {
+      quadrantName = relativeX < 0.5 ? '右下' : '左下';
+    }
+
+    return {
+      name: `${quadrantName}牙齒區域`,
+      confidence: 0.3,
+      fallback: true
+    };
   }
 
   /**
@@ -425,23 +495,46 @@ class MedicalRecordApp {
     const modal = $('#disease-modal');
     if (!modal) return;
 
+    // 使用 DentalImageMapper 識別牙齒
+    const toothInfo = this.detectToothPosition(position);
+
     // 設置位置資訊
     const locationDiv = $('#modal-location');
     if (locationDiv) {
-      const system = this.anatomicalSystems.systems.find(
-        s => s.id === this.currentSystemId
-      );
+      let locationText = '';
 
-      let locationText = `位置: (${Math.round(position.x)}, ${Math.round(position.y)})`;
+      if (toothInfo) {
+        locationText = `
+          <div class="tooth-info">
+            <p class="tooth-info__main">
+              <strong>${toothInfo.name}</strong>
+              ${toothInfo.fdi ? `<span class="fdi-badge">FDI: ${toothInfo.fdi}</span>` : ''}
+            </p>
+            ${toothInfo.confidence < 0.5 ?
+              '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
+          </div>
+        `;
 
-      if (this.currentSystemId === 'teeth' && system) {
-        // 根據點擊位置推斷牙齒（基於圖像區域）
-        const toothName = this.detectToothPosition(position, system);
-        locationText = `位置: ${toothName || '牙齒區域'}`;
+        // 後台記錄信心度
+        console.log(`牙齒檢測: ${toothInfo.name}, 信心度: ${(toothInfo.confidence * 100).toFixed(1)}%`);
+
+        // 低信心度或備選方法時顯示手動選擇器
+        if (toothInfo.fallback || toothInfo.confidence < 0.5) {
+          locationText += this.renderManualToothSelector();
+        }
+      } else {
+        locationText = `
+          <p class="tooth-info__error">無法自動識別牙齒位置</p>
+          ${this.renderManualToothSelector()}
+        `;
       }
 
-      locationDiv.innerHTML = `<p>${locationText}</p>`;
+      locationDiv.innerHTML = locationText;
+      this.setupManualToothSelector();
     }
+
+    // 保存牙齒資訊供後續使用
+    this.currentToothInfo = toothInfo;
 
     // 初始化或更新疾病表單
     const formContainer = $('#disease-form-container');
@@ -467,6 +560,85 @@ class MedicalRecordApp {
 
     // 保存當前位置
     this.currentClickPosition = position;
+  }
+
+  /**
+   * 渲染手動牙齒選擇器
+   * @returns {string} HTML 字串
+   */
+  renderManualToothSelector() {
+    const teethType = this.currentSystemId === 'primary_teeth' ? 'primary' : 'permanent';
+
+    if (!this.dentalMapper || !this.dentalMapper.isLoaded) {
+      return '<p class="manual-selector__empty">無法加載牙齒列表</p>';
+    }
+
+    let teethList = this.dentalMapper.getAllTeeth(teethType);
+
+    let html = `
+      <div class="manual-tooth-selector">
+        <h4 class="manual-selector__title">或手動選擇牙齒：</h4>
+        <select id="manual-tooth-select" class="manual-tooth-select">
+          <option value="">-- 請選擇牙齒 --</option>
+    `;
+
+    const quadrants = {
+      'UR': '右上', 'UL': '左上', 'LL': '左下', 'LR': '右下'
+    };
+
+    Object.entries(quadrants).forEach(([code, name]) => {
+      const quadrantTeeth = teethList.filter(t => t.quadrant === code);
+      if (quadrantTeeth.length > 0) {
+        html += `<optgroup label="${name}">`;
+        quadrantTeeth.forEach(tooth => {
+          html += `
+            <option value="${tooth.toothId}" data-name="${tooth.nameCh}" data-fdi="${tooth.fdi}">
+              ${tooth.nameCh} (FDI: ${tooth.fdi})
+            </option>
+          `;
+        });
+        html += `</optgroup>`;
+      }
+    });
+
+    html += `</select></div>`;
+    return html;
+  }
+
+  /**
+   * 設置手動選擇器的事件監聽
+   */
+  setupManualToothSelector() {
+    const selector = document.getElementById('manual-tooth-select');
+    if (!selector) return;
+
+    selector.addEventListener('change', (e) => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      if (!selectedOption.value) return;
+
+      const teethType = this.currentSystemId === 'primary_teeth' ? 'primary' : 'permanent';
+      const toothInfo = this.dentalMapper.getToothInfo(selectedOption.value, teethType);
+
+      if (toothInfo) {
+        this.currentToothInfo = {
+          name: toothInfo.nameCh,
+          nameEn: toothInfo.name,
+          fdi: toothInfo.fdi,
+          number: toothInfo.toothId,
+          confidence: 1.0,
+          manualSelection: true
+        };
+
+        const mainInfo = document.querySelector('.tooth-info__main');
+        if (mainInfo) {
+          mainInfo.innerHTML = `
+            <strong>${toothInfo.nameCh}</strong>
+            <span class="fdi-badge">FDI: ${toothInfo.fdi}</span>
+            <span class="manual-badge">手動選擇</span>
+          `;
+        }
+      }
+    });
   }
 
   /**
@@ -666,16 +838,45 @@ class MedicalRecordApp {
       return;
     }
 
-    // 構建標註對象
+    // 構建標註對象（包含完整牙齒資訊）
     const annotation = {
       annotationId: generateUUID(),
       position: this.currentClickPosition,
-      locationName: this.getLocationName(this.currentClickPosition),
+
+      // 使用檢測到的牙齒資訊
+      locationName: this.currentToothInfo ? this.currentToothInfo.name :
+                    this.getLocationName(this.currentClickPosition),
+      locationNameEn: this.currentToothInfo ? this.currentToothInfo.nameEn : '',
+
+      // 編號系統（新增）
+      fdiNumber: this.currentToothInfo ? this.currentToothInfo.fdi : null,
+      universalNumber: this.currentToothInfo ? this.currentToothInfo.number : null,
+
+      // 牙齒資訊（新增）
+      toothType: this.currentToothInfo ? this.currentToothInfo.type : null,
+      quadrant: this.currentToothInfo ? this.currentToothInfo.quadrant : null,
+
+      // 檢測元數據（新增，僅後台）
+      detectionConfidence: this.currentToothInfo ? this.currentToothInfo.confidence : null,
+      manualSelection: this.currentToothInfo ? (this.currentToothInfo.manualSelection || false) : false,
+
+      // 疾病和療程
       diseases: formData.diseases,
       treatmentNotes: formData.treatmentNotes,
+
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
+    // 後台記錄完整資訊
+    console.log('保存標註:', {
+      牙齒: annotation.locationName,
+      FDI: annotation.fdiNumber,
+      信心度: annotation.detectionConfidence ?
+              `${(annotation.detectionConfidence * 100).toFixed(1)}%` : 'N/A',
+      手動選擇: annotation.manualSelection ? '是' : '否',
+      疾病數量: annotation.diseases.length
+    });
 
     // 保存到記錄管理器
     this.recordManager.addAnnotation(this.currentSystemId, annotation);
@@ -699,7 +900,15 @@ class MedicalRecordApp {
     // 關閉模態並更新列表
     this.closeDiseaseModal();
     this.updateRecordList(this.currentSystemId);
-    showNotification('疾病記錄已保存', 'success');
+
+    // 根據信心度顯示不同的提示
+    if (annotation.manualSelection) {
+      showNotification('✓ 疾病記錄已保存（手動選擇）', 'success');
+    } else if (annotation.detectionConfidence && annotation.detectionConfidence > 0.8) {
+      showNotification('✓ 疾病記錄已保存（高信心度）', 'success');
+    } else {
+      showNotification('✓ 疾病記錄已保存', 'success');
+    }
   }
 
   /**
@@ -744,12 +953,17 @@ class MedicalRecordApp {
         minute: '2-digit'
       });
 
+      // 顯示牙齒名稱和 FDI 編號
+      const locationDisplay = anno.fdiNumber ?
+        `${anno.locationName} <span class="fdi-badge">FDI: ${anno.fdiNumber}</span>` :
+        anno.locationName || '未知位置';
+
       html += `
         <div class="timeline-item ${index === 0 ? 'timeline-item--latest' : ''}">
           <div class="timeline-marker"></div>
           <div class="timeline-content">
             <div class="timeline-header">
-              <h4 class="timeline-location">${anno.locationName || '未知位置'}</h4>
+              <h4 class="timeline-location">${locationDisplay}</h4>
               <span class="timeline-date">${dateStr}</span>
             </div>
             <div class="timeline-diseases">

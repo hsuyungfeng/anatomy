@@ -77,32 +77,60 @@ class DiseaseVisualizationManager {
   }
 
   /**
-   * 獲取牙齒在 canvas 上的位置
-   * @param {string} locationName - 牙齒名稱 (例: "左上第一門牙")
-   * @param {number} index - 疾病索引（用於多個疾病時的位置偏移）
+   * 獲取牙齒在 canvas 上的位置（使用 DentalImageMapper 的座標）
+   * @param {string} locationName - 牙齒名稱 (例: "右上第三臼齒")
+   * @param {number} index - 疾病索引
    * @returns {Object} 位置座標 {x, y} 或 null
    */
   getToothPosition(locationName, index = 0) {
     if (!this.canvas) return null;
 
-    // 簡化的位置映射（實際應用中應基於系統的 locations 資料）
-    // 這裡使用相對位置估計
-    const relativePositions = {
-      // 永久齒
-      '左上第一門牙': { x: 0.15, y: 0.25 },
-      '左上第二門牙': { x: 0.25, y: 0.25 },
-      '左上尖牙': { x: 0.35, y: 0.25 },
-      '左上第一小臼齒': { x: 0.45, y: 0.25 },
-      '左上第二小臼齒': { x: 0.55, y: 0.25 },
-      // ... 其他牙齒位置 ...
-      // 簡單實現：基於關鍵字匹配估算位置
-    };
-
-    let relPos = relativePositions[locationName];
-    if (!relPos) {
-      // 根據位置關鍵字估算
-      relPos = this.estimatePositionFromName(locationName);
+    // 嘗試從全局 app 實例獲取 DentalImageMapper
+    const app = window.app;
+    if (!app || !app.dentalMapper || !app.dentalMapper.isLoaded) {
+      console.warn('DentalImageMapper 不可用，使用備選方法');
+      return this.getToothPositionFallback(locationName);
     }
+
+    // 從座標數據中查找牙齒
+    const teethType = app.currentSystemId === 'primary_teeth' ? 'primary' : 'permanent';
+    const allTeeth = app.dentalMapper.getAllTeeth(teethType);
+
+    // 根據中文名稱匹配牙齒
+    const tooth = allTeeth.find(t => t.nameCh === locationName);
+
+    if (!tooth) {
+      console.warn(`未找到牙齒: ${locationName}`);
+      return this.getToothPositionFallback(locationName);
+    }
+
+    // 轉換座標到 canvas 相對位置
+    const canvasRect = this.canvas.getBoundingClientRect();
+    const containerRect = this.canvas.parentElement.getBoundingClientRect();
+
+    // 獲取圖像的實際顯示縮放比例
+    const imageWidth = this.canvas.naturalWidth || 1313;
+    const imageHeight = this.canvas.naturalHeight || 610;
+    const displayWidth = canvasRect.width;
+    const displayHeight = canvasRect.height;
+
+    const scaleX = displayWidth / imageWidth;
+    const scaleY = displayHeight / imageHeight;
+
+    // 計算縮放後的座標
+    const x = (tooth.x * scaleX) + (canvasRect.left - containerRect.left);
+    const y = (tooth.y * scaleY) + (canvasRect.top - containerRect.top);
+
+    return { x, y };
+  }
+
+  /**
+   * 備選方法：當 DentalImageMapper 不可用時使用
+   * @param {string} locationName - 牙齒名稱
+   * @returns {Object} 估算的位置座標
+   */
+  getToothPositionFallback(locationName) {
+    const relPos = this.estimatePositionFromName(locationName);
 
     if (!relPos) {
       relPos = { x: 0.5, y: 0.5 }; // 預設中心位置

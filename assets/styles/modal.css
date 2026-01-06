@@ -439,3 +439,103 @@
     background: rgba(255, 255, 255, 0.1);
   }
 }
+
+/* ================================================
+   牙齒位置標註和手動選擇器樣式
+   ================================================ */
+
+/* 牙齒資訊顯示 */
+.tooth-info {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffd700;
+}
+
+.tooth-info__main {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.tooth-info__warning {
+  font-size: 0.9rem;
+  color: #f39c12;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tooth-info__error {
+  color: #e74c3c;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* 手動選擇器 */
+.manual-tooth-selector {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.manual-selector__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.manual-tooth-select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.manual-tooth-select:hover {
+  border-color: #ffd700;
+}
+
+.manual-tooth-select:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.manual-selector__empty {
+  color: #999;
+  font-style: italic;
+}
+
+/* 徽章樣式 */
+.fdi-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  background-color: #e8f4f8;
+  color: #2980b9;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.manual-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: #3498db;
+  color: white;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  font-weight: 600;
+}
