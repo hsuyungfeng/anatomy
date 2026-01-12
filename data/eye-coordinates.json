@@ -1,0 +1,170 @@
+{
+  "version": "1.0",
+  "description": "眼睛座標映射系統 - 定義眼睛結構在圖像上的點擊檢測區域",
+  "lastUpdated": "2026-01-12",
+  "imageReferenceSize": {
+    "width": 1313,
+    "height": 664,
+    "filename": "3Deye.png",
+    "description": "3D 眼睛解剖圖"
+  },
+  "structures": {
+    "right-eye": {
+      "id": "right-eye",
+      "name": "Right Eye",
+      "nameCh": "右眼",
+      "description": "整個右眼球",
+      "type": "eye",
+      "side": "right",
+      "x": 921.5,
+      "y": 412,
+      "radius": 100,
+      "confidence": "high",
+      "notes": "已通過 eye-calibration.html 工具精確校正（2026-01-12）"
+    },
+    "right-eye-cornea": {
+      "id": "right-eye-cornea",
+      "name": "Right Eye Cornea",
+      "nameCh": "右眼角膜",
+      "description": "眼睛前表面的透明膜",
+      "type": "cornea",
+      "side": "right",
+      "parent": "right-eye",
+      "x": 904.5,
+      "y": 400,
+      "radius": 50,
+      "confidence": "high",
+      "notes": "細部結構，半徑較小，優先匹配。已校正（2026-01-12）"
+    },
+    "right-eye-iris": {
+      "id": "right-eye-iris",
+      "name": "Right Eye Iris",
+      "nameCh": "右眼虹膜",
+      "description": "虹膜是眼睛的有色部分",
+      "type": "iris",
+      "side": "right",
+      "parent": "right-eye",
+      "x": 910.5,
+      "y": 389,
+      "radius": 35,
+      "confidence": "high",
+      "notes": "虹膜半徑最小，檢測優先級最高。已校正（2026-01-12）"
+    },
+    "right-eye-lens": {
+      "id": "right-eye-lens",
+      "name": "Right Eye Lens",
+      "nameCh": "右眼晶狀體",
+      "description": "眼睛內聚焦光線的透明結構",
+      "type": "lens",
+      "side": "right",
+      "parent": "right-eye",
+      "x": 921.5,
+      "y": 359,
+      "radius": 40,
+      "confidence": "high",
+      "notes": "晶狀體在角膜後方。已校正（2026-01-12）"
+    },
+    "right-eye-retina": {
+      "id": "right-eye-retina",
+      "name": "Right Eye Retina",
+      "nameCh": "右眼視網膜",
+      "description": "眼睛後部的感光組織",
+      "type": "retina",
+      "side": "right",
+      "parent": "right-eye",
+      "x": 921.5,
+      "y": 313,
+      "radius": 60,
+      "confidence": "high",
+      "notes": "視網膜位於眼球後方。已校正（2026-01-12）"
+    },
+    "left-eye": {
+      "id": "left-eye",
+      "name": "Left Eye",
+      "nameCh": "左眼",
+      "description": "整個左眼球",
+      "type": "eye",
+      "side": "left",
+      "x": 454.5,
+      "y": 313,
+      "radius": 100,
+      "confidence": "high",
+      "notes": "已通過 eye-calibration.html 工具精確校正（2026-01-12）"
+    },
+    "left-eye-cornea": {
+      "id": "left-eye-cornea",
+      "name": "Left Eye Cornea",
+      "nameCh": "左眼角膜",
+      "description": "眼睛前表面的透明膜",
+      "type": "cornea",
+      "side": "left",
+      "parent": "left-eye",
+      "x": 436.5,
+      "y": 400,
+      "radius": 50,
+      "confidence": "high",
+      "notes": "細部結構，半徑較小，優先匹配。已校正（2026-01-12）"
+    },
+    "left-eye-iris": {
+      "id": "left-eye-iris",
+      "name": "Left Eye Iris",
+      "nameCh": "左眼虹膜",
+      "description": "虹膜是眼睛的有色部分",
+      "type": "iris",
+      "side": "left",
+      "parent": "left-eye",
+      "x": 442.5,
+      "y": 389,
+      "radius": 35,
+      "confidence": "high",
+      "notes": "虹膜半徑最小，檢測優先級最高。已校正（2026-01-12）"
+    },
+    "left-eye-lens": {
+      "id": "left-eye-lens",
+      "name": "Left Eye Lens",
+      "nameCh": "左眼晶狀體",
+      "description": "眼睛內聚焦光線的透明結構",
+      "type": "lens",
+      "side": "left",
+      "parent": "left-eye",
+      "x": 454.5,
+      "y": 359,
+      "radius": 40,
+      "confidence": "high",
+      "notes": "晶狀體在角膜後方。已校正（2026-01-12）"
+    },
+    "left-eye-retina": {
+      "id": "left-eye-retina",
+      "name": "Left Eye Retina",
+      "nameCh": "左眼視網膜",
+      "description": "眼睛後部的感光組織",
+      "type": "retina",
+      "side": "left",
+      "parent": "left-eye",
+      "x": 415.5,
+      "y": 433,
+      "radius": 60,
+      "confidence": "high",
+      "notes": "視網膜位於眼球後方。已校正（2026-01-12）"
+    }
+  },
+  "calibrationNotes": {
+    "title": "座標校正指南",
+    "description": "本檔案中的座標已通過 eye-calibration.html 工具進行精確校正（2026-01-12），所有 10 個眼睛結構座標均已驗證。",
+    "steps": [
+      "1. 在瀏覽器開啟 eye-calibration.html",
+      "2. 選擇眼睛結構（從下拉選單）",
+      "3. 點擊 3Deye.png 圖像上該結構的中心位置",
+      "4. 系統記錄點擊座標",
+      "5. 重複步驟 2-4，直至所有 10 個結構都已校正",
+      "6. 匯出座標數據並更新本檔案"
+    ],
+    "tips": [
+      "- 點擊應盡量精確，位置誤差應 < 10 像素",
+      "- 對於細部結構（角膜、虹膜），點擊應在結構的正中心",
+      "- 對於整體眼睛，點擊應在眼球的中心",
+      "- 視網膜位於眼球內部，在 2D 平面圖中無法精確定位，保持現有座標即可",
+      "- 校正完成後應進行功能測試，驗證點擊檢測的準確性"
+    ]
+  }
+}

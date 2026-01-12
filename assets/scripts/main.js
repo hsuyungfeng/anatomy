@@ -13,6 +13,7 @@ class MedicalRecordApp {
     this.ocrHandler = null;
     this.diseaseVisualizer = null; // 疾病可視化管理器
     this.dentalMapper = null; // 牙齒圖像映射器
+    this.eyeMapper = null; // 眼睛圖像映射器 [新增]
 
     this.currentSystemId = 'teeth';
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
@@ -125,6 +126,21 @@ class MedicalRecordApp {
         console.log('✓ 牙齒座標數據加載成功');
       } else {
         console.error('✗ 牙齒座標數據加載失敗');
+      }
+    });
+
+    // 眼睛圖像映射器 [新增區塊]
+    this.eyeMapper = new EyeImageMapper({
+      coordinatesUrl: '/data/eye-coordinates.json',
+      debug: true  // 開發階段啟用，生產環境改為 false
+    });
+
+    // 預加載眼睛座標數據
+    this.eyeMapper.loadCoordinates().then(success => {
+      if (success) {
+        console.log('✓ 眼睛座標數據加載成功');
+      } else {
+        console.error('✗ 眼睛座標數據加載失敗');
       }
     });
 
@@ -317,7 +333,14 @@ class MedicalRecordApp {
       // 構建圖像路徑
       // 牙齒系統統一使用 teeth 資料夾
       const imageFolder = (systemId === 'teeth' || systemId === 'primary_teeth') ? 'teeth' : systemId;
-      const imagePath = `assets/images/${imageFolder}/${imageId}.png`;
+
+      // 特殊映射：某些 imageId 需要映射到實際的文件名
+      const imageFileMap = {
+        'eye-3d': '3Deye'  // eye-3d imageId 對應 3Deye.png 文件
+      };
+
+      const imageFileName = imageFileMap[imageId] || imageId;
+      const imagePath = `assets/images/${imageFolder}/${imageFileName}.png`;
 
       // 加載圖像
       await this.annotator.loadImage(imagePath);
@@ -378,7 +401,7 @@ class MedicalRecordApp {
   handleAnnotationClick(e) {
     const { position } = e.detail;
 
-    // 顯示模態視窗
+    // 顯示模態視窗（openDiseaseModal 會根據系統類型進行適當的檢測）
     this.openDiseaseModal(position);
   }
 
@@ -508,6 +531,96 @@ class MedicalRecordApp {
   }
 
   /**
+   * 使用 EyeImageMapper 精確識別眼睛結構位置 [新增方法]
+   * @param {object} position - 點擊位置 {x, y}
+   * @returns {object|null} 眼睛結構資訊或 null
+   */
+  detectEyeStructure(position) {
+    // 檢查 EyeImageMapper 是否已加載
+    if (!this.eyeMapper || !this.eyeMapper.isLoaded) {
+      console.warn('EyeImageMapper 尚未加載');
+      showNotification('眼睛系統尚未就緒，請稍候...', 'warning');
+      return null;
+    }
+
+    const canvas = document.getElementById('image-canvas');
+    if (!canvas) return null;
+
+    // 獲取原始圖像的實際尺寸（眼睛圖像尺寸）
+    let naturalWidth = 1313;   // 3Deye.png 寬度
+    let naturalHeight = 664;   // 3Deye.png 高度
+
+    // 嘗試從 ImageAnnotator 實例中獲取原始圖像尺寸
+    if (this.annotator && this.annotator.imageData) {
+      naturalWidth = this.annotator.imageData.naturalWidth || naturalWidth;
+      naturalHeight = this.annotator.imageData.naturalHeight || naturalHeight;
+    }
+
+    // 取得 canvas 的顯示尺寸
+    const canvasDisplayWidth = canvas.offsetWidth;
+    const canvasDisplayHeight = canvas.offsetHeight;
+
+    // 獲取 ImageAnnotator 的 zoom 和 pan 參數
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+    if (this.annotator) {
+      zoom = this.annotator.zoom || 1;
+      panX = this.annotator.panX || 0;
+      panY = this.annotator.panY || 0;
+    }
+
+    // 計算縮放後的圖像尺寸
+    const scaledWidth = (canvasDisplayWidth / window.devicePixelRatio) * zoom;
+    const scaledHeight = (canvasDisplayHeight / window.devicePixelRatio) * zoom;
+
+    // 計算圖像在 canvas 中的位置（相對於 canvas 左上角）
+    const imgX = (canvasDisplayWidth / window.devicePixelRatio - scaledWidth) / 2 + panX;
+    const imgY = (canvasDisplayHeight / window.devicePixelRatio - scaledHeight) / 2 + panY;
+
+    // 將點擊坐標轉換回原始圖像座標
+    // 第1步：從 canvas 座標轉換回未縮放的圖像位置
+    const relX = (position.x / window.devicePixelRatio - imgX) / scaledWidth * (canvasDisplayWidth / window.devicePixelRatio);
+    const relY = (position.y / window.devicePixelRatio - imgY) / scaledHeight * (canvasDisplayHeight / window.devicePixelRatio);
+
+    // 第2步：從顯示座標轉換回原始圖像座標
+    const scaleX = canvasDisplayWidth / naturalWidth;
+    const scaleY = canvasDisplayHeight / naturalHeight;
+
+    const adjustedPos = {
+      x: relX / scaleX,
+      y: relY / scaleY
+    };
+
+    if (this.eyeMapper.debug) {
+      console.log('[detectEyeStructure] 坐標轉換詳情：');
+      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}, Canvas: ${canvasDisplayWidth}x${canvasDisplayHeight}`);
+      console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
+      console.log(`  點擊座標 (原始): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
+      console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
+    }
+
+    // 使用 EyeImageMapper 識別眼睛結構
+    const structureInfo = this.eyeMapper.getStructureAtPosition(
+      adjustedPos.x,
+      adjustedPos.y
+    );
+
+    if (structureInfo) {
+      return {
+        structureId: structureInfo.structureId,
+        name: structureInfo.nameCh,           // 中文名稱
+        nameEn: structureInfo.name,           // 英文名稱
+        type: structureInfo.type,             // 結構類型（eye, cornea, iris, lens, retina）
+        side: structureInfo.side,             // 左眼或右眼
+        confidence: structureInfo.confidence  // 信心度（0-1）
+      };
+    }
+
+    return null;
+  }
+
+  /**
    * 打開疾病記錄模態視窗
    * @param {object} position - 點擊位置
    */
@@ -515,46 +628,87 @@ class MedicalRecordApp {
     const modal = $('#disease-modal');
     if (!modal) return;
 
-    // 使用 DentalImageMapper 識別牙齒
-    const toothInfo = this.detectToothPosition(position);
+    // 根據系統類型進行適當的結構檢測 [修改]
+    let structureInfo = null;
+
+    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      // 牙齒系統：使用 DentalImageMapper 識別
+      structureInfo = this.detectToothPosition(position);
+    } else if (this.currentSystemId === 'eye') {
+      // 眼睛系統 [新增] 使用 EyeImageMapper 識別
+      structureInfo = this.detectEyeStructure(position);
+    }
 
     // 設置位置資訊
     const locationDiv = $('#modal-location');
     if (locationDiv) {
       let locationText = '';
 
-      if (toothInfo) {
-        locationText = `
-          <div class="tooth-info">
-            <p class="tooth-info__main">
-              <strong>${toothInfo.name}</strong>
-              ${toothInfo.fdi ? `<span class="fdi-badge">FDI: ${toothInfo.fdi}</span>` : ''}
-            </p>
-            ${toothInfo.confidence < 0.5 ?
-              '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
-          </div>
-        `;
+      if (structureInfo) {
+        // 牙齒系統特定的顯示格式
+        if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+          locationText = `
+            <div class="tooth-info">
+              <p class="tooth-info__main">
+                <strong>${structureInfo.name}</strong>
+                ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${structureInfo.fdi}</span>` : ''}
+              </p>
+              ${structureInfo.confidence < 0.5 ?
+                '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
+            </div>
+          `;
 
-        // 後台記錄信心度
-        console.log(`牙齒檢測: ${toothInfo.name}, 信心度: ${(toothInfo.confidence * 100).toFixed(1)}%`);
+          console.log(`牙齒檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
 
-        // 低信心度或備選方法時顯示手動選擇器
-        if (toothInfo.fallback || toothInfo.confidence < 0.5) {
-          locationText += this.renderManualToothSelector();
+          // 低信心度或備選方法時顯示手動選擇器
+          if (structureInfo.fallback || structureInfo.confidence < 0.5) {
+            locationText += this.renderManualToothSelector();
+          }
+        }
+        // 眼睛系統特定的顯示格式 [新增]
+        else if (this.currentSystemId === 'eye') {
+          locationText = `
+            <div class="eye-structure-info">
+              <p class="structure-info__main">
+                <strong>${structureInfo.name}</strong>
+                <span class="side-badge">${structureInfo.side === 'left' ? '左眼' : '右眼'}</span>
+              </p>
+              <p class="structure-info__type">
+                結構類型: ${structureInfo.type}
+              </p>
+              ${structureInfo.confidence < 0.5 ?
+                '<p class="structure-info__warning">⚠️ 檢測信心度較低，請點擊重試</p>' : ''}
+            </div>
+          `;
+
+          console.log(`眼睛結構檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
         }
       } else {
-        locationText = `
-          <p class="tooth-info__error">無法自動識別牙齒位置</p>
-          ${this.renderManualToothSelector()}
-        `;
+        // 無法識別 [修改]
+        if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+          locationText = `
+            <p class="tooth-info__error">無法自動識別牙齒位置</p>
+            ${this.renderManualToothSelector()}
+          `;
+        } else if (this.currentSystemId === 'eye') {
+          locationText = `
+            <p class="structure-info__error">無法自動識別眼睛結構位置，請重新點擊</p>
+          `;
+        }
       }
 
       locationDiv.innerHTML = locationText;
-      this.setupManualToothSelector();
+      if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+        this.setupManualToothSelector();
+      }
     }
 
-    // 保存牙齒資訊供後續使用
-    this.currentToothInfo = toothInfo;
+    // 保存結構資訊供後續使用 [修改變數名]
+    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      this.currentToothInfo = structureInfo;
+    } else if (this.currentSystemId === 'eye') {
+      this.currentEyeStructure = structureInfo;
+    }
 
     // 初始化或更新疾病表單
     const formContainer = $('#disease-form-container');
