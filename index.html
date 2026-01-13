@@ -139,48 +139,58 @@
           </div>
         </div>
 
-        <div class="image-container">
-          <div class="image-viewer" id="image-viewer">
-            <canvas
-              id="image-canvas"
-              class="image-canvas"
-              aria-label="解剖圖像，點擊進行標註">
-            </canvas>
-          </div>
+        <div class="image-viewer-wrapper" id="eye-info-wrapper" style="display: none;">
+          <div class="image-viewer-panel">
+            <div class="image-container">
+              <div class="image-viewer" id="image-viewer">
+                <canvas
+                  id="image-canvas"
+                  class="image-canvas"
+                  aria-label="解剖圖像，點擊進行標註">
+                </canvas>
+              </div>
 
-          <!-- 圖像控制工具欄 -->
-          <div class="image-toolbar">
-            <div class="image-toolbar__group">
-              <button
-                id="zoom-in-btn"
-                class="btn btn--icon"
-                aria-label="放大圖像"
-                data-en="Zoom In"
-                title="放大 (Scroll up)">
-                <i class="fas fa-search-plus"></i>
-              </button>
+              <!-- 圖像控制工具欄 -->
+              <div class="image-toolbar">
+                <div class="image-toolbar__group">
+                  <button
+                    id="zoom-in-btn"
+                    class="btn btn--icon"
+                    aria-label="放大圖像"
+                    data-en="Zoom In"
+                    title="放大 (Scroll up)">
+                    <i class="fas fa-search-plus"></i>
+                  </button>
 
-              <button
-                id="zoom-reset-btn"
-                class="btn btn--icon"
-                aria-label="重置縮放"
-                data-en="Reset"
-                title="重置為 100%">
-                <i class="fas fa-redo"></i>
-              </button>
+                  <button
+                    id="zoom-reset-btn"
+                    class="btn btn--icon"
+                    aria-label="重置縮放"
+                    data-en="Reset"
+                    title="重置為 100%">
+                    <i class="fas fa-redo"></i>
+                  </button>
 
-              <button
-                id="zoom-out-btn"
-                class="btn btn--icon"
-                aria-label="縮小圖像"
-                data-en="Zoom Out"
-                title="縮小 (Scroll down)">
-                <i class="fas fa-search-minus"></i>
-              </button>
+                  <button
+                    id="zoom-out-btn"
+                    class="btn btn--icon"
+                    aria-label="縮小圖像"
+                    data-en="Zoom Out"
+                    title="縮小 (Scroll down)">
+                    <i class="fas fa-search-minus"></i>
+                  </button>
+                </div>
+
+                <div class="image-toolbar__group">
+                  <span class="zoom-level" id="zoom-level">100%</span>
+                </div>
+              </div>
             </div>
-
-            <div class="image-toolbar__group">
-              <span class="zoom-level" id="zoom-level">100%</span>
+          </div>
+          <div class="eye-info-panel" id="eye-info-panel">
+            <h3>結構信息</h3>
+            <div class="eye-info-empty" id="eye-info-content">
+              點擊圖像上的結構以查看詳細信息
             </div>
           </div>
         </div>
@@ -290,6 +300,7 @@
   <script src="assets/scripts/utils.js"></script>
   <script src="assets/scripts/dental-image-mapper.js"></script>
   <script src="assets/scripts/eye-image-mapper.js"></script>
+  <script src="assets/scripts/eye-descriptions.js"></script>
   <script src="assets/scripts/image-annotator.js"></script>
   <script src="assets/scripts/disease-form.js"></script>
   <script src="assets/scripts/ocr-handler.js"></script>

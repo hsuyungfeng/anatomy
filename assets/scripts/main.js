@@ -286,6 +286,53 @@ class MedicalRecordApp {
   }
 
   /**
+   * 顯示眼睛結構資訊在側面板
+   * @param {object} structure - 眼睛結構物件
+   */
+  displayEyeStructureInfo(structure) {
+    const infoContent = document.getElementById('eye-info-content');
+
+    if (!infoContent) return;
+
+    if (!structure || !structure.structureId) {
+      infoContent.innerHTML = '<div class="eye-info-empty">點擊圖像上的結構以查看詳細信息</div>';
+      return;
+    }
+
+    // 從 eye-descriptions.js 加載說明
+    const description = getEyeStructureDescription(structure.structureId);
+
+    if (!description) {
+      infoContent.innerHTML = `
+            <div class="eye-info-content">
+                <div class="name">${structure.name || structure.structureId}</div>
+            </div>
+        `;
+      return;
+    }
+
+    infoContent.innerHTML = `
+        <div class="eye-info-content">
+            <div class="name">${description.name}</div>
+            <div class="name-en">${description.nameEn}</div>
+            <div class="description">${description.description}</div>
+            <div class="description-en">${description.descriptionEn}</div>
+        </div>
+    `;
+  }
+
+  /**
+   * 切換眼睛資訊面板可見性
+   * @param {boolean} show - 是否顯示面板
+   */
+  toggleEyeInfoPanel(show) {
+    const wrapper = document.getElementById('eye-info-wrapper');
+    if (wrapper) {
+      wrapper.style.display = show ? 'grid' : 'none';
+    }
+  }
+
+  /**
    * 設置疾病記錄模態視窗
    */
   setupDiseaseModal() {
@@ -346,11 +393,13 @@ class MedicalRecordApp {
       teethSubTabs.classList.remove('teeth-sub-tabs--visible');
     }
 
-    // 顯示或隱藏眼睛選擇器
+    // 顯示或隱藏眼睛選擇器和資訊面板
     if (systemId === 'eye') {
       this.showEyeSelector();
+      this.toggleEyeInfoPanel(true);
     } else {
       this.hideEyeSelector();
+      this.toggleEyeInfoPanel(false);
     }
 
     // 切換系統
@@ -485,6 +534,14 @@ class MedicalRecordApp {
    */
   handleAnnotationClick(e) {
     const { position } = e.detail;
+
+    // 如果是眼睛系統，顯示結構資訊
+    if (this.currentSystemId === 'eye') {
+      const structure = this.detectEyeStructure(position);
+      if (structure) {
+        this.displayEyeStructureInfo(structure);
+      }
+    }
 
     // 顯示模態視窗（openDiseaseModal 會根據系統類型進行適當的檢測）
     this.openDiseaseModal(position);
