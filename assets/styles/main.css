@@ -1131,12 +1131,17 @@ body {
     }
 }
 
-/* ===== 雙面板佈局用於眼睛系統 ===== */
+/* ===== 圖像查看器佈局 ===== */
 .image-viewer-wrapper {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr;  /* 預設：單列（僅圖像） */
     gap: var(--spacing-lg);
     margin-top: var(--spacing-md);
+}
+
+/* 當眼睛系統活動時，顯示 2 列佈局 */
+.image-viewer-wrapper.eye-system-active {
+    grid-template-columns: 1fr 300px;
 }
 
 .image-viewer-panel {
@@ -1145,7 +1150,9 @@ body {
     flex-direction: column;
 }
 
+/* 眼睛資訊面板可見性 */
 .eye-info-panel {
+    display: none;  /* 預設隱藏 */
     grid-column: 2;
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
@@ -1155,6 +1162,10 @@ body {
     overflow-y: auto;
     font-size: var(--font-size-sm);
     line-height: 1.5;
+}
+
+.eye-info-panel.visible {
+    display: block;
 }
 
 .eye-info-panel h3 {
@@ -1206,7 +1217,7 @@ body {
 
 /* 響應式：在較小的螢幕上堆疊 */
 @media (max-width: 1200px) {
-    .image-viewer-wrapper {
+    .image-viewer-wrapper.eye-system-active {
         grid-template-columns: 1fr;
     }
 

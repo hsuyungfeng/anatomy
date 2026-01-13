@@ -326,9 +326,19 @@ class MedicalRecordApp {
    * @param {boolean} show - 是否顯示面板
    */
   toggleEyeInfoPanel(show) {
-    const wrapper = document.getElementById('eye-info-wrapper');
-    if (wrapper) {
-      wrapper.style.display = show ? 'grid' : 'none';
+    const wrapper = document.getElementById('image-viewer-wrapper');
+    const infoPanel = document.getElementById('eye-info-panel');
+
+    if (!wrapper || !infoPanel) return;
+
+    if (show) {
+      // 顯示 2 列佈局以用於眼睛系統
+      wrapper.classList.add('eye-system-active');
+      infoPanel.classList.add('visible');
+    } else {
+      // 返回單列佈局用於其他系統
+      wrapper.classList.remove('eye-system-active');
+      infoPanel.classList.remove('visible');
     }
   }
 
@@ -502,7 +512,8 @@ class MedicalRecordApp {
 
       // 特殊映射：某些 imageId 需要映射到實際的文件名
       const imageFileMap = {
-        'eye-3d': '3Deye'  // eye-3d imageId 對應 3Deye.png 文件
+        'eye-3d': '3Deye',        // eye-3d imageId 對應 3Deye.png 文件
+        'eyefunctions': '3Deye'   // eyefunctions imageId 也對應 3Deye.png 文件
       };
 
       const imageFileName = imageFileMap[imageId] || imageId;
