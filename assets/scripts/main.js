@@ -19,6 +19,7 @@ class MedicalRecordApp {
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
     this.currentImageId = null;
     this.anatomicalSystems = null;
+    this.selectedEye = 'right'; // 追蹤選擇的眼睛（左眼或右眼）
 
     this.init();
   }
@@ -205,6 +206,70 @@ class MedicalRecordApp {
 
     // 模態視窗
     this.setupDiseaseModal();
+
+    // 初始化眼睛選擇器
+    this.initializeEyeSelector();
+  }
+
+  /**
+   * 初始化眼睛選擇器
+   */
+  initializeEyeSelector() {
+    const leftEyeBtn = document.getElementById('left-eye-btn');
+    const rightEyeBtn = document.getElementById('right-eye-btn');
+
+    if (!leftEyeBtn || !rightEyeBtn) return;
+
+    leftEyeBtn.addEventListener('click', () => {
+      this.selectedEye = 'left';
+      this.updateEyeSelection();
+    });
+
+    rightEyeBtn.addEventListener('click', () => {
+      this.selectedEye = 'right';
+      this.updateEyeSelection();
+    });
+  }
+
+  /**
+   * 更新眼睛選擇狀態
+   */
+  updateEyeSelection() {
+    const leftEyeBtn = document.getElementById('left-eye-btn');
+    const rightEyeBtn = document.getElementById('right-eye-btn');
+
+    // 更新按鈕活躍狀態
+    leftEyeBtn.classList.remove('active');
+    rightEyeBtn.classList.remove('active');
+
+    if (this.selectedEye === 'left') {
+      leftEyeBtn.classList.add('active');
+    } else {
+      rightEyeBtn.classList.add('active');
+    }
+
+    console.log('眼睛選擇已變更為:', this.selectedEye);
+    document.dispatchEvent(new CustomEvent('eyeSelected', { detail: { eye: this.selectedEye } }));
+  }
+
+  /**
+   * 顯示眼睛選擇器
+   */
+  showEyeSelector() {
+    const container = document.getElementById('eye-selector-container');
+    if (container) {
+      container.style.display = 'block';
+    }
+  }
+
+  /**
+   * 隱藏眼睛選擇器
+   */
+  hideEyeSelector() {
+    const container = document.getElementById('eye-selector-container');
+    if (container) {
+      container.style.display = 'none';
+    }
   }
 
   /**
@@ -266,6 +331,13 @@ class MedicalRecordApp {
       }
     } else if (teethSubTabs) {
       teethSubTabs.classList.remove('teeth-sub-tabs--visible');
+    }
+
+    // 顯示或隱藏眼睛選擇器
+    if (systemId === 'eye') {
+      this.showEyeSelector();
+    } else {
+      this.hideEyeSelector();
     }
 
     // 切換系統

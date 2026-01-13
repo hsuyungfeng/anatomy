@@ -1078,6 +1078,42 @@ body {
   line-height: 1.5;
 }
 
+/* ===== Eye Selection UI ===== */
+.eye-selector {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    justify-content: center;
+}
+
+.eye-btn {
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.eye-btn:hover {
+    border-color: #0066cc;
+    background: #e8f0ff;
+}
+
+.eye-btn.active {
+    border-color: #0066cc;
+    background: #0066cc;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.eye-selector-container {
+    margin-bottom: 15px;
+}
+
 /* ===== 列印樣式 ===== */
 @media print {
   .app__header,
