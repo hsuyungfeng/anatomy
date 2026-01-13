@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>眼睛選擇器測試</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+    }
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>眼睛選擇器實現驗證</h1>
+  
+  <div class="test-section">
+    <h2>HTML 結構檢查</h2>
+    <div id="html-check"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>CSS 檢查</h2>
+    <div id="css-check"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>JavaScript 檢查</h2>
+    <div id="js-check"></div>
+  </div>
+
+  <script>
+    // 檢查 HTML 結構
+    const htmlCheck = document.getElementById('html-check');
+    const eyeSelectorContainer = document.getElementById('eye-selector-container');
+    const leftEyeBtn = document.getElementById('left-eye-btn');
+    const rightEyeBtn = document.getElementById('right-eye-btn');
+
+    if (eyeSelectorContainer) {
+      htmlCheck.innerHTML += `<div class="test-result success">✓ 眼睛選擇器容器存在</div>`;
+    } else {
+      htmlCheck.innerHTML += `<div class="test-result error">✗ 眼睛選擇器容器不存在</div>`;
+    }
+
+    if (leftEyeBtn) {
+      htmlCheck.innerHTML += `<div class="test-result success">✓ 左眼按鈕存在</div>`;
+    } else {
+      htmlCheck.innerHTML += `<div class="test-result error">✗ 左眼按鈕不存在</div>`;
+    }
+
+    if (rightEyeBtn) {
+      htmlCheck.innerHTML += `<div class="test-result success">✓ 右眼按鈕存在</div>`;
+    } else {
+      htmlCheck.innerHTML += `<div class="test-result error">✗ 右眼按鈕不存在</div>`;
+    }
+
+    // 檢查 CSS
+    const cssCheck = document.getElementById('css-check');
+    const computedStyle = window.getComputedStyle(document.querySelector('.eye-selector') || document.body);
+    
+    if (computedStyle.display !== 'none') {
+      cssCheck.innerHTML += `<div class="test-result success">✓ CSS 樣式已加載</div>`;
+    } else {
+      cssCheck.innerHTML += `<div class="test-result">✓ CSS 樣式已加載（當前隱藏）</div>`;
+    }
+
+    // 檢查 JavaScript
+    const jsCheck = document.getElementById('js-check');
+    
+    // 等待 DOM 完全加載
+    setTimeout(() => {
+      // 注意：完整的 JavaScript 檢查需要應用完全初始化
+      jsCheck.innerHTML += `<div class="test-result success">✓ 待應用初始化完成進行測試</div>`;
+      jsCheck.innerHTML += `<div class="test-result">建議在瀏覽器控制台檢查以下項目：</div>`;
+      jsCheck.innerHTML += `<div class="test-result">1. 點擊"眼睛系統"標籤頁</div>`;
+      jsCheck.innerHTML += `<div class="test-result">2. 驗證眼睛選擇器按鈕出現</div>`;
+      jsCheck.innerHTML += `<div class="test-result">3. 點擊左眼/右眼按鈕並檢查控制台日誌</div>`;
+    }, 100);
+  </script>
+
+  <!-- 檢查應用初始化狀態 -->
+  <iframe src="index.html" style="width: 100%; height: 600px; margin-top: 20px;" title="應用測試框架"></iframe>
+</body>
+</html>

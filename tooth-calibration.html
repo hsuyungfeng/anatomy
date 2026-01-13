@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>牙齒位置校正工具 - Tooth Position Calibration</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .canvas-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    canvas {
+      display: block;
+      border: 2px solid #ddd;
+      cursor: crosshair;
+      background: white;
+      margin-bottom: 10px;
+    }
+    .info {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1565c0;
+    }
+    .sidebar {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      height: fit-content;
+    }
+    .tooth-selector {
+      margin-bottom: 15px;
+    }
+    .tooth-selector label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 13px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      background: white;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #1976d2;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #1565c0;
+    }
+    .btn-success {
+      background: #388e3c;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #2e7d32;
+    }
+    .btn-danger {
+      background: #d32f2f;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c62828;
+    }
+    .btn-secondary {
+      background: #757575;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #616161;
+    }
+    .status {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 12px;
+      min-height: 40px;
+    }
+    .calibrated {
+      color: #388e3c;
+      font-weight: 600;
+    }
+    .pending {
+      color: #f57c00;
+      font-weight: 600;
+    }
+    .log {
+      max-height: 200px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      margin-top: 10px;
+      border: 1px solid #eee;
+    }
+    .log-item {
+      padding: 3px 0;
+      border-bottom: 1px solid #f0f0f0;
+      color: #666;
+    }
+    .log-item.success {
+      color: #388e3c;
+    }
+    .log-item.error {
+      color: #d32f2f;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 12px;
+    }
+    .stat {
+      background: #f5f5f5;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .stat-value {
+      font-weight: 700;
+      font-size: 14px;
+      color: #1976d2;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🦷 牙齒位置校正工具</h1>
+    <p class="subtitle">Tooth Position Calibration Tool - Click on each tooth in the image to record its position</p>
+
+    <div class="workspace">
+      <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="info">
+          💡 <strong>校正步驟：</strong><br>
+          1. 選擇牙齒系統（永久牙或乳牙）<br>
+          2. 從下拉菜單選擇牙齒<br>
+          3. 點擊「記錄當前牙齒位置」按鈕<br>
+          4. 在圖像上點擊該牙齒的中心<br>
+          <br>
+          <strong>圖像標記說明：</strong><br>
+          • 綠圈 = 已校正的牙齒位置<br>
+          • #號 = 牙齒編號 (1-32永久牙, A-T乳牙)<br>
+          • [順序] = 校正的順序 (例如 [1], [2], ...)<br>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="tooth-selector">
+          <label>選擇牙齒系統</label>
+          <select id="systemSelect">
+            <option value="permanteeth">永久牙 (Permanent)</option>
+            <option value="primaryteeth">乳牙 (Primary)</option>
+          </select>
+        </div>
+
+        <div class="tooth-selector">
+          <label>選擇牙齒</label>
+          <select id="toothSelect"></select>
+        </div>
+
+        <button class="btn-primary" onclick="captureToothPosition()">
+          📍 記錄當前牙齒位置
+        </button>
+
+        <div class="status" id="status">準備就緒</div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" id="calibratedCount">0</div>
+            <div class="stat-label">已校正</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="totalCount">0</div>
+            <div class="stat-label">總計</div>
+          </div>
+        </div>
+
+        <button class="btn-success" onclick="exportCalibration()" style="margin-top: 15px;">
+          💾 匯出座標數據
+        </button>
+
+        <button class="btn-danger" onclick="resetCalibration()">
+          🔄 重置所有
+        </button>
+
+        <button class="btn-secondary" onclick="downloadJSON()">
+          ⬇️ 下載 JSON
+        </button>
+
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const systemSelect = document.getElementById('systemSelect');
+    const toothSelect = document.getElementById('toothSelect');
+    const statusDiv = document.getElementById('status');
+    const logDiv = document.getElementById('log');
+    const calibratedCountDiv = document.getElementById('calibratedCount');
+    const totalCountDiv = document.getElementById('totalCount');
+
+    let image = null;
+    let coordinates = null;
+    let calibrationData = {};
+    let currentSystem = 'permanteeth';
+    let currentToothId = null;
+    let imageLoaded = false;
+
+    // 牙齒中文名稱映射
+    const toothNames = {
+      permanent: {
+        '1': '右上第三臼齒 #1', '2': '右上第二臼齒 #2', '3': '右上第一臼齒 #3',
+        '4': '右上第一小臼齒 #4', '5': '右上第二小臼齒 #5', '6': '右上犬齒 #6',
+        '7': '右上側門牙 #7', '8': '右上中門牙 #8', '9': '左上中門牙 #9',
+        '10': '左上側門牙 #10', '11': '左上犬齒 #11', '12': '左上第二小臼齒 #12',
+        '13': '左上第一小臼齒 #13', '14': '左上第一臼齒 #14', '15': '左上第二臼齒 #15',
+        '16': '左上第三臼齒 #16', '17': '右下第三臼齒 #17', '18': '右下第二臼齒 #18',
+        '19': '右下第一臼齒 #19', '20': '右下第一小臼齒 #20', '21': '右下第二小臼齒 #21',
+        '22': '右下犬齒 #22', '23': '右下側門牙 #23', '24': '右下中門牙 #24',
+        '25': '左下中門牙 #25', '26': '左下側門牙 #26', '27': '左下犬齒 #27',
+        '28': '左下第二小臼齒 #28', '29': '左下第一小臼齒 #29', '30': '左下第一臼齒 #30',
+        '31': '左下第二臼齒 #31', '32': '左下第三臼齒 #32'
+      },
+      primary: {
+        'A': '右上 中門齒', 'B': '右上 侧門齒', 'C': '右上 乳犬齒',
+        'D': '右上 第一乳臼齒', 'E': '右上 第二乳臼齒', 'F': '左上 中門齒',
+        'G': '左上 侧門齒', 'H': '左上 乳犬齒', 'I': '左上 第一乳臼齒',
+        'J': '左上 第二乳臼齒', 'K': '左下 中門齒', 'L': '左下 侧門齒',
+        'M': '左下 乳犬齒', 'N': '左下 第一乳臼齒', 'O': '左下 第二乳臼齒',
+        'P': '右下 中門齒', 'Q': '右下 侧門齒', 'R': '右下 乳犬齒',
+        'S': '右下 第一乳臼齒', 'T': '右下 第二乳臼齒'
+      }
+    };
+
+    function addLog(message, type = 'normal') {
+      const item = document.createElement('div');
+      item.className = 'log-item ' + type;
+      item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(item);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    async function loadCoordinates() {
+      try {
+        const response = await fetch('/data/dental-coordinates.json');
+        coordinates = await response.json();
+        addLog('✓ 座標數據加載成功', 'success');
+        updateToothSelector();
+        initializeCalibrationData();
+      } catch (error) {
+        addLog('✗ 座標數據加載失敗: ' + error.message, 'error');
+      }
+    }
+
+    async function loadImage(system) {
+      try {
+        const imageInfo = coordinates.imageReferenceSize[system];
+        const imagePath = `/assets/images/teeth/${imageInfo.filename}`;
+
+        image = new Image();
+        image.onload = () => {
+          imageLoaded = true;
+          canvas.width = image.width;
+          canvas.height = image.height;
+          redraw();
+          addLog(`✓ 圖像加載: ${system} (${image.width}x${image.height})`, 'success');
+        };
+        image.onerror = () => {
+          addLog(`✗ 無法加載圖像: ${imagePath}`, 'error');
+          imageLoaded = false;
+        };
+        image.src = imagePath;
+      } catch (error) {
+        addLog('✗ 圖像加載錯誤: ' + error.message, 'error');
+      }
+    }
+
+    function initializeCalibrationData() {
+      if (!coordinates) return;
+      calibrationData = {};
+      Object.keys(coordinates.permanent.teeth).forEach(id => {
+        calibrationData[`permanent_${id}`] = null;
+      });
+      Object.keys(coordinates.primary.teeth).forEach(id => {
+        calibrationData[`primary_${id}`] = null;
+      });
+    }
+
+    function updateToothSelector() {
+      if (!coordinates) return;
+      toothSelect.innerHTML = '';
+      const system = systemSelect.value;
+      const systemKey = system === 'permanteeth' ? 'permanent' : 'primary';
+      const teeth = coordinates[systemKey].teeth;
+
+      Object.keys(teeth).forEach(id => {
+        const option = document.createElement('option');
+        option.value = id;
+        const name = toothNames[systemKey][id] || `Tooth ${id}`;
+        option.textContent = name;
+        toothSelect.appendChild(option);
+      });
+
+      currentToothId = toothSelect.value;
+    }
+
+    function updateStats() {
+      const total = Object.keys(calibrationData).length;
+      const calibrated = Object.values(calibrationData).filter(v => v !== null).length;
+      calibratedCountDiv.textContent = calibrated;
+      totalCountDiv.textContent = total;
+    }
+
+    function redraw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (imageLoaded && image) {
+        ctx.drawImage(image, 0, 0);
+      }
+
+      // 繪製已校正的牙齒位置
+      Object.entries(calibrationData).forEach(([key, data], index) => {
+        if (data) {
+          const [system, id] = key.split('_');
+          const teeth = system === 'permanent' ? coordinates.permanent.teeth : coordinates.primary.teeth;
+          const tooth = teeth[id];
+
+          // 繪製圓圈 (進一步縮小 - 半徑改為25)
+          ctx.fillStyle = 'rgba(76, 175, 80, 0.2)';
+          ctx.strokeStyle = '#4CAF50';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(data.x, data.y, 25, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+
+          // 繪製順序編號和牙齒標籤
+          ctx.fillStyle = '#333';
+          ctx.font = 'bold 11px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(`#${id}`, data.x, data.y - 50);
+
+          // 繪製順序編號（例如 1/52）
+          ctx.fillStyle = '#f57c00';
+          ctx.font = 'bold 9px Arial';
+          const calibratedList = Object.values(calibrationData).filter(v => v !== null);
+          const orderNum = calibratedList.findIndex(v => v === data) + 1;
+          ctx.fillText(`[${orderNum}]`, data.x, data.y + 55);
+        }
+      });
+
+      // 繪製目前選擇的牙齒位置 (如果已定義)
+      if (currentToothId) {
+        const systemKey = currentSystem === 'permanteeth' ? 'permanent' : 'primary';
+        const key = `${systemKey}_${currentToothId}`;
+        if (calibrationData[key]) {
+          const data = calibrationData[key];
+          ctx.fillStyle = 'rgba(33, 150, 243, 0.3)';
+          ctx.strokeStyle = '#2196F3';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(data.x, data.y, 25, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+    }
+
+    function captureToothPosition() {
+      if (!currentToothId) {
+        statusDiv.innerHTML = '<span class="error">請選擇牙齒</span>';
+        return;
+      }
+      statusDiv.innerHTML = '<span class="pending">點擊圖像上的牙齒位置...</span>';
+      canvas.style.cursor = 'crosshair';
+
+      const handleClick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const systemKey = currentSystem === 'permanteeth' ? 'permanent' : 'primary';
+        const key = `${systemKey}_${currentToothId}`;
+        calibrationData[key] = { x, y, radius: 45 };
+
+        const toothName = toothNames[systemKey][currentToothId];
+        addLog(`✓ ${toothName} 已校正: (${Math.round(x)}, ${Math.round(y)})`, 'success');
+        statusDiv.innerHTML = `<span class="calibrated">✓ ${toothName} 已校正</span>`;
+
+        updateStats();
+        redraw();
+
+        canvas.removeEventListener('click', handleClick);
+
+        // 移動到下一顆牙齒
+        const currentIndex = Array.from(toothSelect.options).findIndex(o => o.value === currentToothId);
+        if (currentIndex < toothSelect.options.length - 1) {
+          toothSelect.selectedIndex = currentIndex + 1;
+          currentToothId = toothSelect.value;
+          setTimeout(() => captureToothPosition(), 500);
+        } else {
+          statusDiv.innerHTML = '<span class="calibrated">✓ 所有牙齒已校正</span>';
+          canvas.style.cursor = 'default';
+        }
+      };
+
+      canvas.addEventListener('click', handleClick);
+    }
+
+    function exportCalibration() {
+      const permanent = coordinates.permanent.teeth;
+      const primary = coordinates.primary.teeth;
+
+      // 更新座標
+      Object.keys(permanent).forEach(id => {
+        const key = `permanent_${id}`;
+        if (calibrationData[key]) {
+          permanent[id].x = Math.round(calibrationData[key].x);
+          permanent[id].y = Math.round(calibrationData[key].y);
+          permanent[id].radius = calibrationData[key].radius;
+        }
+      });
+
+      Object.keys(primary).forEach(id => {
+        const key = `primary_${id}`;
+        if (calibrationData[key]) {
+          primary[id].x = Math.round(calibrationData[key].x);
+          primary[id].y = Math.round(calibrationData[key].y);
+          primary[id].radius = calibrationData[key].radius;
+        }
+      });
+
+      const output = {
+        version: coordinates.version,
+        description: coordinates.description,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        imageReferenceSize: coordinates.imageReferenceSize,
+        permanent: { description: coordinates.permanent.description, teeth: permanent },
+        primary: { description: coordinates.primary.description, teeth: primary }
+      };
+
+      console.log('Updated coordinates:', JSON.stringify(output, null, 2));
+      addLog('✓ 座標數據已準備匯出', 'success');
+      alert('座標數據已在控制台打印。複製並保存到 dental-coordinates.json');
+    }
+
+    function downloadJSON() {
+      exportCalibration();
+      const permanent = coordinates.permanent.teeth;
+      const primary = coordinates.primary.teeth;
+
+      Object.keys(permanent).forEach(id => {
+        const key = `permanent_${id}`;
+        if (calibrationData[key]) {
+          permanent[id].x = Math.round(calibrationData[key].x);
+          permanent[id].y = Math.round(calibrationData[key].y);
+          permanent[id].radius = calibrationData[key].radius;
+        }
+      });
+
+      Object.keys(primary).forEach(id => {
+        const key = `primary_${id}`;
+        if (calibrationData[key]) {
+          primary[id].x = Math.round(calibrationData[key].x);
+          primary[id].y = Math.round(calibrationData[key].y);
+          primary[id].radius = calibrationData[key].radius;
+        }
+      });
+
+      const output = {
+        version: coordinates.version,
+        description: coordinates.description,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        imageReferenceSize: coordinates.imageReferenceSize,
+        permanent: { description: coordinates.permanent.description, teeth: permanent },
+        primary: { description: coordinates.primary.description, teeth: primary }
+      };
+
+      const dataStr = JSON.stringify(output, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'dental-coordinates.json';
+      link.click();
+      addLog('✓ JSON 文件已下載', 'success');
+    }
+
+    function resetCalibration() {
+      if (confirm('確定要重置所有校正資料嗎?')) {
+        initializeCalibrationData();
+        updateStats();
+        redraw();
+        statusDiv.innerHTML = '已重置';
+        addLog('🔄 所有校正資料已重置', 'normal');
+      }
+    }
+
+    // 事件監聽器
+    systemSelect.addEventListener('change', (e) => {
+      currentSystem = e.target.value;
+      loadImage(currentSystem);
+      updateToothSelector();
+      updateStats();
+    });
+
+    toothSelect.addEventListener('change', (e) => {
+      currentToothId = e.target.value;
+      redraw();
+    });
+
+    // 初始化
+    window.addEventListener('load', async () => {
+      await loadCoordinates();
+      loadImage('permanteeth');
+      updateStats();
+      addLog('🦷 牙齒校正工具已就緒', 'success');
+    });
+  </script>
+</body>
+</html>

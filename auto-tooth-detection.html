@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>自動牙齒位置檢測工具 - Auto Tooth Detection</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr 280px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .canvas-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    canvas {
+      display: block;
+      border: 2px solid #ddd;
+      cursor: crosshair;
+      background: white;
+      width: 100%;
+      max-width: 100%;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    input[type="range"], input[type="number"] {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #1976d2;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #1565c0;
+    }
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn-success {
+      background: #388e3c;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #2e7d32;
+    }
+    .btn-danger {
+      background: #d32f2f;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c62828;
+    }
+    .control-group {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .stat-box {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid #1976d2;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-weight: 700;
+      font-size: 18px;
+      color: #1976d2;
+    }
+    .log {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+    }
+    .log-item {
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+      color: #666;
+    }
+    .log-item.success {
+      color: #388e3c;
+    }
+    .log-item.error {
+      color: #d32f2f;
+    }
+    .log-item.info {
+      color: #1976d2;
+    }
+    .results {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+    }
+    .tooth-result {
+      padding: 6px;
+      background: white;
+      margin-bottom: 4px;
+      border-radius: 3px;
+      border-left: 3px solid #4CAF50;
+      font-family: monospace;
+    }
+    .info-box {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #2196F3;
+      font-size: 12px;
+      color: #1565c0;
+      margin-bottom: 10px;
+    }
+    .warning-box {
+      background: #fff3e0;
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #ff9800;
+      font-size: 12px;
+      color: #e65100;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🦷 自動牙齒位置檢測工具</h1>
+    <p class="subtitle">Automatic Tooth Detection - Uses image processing to find tooth centers</p>
+
+    <div class="workspace">
+      <!-- 原始圖像 -->
+      <div class="panel">
+        <h3 style="margin-bottom: 10px;">原始圖像 (Original Image)</h3>
+        <div class="canvas-wrapper">
+          <canvas id="originalCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- 處理後的圖像 -->
+      <div class="panel">
+        <h3 style="margin-bottom: 10px;">檢測結果 (Detection Results)</h3>
+        <div class="canvas-wrapper">
+          <canvas id="processedCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- 控制面板 -->
+      <div class="panel">
+        <h3 style="margin-bottom: 15px;">⚙️ 控制選項</h3>
+
+        <div class="control-group">
+          <label>圖像系統</label>
+          <select id="systemSelect" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            <option value="permanent">永久牙 (Permanent)</option>
+            <option value="primary">乳牙 (Primary)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>邊界檢測閾值: <span id="edgeThresholdValue">50</span></label>
+          <input type="range" id="edgeThreshold" min="10" max="200" value="50" style="width: 100;">
+        </div>
+
+        <div class="control-group">
+          <label>輪廓最小面積: <span id="minAreaValue">200</span> px²</label>
+          <input type="range" id="minArea" min="50" max="2000" step="50" value="200" style="width: 100;">
+        </div>
+
+        <div class="control-group">
+          <label>牙齒檢測半徑: <span id="radiusValue">50</span> px</label>
+          <input type="range" id="radius" min="20" max="150" step="10" value="50" style="width: 100;">
+        </div>
+
+        <button class="btn-primary" onclick="detectTeeth()" style="width: 100%;">
+          🔍 開始檢測
+        </button>
+
+        <button class="btn-success" onclick="exportResults()" style="width: 100%; margin-top: 10px;">
+          💾 匯出座標數據
+        </button>
+
+        <button class="btn-danger" onclick="downloadJSON()" style="width: 100%; margin-top: 10px;">
+          ⬇️ 下載 JSON
+        </button>
+
+        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+          <div class="stat-box">
+            <div class="stat-label">檢測到的牙齒</div>
+            <div class="stat-value" id="detectedCount">0</div>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <div class="stat-label" style="margin-bottom: 8px;">📋 檢測日誌</div>
+            <div class="log" id="log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 結果面板 -->
+    <div class="panel">
+      <h3 style="margin-bottom: 15px;">📊 檢測結果 (Detection Results)</h3>
+      <div class="info-box">
+        💡 下方顯示自動檢測到的牙齒位置。點擊"匯出座標數據"將結果保存為 JSON 格式。
+      </div>
+      <div class="results" id="resultsPanel"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/opencv.js/4.5.2/opencv.min.js"></script>
+  <script>
+    const originalCanvas = document.getElementById('originalCanvas');
+    const processedCanvas = document.getElementById('processedCanvas');
+    const originalCtx = originalCanvas.getContext('2d');
+    const processedCtx = processedCanvas.getContext('2d');
+
+    let image = null;
+    let coordinates = null;
+    let detectionResults = {};
+    let currentSystem = 'permanent';
+
+    const log = document.getElementById('log');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const detectedCountDiv = document.getElementById('detectedCount');
+
+    function addLog(message, type = 'info') {
+      const item = document.createElement('div');
+      item.className = 'log-item ' + type;
+      item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(item);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function loadCoordinates() {
+      try {
+        const response = await fetch('/data/dental-coordinates.json');
+        coordinates = await response.json();
+        addLog('✓ 座標數據加載成功', 'success');
+      } catch (error) {
+        addLog('✗ 座標數據加載失敗: ' + error.message, 'error');
+      }
+    }
+
+    async function loadImage(system) {
+      return new Promise((resolve) => {
+        const systemKey = system === 'permanent' ? 'permanteeth' : 'primaryteeth';
+        const imageInfo = coordinates.imageReferenceSize[systemKey];
+        const imagePath = `/assets/images/teeth/${imageInfo.filename}`;
+
+        image = new Image();
+        image.onload = () => {
+          originalCanvas.width = image.width;
+          originalCanvas.height = image.height;
+          processedCanvas.width = image.width;
+          processedCanvas.height = image.height;
+
+          originalCtx.drawImage(image, 0, 0);
+          addLog(`✓ 圖像加載: ${system} (${image.width}x${image.height})`, 'success');
+          resolve(true);
+        };
+        image.onerror = () => {
+          addLog(`✗ 無法加載圖像: ${imagePath}`, 'error');
+          resolve(false);
+        };
+        image.src = imagePath;
+      });
+    }
+
+    function detectTeeth() {
+      if (!image) {
+        addLog('✗ 圖像未加載', 'error');
+        return;
+      }
+
+      addLog('🔍 開始牙齒檢測...', 'info');
+
+      try {
+        const edgeThreshold = parseInt(document.getElementById('edgeThreshold').value);
+        const minArea = parseInt(document.getElementById('minArea').value);
+        const radius = parseInt(document.getElementById('radius').value);
+
+        // 讀取圖像
+        let src = cv.imread(originalCanvas);
+        let gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        // Canny 邊界檢測
+        let edges = new cv.Mat();
+        cv.Canny(gray, edges, edgeThreshold, edgeThreshold * 2);
+
+        // 膨脹以連接斷裂的邊界
+        let kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(5, 5));
+        cv.dilate(edges, edges, kernel, new cv.Point(-1, -1), 2);
+
+        // 找輪廓
+        let contours = new cv.MatVector();
+        let hierarchy = new cv.Mat();
+        cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+        // 處理輪廓
+        const teeth = [];
+        for (let i = 0; i < contours.size(); i++) {
+          let contour = contours.get(i);
+          let area = cv.contourArea(contour);
+
+          // 過濾小的輪廓
+          if (area > minArea) {
+            let rect = cv.boundingRect(contour);
+            let cx = rect.x + rect.width / 2;
+            let cy = rect.y + rect.height / 2;
+
+            teeth.push({
+              x: Math.round(cx),
+              y: Math.round(cy),
+              area: Math.round(area),
+              width: rect.width,
+              height: rect.height
+            });
+          }
+
+          contour.delete();
+        }
+
+        // 按 X 座標排序
+        teeth.sort((a, b) => a.x - b.x);
+
+        // 顯示檢測結果
+        processedCtx.drawImage(originalCanvas, 0, 0);
+
+        teeth.forEach((tooth, idx) => {
+          // 繪製圓圈
+          processedCtx.fillStyle = 'rgba(76, 175, 80, 0.2)';
+          processedCtx.strokeStyle = '#4CAF50';
+          processedCtx.lineWidth = 2;
+          processedCtx.beginPath();
+          processedCtx.arc(tooth.x, tooth.y, radius, 0, 2 * Math.PI);
+          processedCtx.fill();
+          processedCtx.stroke();
+
+          // 繪製標籤
+          processedCtx.fillStyle = '#333';
+          processedCtx.font = 'bold 14px Arial';
+          processedCtx.fillText(`${idx + 1}`, tooth.x - 8, tooth.y + 5);
+        });
+
+        // 保存結果
+        detectionResults = {};
+        const system = currentSystem;
+        const systemTeeth = coordinates[system].teeth;
+        const toothIds = Object.keys(systemTeeth).sort((a, b) => parseInt(a) - parseInt(b));
+
+        teeth.forEach((tooth, idx) => {
+          if (idx < toothIds.length) {
+            const toothId = toothIds[idx];
+            detectionResults[toothId] = {
+              ...tooth,
+              radius: radius,
+              toothId: toothId
+            };
+          }
+        });
+
+        detectedCountDiv.textContent = teeth.length;
+        displayResults(teeth);
+
+        addLog(`✓ 檢測完成: 找到 ${teeth.length} 顆牙齒`, 'success');
+
+        // 清理
+        src.delete();
+        gray.delete();
+        edges.delete();
+        kernel.delete();
+        contours.delete();
+        hierarchy.delete();
+
+      } catch (error) {
+        addLog(`✗ 檢測錯誤: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+
+    function displayResults(teeth) {
+      resultsPanel.innerHTML = '';
+      const system = currentSystem;
+      const systemTeeth = coordinates[system].teeth;
+      const toothIds = Object.keys(systemTeeth).sort((a, b) => parseInt(a) - parseInt(b));
+
+      teeth.forEach((tooth, idx) => {
+        if (idx < toothIds.length) {
+          const toothId = toothIds[idx];
+          const toothData = systemTeeth[toothId];
+          const div = document.createElement('div');
+          div.className = 'tooth-result';
+          div.innerHTML = `<strong>#${toothId}</strong>: (${tooth.x}, ${tooth.y}) | 面積: ${tooth.area}px² | ${toothData.nameCh || toothData.name}`;
+          resultsPanel.appendChild(div);
+        }
+      });
+    }
+
+    function exportResults() {
+      if (Object.keys(detectionResults).length === 0) {
+        alert('請先執行檢測');
+        return;
+      }
+
+      const system = currentSystem;
+      const systemTeeth = coordinates[system].teeth;
+
+      Object.entries(detectionResults).forEach(([toothId, data]) => {
+        systemTeeth[toothId].x = data.x;
+        systemTeeth[toothId].y = data.y;
+        systemTeeth[toothId].radius = data.radius;
+      });
+
+      const output = {
+        version: coordinates.version,
+        description: coordinates.description,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        imageReferenceSize: coordinates.imageReferenceSize,
+        permanent: { description: coordinates.permanent.description, teeth: coordinates.permanent.teeth },
+        primary: { description: coordinates.primary.description, teeth: coordinates.primary.teeth }
+      };
+
+      console.log('Updated coordinates:', JSON.stringify(output, null, 2));
+      addLog('✓ 座標數據已準備匯出', 'success');
+      alert('座標數據已在控制台打印。複製並保存到 dental-coordinates.json');
+    }
+
+    function downloadJSON() {
+      exportResults();
+      const system = currentSystem;
+      const systemTeeth = coordinates[system].teeth;
+
+      Object.entries(detectionResults).forEach(([toothId, data]) => {
+        systemTeeth[toothId].x = data.x;
+        systemTeeth[toothId].y = data.y;
+        systemTeeth[toothId].radius = data.radius;
+      });
+
+      const output = {
+        version: coordinates.version,
+        description: coordinates.description,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        imageReferenceSize: coordinates.imageReferenceSize,
+        permanent: { description: coordinates.permanent.description, teeth: coordinates.permanent.teeth },
+        primary: { description: coordinates.primary.description, teeth: coordinates.primary.teeth }
+      };
+
+      const dataStr = JSON.stringify(output, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'dental-coordinates.json';
+      link.click();
+      addLog('✓ JSON 文件已下載', 'success');
+    }
+
+    // 事件監聽
+    document.getElementById('systemSelect').addEventListener('change', async (e) => {
+      currentSystem = e.target.value;
+      detectionResults = {};
+      detectedCountDiv.textContent = 0;
+      resultsPanel.innerHTML = '';
+      await loadImage(currentSystem);
+    });
+
+    document.getElementById('edgeThreshold').addEventListener('input', (e) => {
+      document.getElementById('edgeThresholdValue').textContent = e.target.value;
+    });
+
+    document.getElementById('minArea').addEventListener('input', (e) => {
+      document.getElementById('minAreaValue').textContent = e.target.value;
+    });
+
+    document.getElementById('radius').addEventListener('input', (e) => {
+      document.getElementById('radiusValue').textContent = e.target.value;
+    });
+
+    // 初始化
+    window.addEventListener('load', async () => {
+      addLog('⏳ 正在加載 OpenCV...', 'info');
+      await new Promise(resolve => {
+        if (typeof cv !== 'undefined') {
+          resolve();
+        } else {
+          setTimeout(resolve, 2000);
+        }
+      });
+
+      await loadCoordinates();
+      await loadImage('permanent');
+      addLog('✓ 自動檢測工具已就緒', 'success');
+    });
+  </script>
+</body>
+</html>
