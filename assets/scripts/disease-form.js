@@ -13,11 +13,15 @@ class DiseaseForm {
     this.selectedDiseases = [];
     this.treatmentNotes = '';
     this.currentLanguage = getCurrentLanguage();
+    this.systemId = options.systemId || 'teeth'; // 預設系統 ID
+    this.diseases = []; // 存儲當前系統的疾病列表
 
-    // 初始化時自動渲染（非同步，不阻塞）
+    // 初始化時先加載疾病，然後渲染（非同步，不阻塞）
     if (this.container) {
-      this.render().catch(error => {
-        console.error('Error rendering disease form:', error);
+      this.loadDiseases(this.systemId).then(() => {
+        return this.render();
+      }).catch(error => {
+        console.error('Error initializing disease form:', error);
       });
     }
 
@@ -29,10 +33,48 @@ class DiseaseForm {
   }
 
   /**
+   * 加載特定系統的疾病數據
+   * @param {string} systemId - 解剖系統 ID
+   */
+  async loadDiseases(systemId = 'teeth') {
+    this.systemId = systemId;
+
+    try {
+      const response = await fetch('/data/disease-categories.json');
+      const data = await response.json();
+
+      // 查找系統分類
+      let systemCategory = null;
+      if (data.anatomicalSystems && Array.isArray(data.anatomicalSystems)) {
+        systemCategory = data.anatomicalSystems.find(sys => sys.systemId === systemId);
+      } else if (Array.isArray(data)) {
+        systemCategory = data.find(sys => sys.systemId === systemId);
+      }
+
+      if (!systemCategory) {
+        console.warn(`未找到系統的疾病: ${systemId}`);
+        this.diseases = [];
+        return;
+      }
+
+      this.diseases = systemCategory.diseases || [];
+      console.log(`已加載 ${this.diseases.length} 個疾病，系統: ${systemId}`);
+    } catch (error) {
+      console.error('加載疾病數據失敗:', error);
+      this.diseases = [];
+    }
+  }
+
+  /**
    * 渲染表單
    */
   async render() {
     if (!this.container) return;
+
+    // 如果疾病列表為空，先加載該系統的疾病
+    if (!this.diseases || this.diseases.length === 0) {
+      await this.loadDiseases(this.systemId);
+    }
 
     let html = '<div class="disease-form">';
 
@@ -51,23 +93,9 @@ class DiseaseForm {
     // 疾病分類
     html += '<div class="disease-form__categories">';
 
-    // 從 disease-categories.json 中加載疾病數據
-    try {
-      const response = await fetch('/data/disease-categories.json');
-      const data = await response.json();
-
-      let teethSystem = null;
-      if (data.anatomicalSystems && Array.isArray(data.anatomicalSystems)) {
-        teethSystem = data.anatomicalSystems.find(sys => sys.systemId === 'teeth');
-      } else if (Array.isArray(data)) {
-        teethSystem = data.find(sys => sys.systemId === 'teeth');
-      }
-
-      if (teethSystem && teethSystem.diseases) {
-        html += this.renderCategory(teethSystem);
-      }
-    } catch (error) {
-      console.error('Error loading disease-categories.json:', error);
+    if (this.diseases && this.diseases.length > 0) {
+      html += this.renderDiseaseList();
+    } else {
       html += '<p class="error-message">無法加載疾病列表</p>';
     }
 
@@ -89,6 +117,39 @@ class DiseaseForm {
 
     this.container.innerHTML = html;
     this.setupEventListeners();
+  }
+
+  /**
+   * 渲染疾病列表
+   * @returns {string} HTML
+   */
+  renderDiseaseList() {
+    let html = '<div class="disease-list">';
+
+    if (!this.diseases || !Array.isArray(this.diseases)) {
+      return html + '</div>';
+    }
+
+    this.diseases.forEach((disease) => {
+      html += `
+        <div class="disease-item">
+          <input
+            type="checkbox"
+            id="disease-${disease.id}"
+            class="disease-checkbox"
+            value="${disease.id}"
+            data-name="${disease.name}"
+            data-name-en="${disease.nameEn}"
+            data-icd10="${disease.icd10 || disease.id}">
+          <label for="disease-${disease.id}">
+            ${disease.name}
+          </label>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+    return html;
   }
 
   /**

@@ -367,6 +367,35 @@ class MedicalRecordApp {
   }
 
   /**
+   * 初始化疾病表單以加載特定系統的疾病
+   * @param {string} systemId - 系統 ID (eye 或 teeth)
+   */
+  initializeDiseaseForm(systemId) {
+    const formContainer = $('#disease-form-container');
+    if (!formContainer) return;
+
+    // 如果表單不存在，創建新的
+    if (!this.diseaseForm) {
+      this.diseaseForm = new DiseaseForm({
+        container: formContainer,
+        systemId: systemId
+      });
+    } else {
+      // 如果表單已存在，更新系統 ID 並重新加載疾病
+      this.diseaseForm.systemId = systemId;
+      this.diseaseForm.selectedDiseases = [];
+      this.diseaseForm.treatmentNotes = '';
+
+      // 加載新系統的疾病
+      this.diseaseForm.loadDiseases(systemId).then(() => {
+        return this.diseaseForm.render();
+      }).catch(error => {
+        console.error('重新加載疾病失敗:', error);
+      });
+    }
+  }
+
+  /**
    * 處理系統標籤頁點擊
    * @param {Event} e - 事件
    */
@@ -401,6 +430,9 @@ class MedicalRecordApp {
       this.hideEyeSelector();
       this.toggleEyeInfoPanel(false);
     }
+
+    // 初始化疾病表單（當系統切換時）
+    this.initializeDiseaseForm(systemId);
 
     // 切換系統
     await this.loadSystemImage(systemId);
@@ -855,15 +887,20 @@ class MedicalRecordApp {
     // 初始化或更新疾病表單
     const formContainer = $('#disease-form-container');
     if (formContainer && !this.diseaseForm) {
-      // 載入疾病資料並初始化表單
+      // 載入疾病資料並初始化表單（使用當前系統 ID）
       this.diseaseForm = new DiseaseForm({
         container: formContainer,
+        systemId: this.currentSystemId,
         diseaseData: this.anatomicalSystems
       });
       // 等待表單渲染完成
       await this.diseaseForm.render();
     } else if (this.diseaseForm) {
-      // 重新渲染表單（刷新數據）
+      // 確保使用正確的系統 ID，然後重新渲染表單
+      if (this.diseaseForm.systemId !== this.currentSystemId) {
+        this.diseaseForm.systemId = this.currentSystemId;
+        this.diseaseForm.diseases = [];
+      }
       await this.diseaseForm.render();
     }
 

@@ -68,67 +68,178 @@
           "id": "conjunctivitis",
           "name": "結膜炎",
           "nameEn": "Conjunctivitis",
+          "description": "眼睛表面膜的發炎，可能由病毒、細菌或過敏引起。",
+          "descriptionEn": "Inflammation of the conjunctiva (eye surface membrane), can be caused by viruses, bacteria, or allergies.",
           "subcategories": [
-            {"id": "viral", "name": "病毒性結膜炎", "nameEn": "Viral Conjunctivitis"},
-            {"id": "bacterial", "name": "細菌性結膜炎", "nameEn": "Bacterial Conjunctivitis"},
-            {"id": "allergic", "name": "過敏性結膜炎", "nameEn": "Allergic Conjunctivitis"}
+            {
+              "id": "viral_conjunctivitis",
+              "name": "病毒性結膜炎",
+              "nameEn": "Viral Conjunctivitis"
+            },
+            {
+              "id": "bacterial_conjunctivitis",
+              "name": "細菌性結膜炎",
+              "nameEn": "Bacterial Conjunctivitis"
+            },
+            {
+              "id": "allergic_conjunctivitis",
+              "name": "過敏性結膜炎",
+              "nameEn": "Allergic Conjunctivitis"
+            }
           ]
         },
         {
           "id": "corneal_ulcer",
           "name": "角膜潰瘍",
           "nameEn": "Corneal Ulcer",
-          "subcategories": []
+          "description": "角膜上的開放性病灶，可能由感染或眼部損傷引起，是眼科急症。",
+          "descriptionEn": "Open sore on the cornea, potentially caused by infection or eye trauma. A serious eye condition.",
+          "subcategories": [
+            {
+              "id": "infectious_corneal_ulcer",
+              "name": "感染性角膜潰瘍",
+              "nameEn": "Infectious Corneal Ulcer"
+            },
+            {
+              "id": "traumatic_corneal_ulcer",
+              "name": "創傷性角膜潰瘍",
+              "nameEn": "Traumatic Corneal Ulcer"
+            }
+          ]
         },
         {
           "id": "cataract",
           "name": "白內障",
           "nameEn": "Cataract",
+          "description": "眼球水晶體變濁，導致視力下降。常見於老年人。",
+          "descriptionEn": "Clouding of the eye lens, causing vision loss. Commonly seen in older adults.",
           "subcategories": [
-            {"id": "nuclear", "name": "核性白內障", "nameEn": "Nuclear Cataract"},
-            {"id": "cortical", "name": "皮質白內障", "nameEn": "Cortical Cataract"},
-            {"id": "posterior_subcapsular", "name": "後囊下白內障", "nameEn": "Posterior Subcapsular"}
+            {
+              "id": "nuclear_cataract",
+              "name": "核性白內障",
+              "nameEn": "Nuclear Cataract"
+            },
+            {
+              "id": "cortical_cataract",
+              "name": "皮質性白內障",
+              "nameEn": "Cortical Cataract"
+            },
+            {
+              "id": "posterior_subcapsular_cataract",
+              "name": "後囊下白內障",
+              "nameEn": "Posterior Subcapsular Cataract"
+            }
           ]
         },
         {
           "id": "glaucoma",
           "name": "青光眼",
           "nameEn": "Glaucoma",
+          "description": "眼內壓升高導致視神經損傷和視野缺損。是導致不可逆性失明的主要原因。",
+          "descriptionEn": "Elevated intraocular pressure damaging the optic nerve and causing vision loss. Leading cause of irreversible blindness.",
           "subcategories": [
-            {"id": "open_angle", "name": "開角型青光眼", "nameEn": "Open-Angle Glaucoma"},
-            {"id": "closed_angle", "name": "閉角型青光眼", "nameEn": "Closed-Angle Glaucoma"}
+            {
+              "id": "open_angle_glaucoma",
+              "name": "開角型青光眼",
+              "nameEn": "Open-Angle Glaucoma"
+            },
+            {
+              "id": "closed_angle_glaucoma",
+              "name": "閉角型青光眼",
+              "nameEn": "Closed-Angle Glaucoma"
+            },
+            {
+              "id": "secondary_glaucoma",
+              "name": "繼發性青光眼",
+              "nameEn": "Secondary Glaucoma"
+            }
           ]
         },
         {
           "id": "refractive_error",
           "name": "屈光不正",
           "nameEn": "Refractive Error",
+          "description": "眼睛不能正確聚焦光線，導致視力模糊。是最常見的視力問題。",
+          "descriptionEn": "Eye's inability to properly focus light, causing blurred vision. Most common vision problem worldwide.",
           "subcategories": [
-            {"id": "myopia", "name": "近視", "nameEn": "Myopia"},
-            {"id": "hyperopia", "name": "遠視", "nameEn": "Hyperopia"},
-            {"id": "astigmatism", "name": "散光", "nameEn": "Astigmatism"}
+            {
+              "id": "myopia",
+              "name": "近視",
+              "nameEn": "Myopia (Nearsightedness)"
+            },
+            {
+              "id": "hyperopia",
+              "name": "遠視",
+              "nameEn": "Hyperopia (Farsightedness)"
+            },
+            {
+              "id": "astigmatism",
+              "name": "散光",
+              "nameEn": "Astigmatism"
+            },
+            {
+              "id": "presbyopia",
+              "name": "老花眼",
+              "nameEn": "Presbyopia"
+            }
           ]
         },
         {
           "id": "dry_eye",
           "name": "乾眼症",
           "nameEn": "Dry Eye Syndrome",
-          "subcategories": []
+          "description": "淚液分泌不足或淚膜穩定性下降，導致眼睛不適和視力波動。",
+          "descriptionEn": "Insufficient tear production or unstable tear film, causing eye discomfort and fluctuating vision.",
+          "subcategories": [
+            {
+              "id": "aqueous_deficient_dry_eye",
+              "name": "淚液缺乏型乾眼症",
+              "nameEn": "Aqueous Deficient Dry Eye"
+            },
+            {
+              "id": "evaporative_dry_eye",
+              "name": "蒸發型乾眼症",
+              "nameEn": "Evaporative Dry Eye"
+            }
+          ]
         },
         {
           "id": "age_related_macular_degeneration",
-          "name": "年齡相關性黃斑變性",
-          "nameEn": "Age-Related Macular Degeneration",
+          "name": "年齡相關黃斑變性",
+          "nameEn": "Age-Related Macular Degeneration (AMD)",
+          "description": "黃斑部退化導致中心視力喪失。是老年人視力喪失的主要原因。",
+          "descriptionEn": "Deterioration of the macula causing loss of central vision. Leading cause of vision loss in older adults.",
           "subcategories": [
-            {"id": "dry_amd", "name": "乾性 AMD", "nameEn": "Dry AMD"},
-            {"id": "wet_amd", "name": "濕性 AMD", "nameEn": "Wet AMD"}
+            {
+              "id": "dry_amd",
+              "name": "乾性黃斑變性",
+              "nameEn": "Dry AMD"
+            },
+            {
+              "id": "wet_amd",
+              "name": "濕性黃斑變性",
+              "nameEn": "Wet AMD"
+            }
           ]
         },
         {
           "id": "retinal_detachment",
           "name": "視網膜脫離",
           "nameEn": "Retinal Detachment",
-          "subcategories": []
+          "description": "視網膜從眼球後部分離，可能導致永久性視力喪失。是眼科急症。",
+          "descriptionEn": "Separation of the retina from the back of the eye, potentially causing permanent vision loss. Requires emergency treatment.",
+          "subcategories": [
+            {
+              "id": "rhegmatogenous_retinal_detachment",
+              "name": "孔源性視網膜脫離",
+              "nameEn": "Rhegmatogenous Retinal Detachment"
+            },
+            {
+              "id": "tractional_retinal_detachment",
+              "name": "牽引性視網膜脫離",
+              "nameEn": "Tractional Retinal Detachment"
+            }
+          ]
         }
       ]
     },
