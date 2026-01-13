@@ -1079,10 +1079,19 @@ body {
 }
 
 /* ===== Eye Selection UI ===== */
+.eye-selector-container {
+    margin-bottom: var(--spacing-md);
+    display: none;
+}
+
+.eye-selector-container--visible {
+    display: block;
+}
+
 .eye-selector {
     display: flex;
-    gap: 10px;
-    margin: 10px 0;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
     justify-content: center;
 }
 
@@ -1094,24 +1103,32 @@ body {
     border-radius: 5px;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
     font-family: inherit;
 }
 
 .eye-btn:hover {
-    border-color: #0066cc;
+    border-color: var(--color-primary);
     background: #e8f0ff;
 }
 
 .eye-btn.active {
-    border-color: #0066cc;
-    background: #0066cc;
+    border-color: var(--color-primary);
+    background: var(--color-primary);
     color: white;
     box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
 }
 
-.eye-selector-container {
-    margin-bottom: 15px;
+@media (max-width: 480px) {
+    .eye-selector {
+        gap: var(--spacing-xs);
+        margin: var(--spacing-xs) 0;
+    }
+
+    .eye-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
 }
 
 /* ===== 列印樣式 ===== */

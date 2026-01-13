@@ -20,6 +20,7 @@ class MedicalRecordApp {
     this.currentImageId = null;
     this.anatomicalSystems = null;
     this.selectedEye = 'right'; // 追蹤選擇的眼睛（左眼或右眼）
+    this.eyeSelectorInitialized = false; // 追蹤眼睛選擇器是否已初始化
 
     this.init();
   }
@@ -215,6 +216,8 @@ class MedicalRecordApp {
    * 初始化眼睛選擇器
    */
   initializeEyeSelector() {
+    if (this.eyeSelectorInitialized) return;  // 防止重複初始化
+
     const leftEyeBtn = document.getElementById('left-eye-btn');
     const rightEyeBtn = document.getElementById('right-eye-btn');
 
@@ -229,6 +232,8 @@ class MedicalRecordApp {
       this.selectedEye = 'right';
       this.updateEyeSelection();
     });
+
+    this.eyeSelectorInitialized = true;
   }
 
   /**
@@ -238,18 +243,26 @@ class MedicalRecordApp {
     const leftEyeBtn = document.getElementById('left-eye-btn');
     const rightEyeBtn = document.getElementById('right-eye-btn');
 
+    if (!leftEyeBtn || !rightEyeBtn) {
+      console.warn('眼睛選擇按鈕未找到');
+      return;
+    }
+
     // 更新按鈕活躍狀態
     leftEyeBtn.classList.remove('active');
     rightEyeBtn.classList.remove('active');
 
     if (this.selectedEye === 'left') {
       leftEyeBtn.classList.add('active');
+      leftEyeBtn.setAttribute('aria-pressed', 'true');
+      rightEyeBtn.setAttribute('aria-pressed', 'false');
     } else {
       rightEyeBtn.classList.add('active');
+      leftEyeBtn.setAttribute('aria-pressed', 'false');
+      rightEyeBtn.setAttribute('aria-pressed', 'true');
     }
 
     console.log('眼睛選擇已變更為:', this.selectedEye);
-    document.dispatchEvent(new CustomEvent('eyeSelected', { detail: { eye: this.selectedEye } }));
   }
 
   /**
@@ -258,7 +271,7 @@ class MedicalRecordApp {
   showEyeSelector() {
     const container = document.getElementById('eye-selector-container');
     if (container) {
-      container.style.display = 'block';
+      container.classList.add('eye-selector-container--visible');
     }
   }
 
@@ -268,7 +281,7 @@ class MedicalRecordApp {
   hideEyeSelector() {
     const container = document.getElementById('eye-selector-container');
     if (container) {
-      container.style.display = 'none';
+      container.classList.remove('eye-selector-container--visible');
     }
   }
 
