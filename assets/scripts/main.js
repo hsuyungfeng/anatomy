@@ -897,20 +897,24 @@ class MedicalRecordApp {
 
     // 初始化或更新疾病表單
     const formContainer = $('#disease-form-container');
+    // 將 primary_teeth 系統轉換為 teeth（它們使用相同的疾病列表）
+    const diseaseSystemId = this.currentSystemId === 'primary_teeth' ? 'teeth' : this.currentSystemId;
+
     if (formContainer && !this.diseaseForm) {
-      // 載入疾病資料並初始化表單（使用當前系統 ID）
+      // 載入疾病資料並初始化表單（使用正確的系統 ID）
       this.diseaseForm = new DiseaseForm({
         container: formContainer,
-        systemId: this.currentSystemId,
+        systemId: diseaseSystemId,
         diseaseData: this.anatomicalSystems
       });
       // 等待表單渲染完成
       await this.diseaseForm.render();
     } else if (this.diseaseForm) {
       // 確保使用正確的系統 ID，然後重新渲染表單
-      if (this.diseaseForm.systemId !== this.currentSystemId) {
-        this.diseaseForm.systemId = this.currentSystemId;
+      if (this.diseaseForm.systemId !== diseaseSystemId) {
+        this.diseaseForm.systemId = diseaseSystemId;
         this.diseaseForm.diseases = [];
+        await this.diseaseForm.loadDiseases(diseaseSystemId);
       }
       await this.diseaseForm.render();
     }
