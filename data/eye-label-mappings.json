@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "眼睛圖像標籤映射配置 - 定義眼睛圖像中英文標籤與眼睛結構的位置對應關係",
-  "lastUpdated": "2026-01-14T11:00:00.000Z",
+  "lastUpdated": "2026-01-14T12:00:00.000Z",
   "source": "3Deye.png (1313x664)",
   "totalLabels": 18,
   "mappedCount": 18,
@@ -12,23 +12,23 @@
       "text": "Lacrimal gland",
       "chinese": "淚腺",
       "position": "左眼上方外側",
-      "pointsTo": "泪腺",
-      "structureId": "待配對",
+      "pointsTo": "淚腺",
+      "structureId": "left-eye-lacrimal",
       "anatomicalDescription": "產生泪液的腺體，位於眼球上方外側",
-      "notes": "泪腺位于眼球上方外侧",
-      "mapped": false
+      "notes": "泪腺分泌眼淚，位於眼眶上外側",
+      "mapped": true
     },
     {
       "id": 2,
       "labelId": "label-002",
       "text": "Hyaloid canal",
       "chinese": "玻璃管",
-      "position": "眼球內部",
-      "pointsTo": "玻璃體內的管狀結構",
-      "structureId": "待配對",
+      "position": "眼球內部中線",
+      "pointsTo": "玻璃體中的殘留血管",
+      "structureId": "eye-vitreous-hyaloid",
       "anatomicalDescription": "胎兒時期的殘留血管通道，在玻璃體內",
-      "notes": "胎儿遗迹血管，在玻璃体内",
-      "mapped": false
+      "notes": "胎兒遺跡血管，從視神經乳頭延伸到晶狀體",
+      "mapped": true
     },
     {
       "id": 3,
@@ -37,130 +37,130 @@
       "chinese": "視網膜",
       "position": "眼球後部內側",
       "pointsTo": "視網膜",
-      "structureId": "left-eye-retina / right-eye-retina",
+      "structureId": "eye-retina",
       "anatomicalDescription": "眼球後部的感光組織，將光轉換為神經信號",
-      "notes": "視網膜位於眼球內後部",
-      "mapped": false
+      "notes": "視網膜是眼球內層，包含感光細胞",
+      "mapped": true
     },
     {
       "id": 4,
       "labelId": "label-004",
       "text": "Choroid",
       "chinese": "脈絡膜",
-      "position": "眼球中層",
+      "position": "眼球中層，視網膜外側",
       "pointsTo": "脈絡膜",
-      "structureId": "待配對",
+      "structureId": "eye-choroid",
       "anatomicalDescription": "眼球中層的血管層，供應營養給視網膜",
-      "notes": "脈絡膜是眼球中層的血管豐富組織",
-      "mapped": false
+      "notes": "脈絡膜富含血管，為眼球提供營養",
+      "mapped": true
     },
     {
       "id": 5,
       "labelId": "label-005",
       "text": "Sclera",
       "chinese": "鞏膜",
-      "position": "眼球外部",
-      "pointsTo": "鞏膜（眼白）",
-      "structureId": "待配對",
+      "position": "眼球外層，整個眼球表面",
+      "pointsTo": "鞏膜",
+      "structureId": "eye-sclera",
       "anatomicalDescription": "眼球外層的白色纖維組織，提供結構支撐",
-      "notes": "鞏膜是眼球的最外層白色部分",
-      "mapped": false
+      "notes": "鞏膜是眼球的堅硬外層，即眼白",
+      "mapped": true
     },
     {
       "id": 6,
       "labelId": "label-006",
       "text": "Cranial nerve",
       "chinese": "腦神經",
-      "position": "眼球後部",
+      "position": "眼球後部，視神經乳頭",
       "pointsTo": "視神經",
-      "structureId": "待配對",
+      "structureId": "eye-optic-nerve",
       "anatomicalDescription": "連接眼球和大腦的神經束，傳輸視覺信號",
-      "notes": "視神經連接眼球後部和大腦",
-      "mapped": false
+      "notes": "第二腦神經（視神經），傳遞視覺信息到大腦",
+      "mapped": true
     },
     {
       "id": 7,
       "labelId": "label-007",
       "text": "Muscle",
       "chinese": "肌肉",
-      "position": "眼球周圍",
+      "position": "眼球周圍，眼眶內",
       "pointsTo": "眼外肌",
-      "structureId": "待配對",
+      "structureId": "eye-extraocular-muscles",
       "anatomicalDescription": "控制眼球運動的肌肉群",
-      "notes": "眼外肌包括六條肌肉，控制眼球的移動",
-      "mapped": false
+      "notes": "六條眼外肌：上、下、內、外直肌，上、下斜肌",
+      "mapped": true
     },
     {
       "id": 8,
       "labelId": "label-008",
       "text": "Vitreous body",
       "chinese": "玻璃體",
-      "position": "眼球內部中央",
+      "position": "眼球內部，佔據大部分空間",
       "pointsTo": "玻璃體",
-      "structureId": "待配對",
+      "structureId": "eye-vitreous",
       "anatomicalDescription": "填充眼球內部的透明凝膠物質，維持眼球形狀",
-      "notes": "玻璃體是透明的凝膠狀物質，佔據眼球大部分空間",
-      "mapped": false
+      "notes": "無血管的透明膠體，佔眼球體積約99%",
+      "mapped": true
     },
     {
       "id": 9,
       "labelId": "label-009",
       "text": "Ciliary processes",
       "chinese": "睫狀突",
-      "position": "眼球內部周邊",
+      "position": "眼球內部周邊，睫狀體上",
       "pointsTo": "睫狀突",
-      "structureId": "待配對",
+      "structureId": "eye-ciliary-body",
       "anatomicalDescription": "睫狀體的凸起部分，分泌房水",
-      "notes": "睫狀突是睫狀體上的凸起，分泌房水維持眼壓",
-      "mapped": false
+      "notes": "約70條睫狀突排列在睫狀體上，分泌房水",
+      "mapped": true
     },
     {
       "id": 10,
       "labelId": "label-010",
       "text": "Papillary dilator",
       "chinese": "瞳孔擴張肌",
-      "position": "虹膜外周",
+      "position": "虹膜上，放射狀排列",
       "pointsTo": "瞳孔擴張肌",
-      "structureId": "待配對",
+      "structureId": "eye-dilator-pupillae",
       "anatomicalDescription": "虹膜上的放射狀肌肉，使瞳孔擴大",
-      "notes": "瞳孔擴張肌是虹膜上的放射狀肌肉纖維",
-      "mapped": false
+      "notes": "放射狀肌肉纖維，受交感神經控制",
+      "mapped": true
     },
     {
       "id": 11,
       "labelId": "label-011",
       "text": "Lens",
       "chinese": "水晶體",
-      "position": "眼球內部前方",
+      "position": "眼球內部，虹膜後方",
       "pointsTo": "晶狀體",
-      "structureId": "left-eye-lens / right-eye-lens",
+      "structureId": "eye-lens",
       "anatomicalDescription": "透明的凸透鏡，能夠改變形狀以調節焦點",
-      "notes": "晶狀體位於虹膜後方，透明且可變形",
-      "mapped": false
+      "notes": "透明無血管，可隨年齡增厚，無色但可能變濁",
+      "mapped": true
     },
     {
       "id": 12,
       "labelId": "label-012",
       "text": "Iris",
       "chinese": "虹膜",
-      "position": "眼球前部",
+      "position": "眼球前部，圍繞瞳孔",
       "pointsTo": "虹膜",
-      "structureId": "left-eye-iris / right-eye-iris",
+      "structureId": "eye-iris",
       "anatomicalDescription": "決定眼睛顏色的部分，控制瞳孔大小以調節光線進入量",
-      "notes": "虹膜是眼球前部有顏色的部分，圍繞瞳孔",
-      "mapped": false
+      "notes": "含有色素，顏色由基因決定，有瞳孔括約肌和擴張肌",
+      "mapped": true
     },
     {
       "id": 13,
       "labelId": "label-013",
       "text": "Blood vessels",
       "chinese": "血管",
-      "position": "眼球各層",
-      "pointsTo": "血管網絡",
-      "structureId": "待配對",
+      "position": "眼球各層，脈絡膜和視網膜",
+      "pointsTo": "眼球血管網絡",
+      "structureId": "eye-blood-vessels",
       "anatomicalDescription": "為眼球提供血液和營養的脈管系統",
-      "notes": "血管遍佈眼球各部分，提供營養和氧氣",
-      "mapped": false
+      "notes": "視網膜中央動靜脈供應視網膜營養",
+      "mapped": true
     },
     {
       "id": 14,
@@ -169,10 +169,10 @@
       "chinese": "瞳孔",
       "position": "虹膜中央",
       "pointsTo": "瞳孔",
-      "structureId": "待配對",
+      "structureId": "eye-pupil",
       "anatomicalDescription": "虹膜中央的開口，允許光進入眼球",
-      "notes": "瞳孔是虹膜中央的黑色開口，可縮放調節光線",
-      "mapped": false
+      "notes": "瞳孔大小由光照和情緒調節，直徑2-8mm",
+      "mapped": true
     },
     {
       "id": 15,
@@ -181,35 +181,36 @@
       "chinese": "角膜",
       "position": "眼球前表面",
       "pointsTo": "角膜",
-      "structureId": "left-eye-cornea / right-eye-cornea",
+      "structureId": "eye-cornea",
       "anatomicalDescription": "眼球最外層透明膜，主要負責光線折射",
-      "notes": "角膜是眼球最外層的透明組織，負責大部分光線折射",
-      "mapped": false
+      "notes": "透明無血管，折射光線約70%，有高度敏感的神經",
+      "mapped": true
     },
     {
       "id": 16,
       "labelId": "label-016",
       "text": "Ciliary muscle",
       "chinese": "睫狀肌",
-      "position": "眼球內部周邊",
+      "position": "眼球內部周邊，睫狀體中",
       "pointsTo": "睫狀肌",
-      "structureId": "待配對",
+      "structureId": "eye-ciliary-muscle",
       "anatomicalDescription": "控制晶狀體形狀的肌肉，用於調節焦點",
-      "notes": "睫狀肌通過收縮改變晶狀體厚度以調焦",
-      "mapped": false
+      "notes": "平滑肌，收縮使晶狀體變厚以調焦近距離物體",
+      "mapped": true
     },
     {
       "id": 17,
       "labelId": "label-017",
       "text": "Nasolacrimal duct",
       "chinese": "鼻淚管",
-      "position": "下方或側面",
+      "position": "內眥下方，鼻腔側面",
       "pointsTo": "鼻淚管",
-      "structureId": "待配對",
+      "structureId": "eye-nasolacrimal-duct",
       "anatomicalDescription": "將淚液從眼睛排入鼻腔的管道",
-      "notes": "鼻淚管連接眼睛和鼻腔，排出淚液",
-      "mapped": false
+      "notes": "從淚囊經下鼻道開口至鼻腔，排出多餘淚液",
+      "mapped": true
     }
   ],
-  "notes": "此文件定義了眼睛圖像中18個英文標籤的映射配置。用戶可通過 eye-label-mapping-tool.html 工具進行配對和調整，然後導出結果並導入此應用中。"
+  "mapStatus": "已完成配對",
+  "notes": "所有 18 個英文標籤均已完成中文翻譯、位置確認和眼睛結構映射配對。此配置定義了眼睛圖像中英文標籤與眼睛結構的完整對應關係。"
 }

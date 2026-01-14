@@ -598,6 +598,28 @@ console.log(document.getElementById('diseaseList'));  // 檢查 DOM
 
 ---
 
+## 🔧 最新增強（2026-01-14）
+
+### 眼睛標籤映射系統增強
+- ✅ 添加 `loadCustomMappings()` 方法 - 支持導入外部 JSON 映射數據
+- ✅ 添加 `loadMappingsFromURL()` 方法 - 非同步加載遠程映射文件
+- ✅ 創建 `data/eye-label-mappings.json` - 18 個英文標籤的映射模板
+- ✅ 完整的文檔與註釋
+
+### 系統架構
+```
+應用流程：
+1. 用戶訪問主應用 (index.html)
+2. 眼睛系統加載時自動初始化 EyeLabelMapper
+3. 使用者可以：
+   a. 直接在主應用中點擊標籤位置標記疾病
+   b. 或訪問 eye-label-mapping-tool.html 進行更細致的標籤配對和調整
+4. 用戶在映射工具中導出 JSON 映射結果
+5. 導出的 JSON 可通過 loadCustomMappings() 導入回應用
+```
+
+---
+
 ## 🎯 當前優先級工作項
 
 ### 高優先級 (立即開始)

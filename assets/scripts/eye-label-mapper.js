@@ -36,81 +36,195 @@ class EyeLabelMapper {
    * @returns {Object} 標籤映射表
    */
   initializeLabelMappings() {
-    // 基於 eye-coordinates.json 中的座標定義標籤位置
+    // 基於 eye-coordinates.json 中的精確座標定義標籤位置
     // 左眼座標: (454.5, 313)，右眼座標: (921.5, 412)
     return {
-      // 左眼相關標籤
+      // 左眼相關標籤 (左眼座標: 454.5, 313)
       'left-eye-label': {
         structureId: 'left-eye',
         labelText: '左眼',
         labelTextEn: 'Left Eye',
-        position: { x: 350, y: 250 },  // 左眼球中心左上方
+        position: { x: 380, y: 250 },  // 左眼球上方
         belongsTo: 'left'
       },
       'left-cornea-label': {
         structureId: 'left-eye-cornea',
         labelText: '角膜',
         labelTextEn: 'Cornea',
-        position: { x: 300, y: 350 },  // 角膜位置
+        position: { x: 350, y: 390 },  // 左眼前表面
         belongsTo: 'left'
       },
       'left-iris-label': {
         structureId: 'left-eye-iris',
         labelText: '虹膜',
         labelTextEn: 'Iris',
-        position: { x: 330, y: 330 },  // 虹膜位置
+        position: { x: 370, y: 360 },  // 左眼虹膜位置
         belongsTo: 'left'
       },
       'left-lens-label': {
         structureId: 'left-eye-lens',
-        labelText: '晶狀體',
+        labelText: '水晶體',
         labelTextEn: 'Lens',
-        position: { x: 350, y: 280 },  // 晶狀體位置
+        position: { x: 380, y: 320 },  // 左眼晶狀體位置
         belongsTo: 'left'
       },
       'left-retina-label': {
         structureId: 'left-eye-retina',
         labelText: '視網膜',
         labelTextEn: 'Retina',
-        position: { x: 300, y: 450 },  // 視網膜位置（眼球後方）
+        position: { x: 350, y: 480 },  // 左眼視網膜位置（眼球後方）
+        belongsTo: 'left'
+      },
+      'left-lacrimal-label': {
+        structureId: 'left-eye-lacrimal',
+        labelText: '淚腺',
+        labelTextEn: 'Lacrimal gland',
+        position: { x: 380, y: 260 },  // 左眼上方外側
+        belongsTo: 'left'
+      },
+      'left-choroid-label': {
+        structureId: 'eye-choroid',
+        labelText: '脈絡膜',
+        labelTextEn: 'Choroid',
+        position: { x: 360, y: 440 },  // 左眼中層
+        belongsTo: 'left'
+      },
+      'left-sclera-label': {
+        structureId: 'eye-sclera',
+        labelText: '鞏膜',
+        labelTextEn: 'Sclera',
+        position: { x: 300, y: 320 },  // 左眼外層
         belongsTo: 'left'
       },
 
-      // 右眼相關標籤
+      // 右眼相關標籤 (右眼座標: 921.5, 412)
       'right-eye-label': {
         structureId: 'right-eye',
         labelText: '右眼',
         labelTextEn: 'Right Eye',
-        position: { x: 1050, y: 300 },  // 右眼球中心右上方
+        position: { x: 1000, y: 330 },  // 右眼球上方
         belongsTo: 'right'
       },
       'right-cornea-label': {
         structureId: 'right-eye-cornea',
         labelText: '角膜',
         labelTextEn: 'Cornea',
-        position: { x: 1000, y: 350 },  // 角膜位置
+        position: { x: 1050, y: 390 },  // 右眼前表面
         belongsTo: 'right'
       },
       'right-iris-label': {
         structureId: 'right-eye-iris',
         labelText: '虹膜',
         labelTextEn: 'Iris',
-        position: { x: 1020, y: 330 },  // 虹膜位置
+        position: { x: 1020, y: 360 },  // 右眼虹膜位置
         belongsTo: 'right'
       },
       'right-lens-label': {
         structureId: 'right-eye-lens',
-        labelText: '晶狀體',
+        labelText: '水晶體',
         labelTextEn: 'Lens',
-        position: { x: 1050, y: 280 },  // 晶狀體位置
+        position: { x: 1000, y: 320 },  // 右眼晶狀體位置
         belongsTo: 'right'
       },
       'right-retina-label': {
         structureId: 'right-eye-retina',
         labelText: '視網膜',
         labelTextEn: 'Retina',
-        position: { x: 1000, y: 500 },  // 視網膜位置（眼球後方）
+        position: { x: 1050, y: 480 },  // 右眼視網膜位置（眼球後方）
         belongsTo: 'right'
+      },
+      'right-lacrimal-label': {
+        structureId: 'right-eye-lacrimal',
+        labelText: '淚腺',
+        labelTextEn: 'Lacrimal gland',
+        position: { x: 1020, y: 260 },  // 右眼上方外側
+        belongsTo: 'right'
+      },
+      'right-choroid-label': {
+        structureId: 'eye-choroid',
+        labelText: '脈絡膜',
+        labelTextEn: 'Choroid',
+        position: { x: 1040, y: 440 },  // 右眼中層
+        belongsTo: 'right'
+      },
+      'right-sclera-label': {
+        structureId: 'eye-sclera',
+        labelText: '鞏膜',
+        labelTextEn: 'Sclera',
+        position: { x: 1100, y: 320 },  // 右眼外層
+        belongsTo: 'right'
+      },
+
+      // 共用結構標籤（中線位置）
+      'optic-nerve-label': {
+        structureId: 'eye-optic-nerve',
+        labelText: '視神經',
+        labelTextEn: 'Cranial nerve',
+        position: { x: 650, y: 550 },  // 眼球後部，中線
+        belongsTo: 'center'
+      },
+      'vitreous-label': {
+        structureId: 'eye-vitreous',
+        labelText: '玻璃體',
+        labelTextEn: 'Vitreous body',
+        position: { x: 650, y: 380 },  // 眼球內部中央
+        belongsTo: 'center'
+      },
+      'ciliary-body-label': {
+        structureId: 'eye-ciliary-body',
+        labelText: '睫狀體',
+        labelTextEn: 'Ciliary processes',
+        position: { x: 650, y: 450 },  // 眼球內部周邊
+        belongsTo: 'center'
+      },
+      'muscles-label': {
+        structureId: 'eye-extraocular-muscles',
+        labelText: '眼肌',
+        labelTextEn: 'Muscle',
+        position: { x: 200, y: 380 },  // 眼球周圍
+        belongsTo: 'center'
+      },
+      'blood-vessels-label': {
+        structureId: 'eye-blood-vessels',
+        labelText: '血管',
+        labelTextEn: 'Blood vessels',
+        position: { x: 1150, y: 380 },  // 眼球各層
+        belongsTo: 'center'
+      },
+      'pupil-label': {
+        structureId: 'eye-pupil',
+        labelText: '瞳孔',
+        labelTextEn: 'Pupil',
+        position: { x: 650, y: 380 },  // 虹膜中央
+        belongsTo: 'center'
+      },
+      'dilator-label': {
+        structureId: 'eye-dilator-pupillae',
+        labelText: '瞳孔擴張肌',
+        labelTextEn: 'Papillary dilator',
+        position: { x: 600, y: 360 },  // 虹膜外周
+        belongsTo: 'center'
+      },
+      'nasolacrimal-label': {
+        structureId: 'eye-nasolacrimal-duct',
+        labelText: '鼻淚管',
+        labelTextEn: 'Nasolacrimal duct',
+        position: { x: 650, y: 600 },  // 內眥下方
+        belongsTo: 'center'
+      },
+      'hyaloid-label': {
+        structureId: 'eye-vitreous-hyaloid',
+        labelText: '玻璃管',
+        labelTextEn: 'Hyaloid canal',
+        position: { x: 650, y: 340 },  // 眼球內部中線
+        belongsTo: 'center'
+      },
+      'ciliary-muscle-label': {
+        structureId: 'eye-ciliary-muscle',
+        labelText: '睫狀肌',
+        labelTextEn: 'Ciliary muscle',
+        position: { x: 650, y: 420 },  // 眼球內部周邊
+        belongsTo: 'center'
       }
     };
   }
