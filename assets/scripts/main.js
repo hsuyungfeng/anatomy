@@ -146,6 +146,14 @@ class MedicalRecordApp {
       }
     });
 
+    // 眼睛標籤映射器 [新增] - 用於識別眼睛圖像中的文字標籤
+    if (typeof EyeLabelMapper !== 'undefined') {
+      this.eyeLabelMapper = new EyeLabelMapper({
+        debug: true
+      });
+      console.log('✓ 眼睛標籤映射器已初始化');
+    }
+
     // 病歷管理器
     this.recordManager = new RecordManager();
 
@@ -531,6 +539,25 @@ class MedicalRecordApp {
       // 重置縮放
       this.annotator.resetZoom();
 
+      // 在眼睛系統加載後繪製標籤 [新增]
+      if (systemId === 'eye' && this.eyeLabelMapper) {
+        const canvas = document.getElementById('image-canvas');
+        if (canvas) {
+          setTimeout(() => {
+            // 延遲繪製以確保圖像已加載
+            this.eyeLabelMapper.drawLabels(canvas, {
+              showText: true,
+              textColor: '#333',
+              fontSize: 13,
+              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              borderColor: '#0066cc',
+              borderRadius: 4
+            });
+            console.log('✓ 眼睛標籤已繪製在 canvas 上');
+          }, 100);
+        }
+      }
+
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
@@ -785,12 +812,38 @@ class MedicalRecordApp {
       console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
     }
 
+    // 首先嘗試檢測標籤點擊（標籤有更高的優先級） [新增]
+    let labelInfo = null;
+    if (this.eyeLabelMapper) {
+      labelInfo = this.eyeLabelMapper.getLabelAtPosition(adjustedPos.x, adjustedPos.y, 40);
+      if (labelInfo && this.eyeMapper.debug) {
+        console.log('[detectEyeStructure] 檢測到標籤點擊:', labelInfo.labelText);
+      }
+    }
+
     // 使用 EyeImageMapper 識別眼睛結構
     const structureInfo = this.eyeMapper.getStructureAtPosition(
       adjustedPos.x,
       adjustedPos.y
     );
 
+    // 如果點擊了標籤，優先使用標籤的結構 ID [新增]
+    if (labelInfo && labelInfo.structureId) {
+      const labelStructureInfo = this.eyeMapper.getStructureInfo(labelInfo.structureId);
+      if (labelStructureInfo) {
+        return {
+          structureId: labelStructureInfo.id,
+          name: labelStructureInfo.nameCh,           // 中文名稱
+          nameEn: labelStructureInfo.name,           // 英文名稱
+          type: labelStructureInfo.type,             // 結構類型
+          side: labelStructureInfo.side,             // 左眼或右眼
+          confidence: 1.0,  // 標籤點擊信心度為 100%
+          fromLabel: true   // 標記為來自標籤點擊
+        };
+      }
+    }
+
+    // 其次使用圖像結構識別結果
     if (structureInfo) {
       return {
         structureId: structureInfo.structureId,
