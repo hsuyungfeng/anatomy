@@ -292,6 +292,87 @@ class EyeLabelMapper {
   }
 
   /**
+   * 非同步加載外部 JSON 文件的標籤映射
+   * @param {string} url 映射文件的 URL 路徑
+   * @returns {Promise<boolean>} 是否成功加載
+   */
+  async loadMappingsFromURL(url) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const success = this.loadCustomMappings(data);
+
+      if (success && this.debug) {
+        console.log(`[EyeLabelMapper] 已從 ${url} 加載映射`);
+      }
+
+      return success;
+    } catch (error) {
+      console.error(`[EyeLabelMapper] 從 ${url} 加載映射失敗:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * 從外部 JSON 數據加載自定義標籤映射
+   * 用於導入用戶通過 eye-label-mapping-tool.html 完成的配對結果
+   * @param {Object|string} mappingData 映射數據（對象或 JSON 字串）
+   * @returns {boolean} 是否成功加載
+   */
+  loadCustomMappings(mappingData) {
+    try {
+      let data = mappingData;
+
+      // 如果是字符串，解析為對象
+      if (typeof mappingData === 'string') {
+        data = JSON.parse(mappingData);
+      }
+
+      // 驗證數據結構
+      if (!data || typeof data !== 'object') {
+        console.error('[EyeLabelMapper] 無效的映射數據格式');
+        return false;
+      }
+
+      // 支援兩種格式：直接映射對象或帶有 labelMappings 的外層對象
+      const mappings = data.labelMappings || data;
+
+      if (typeof mappings !== 'object') {
+        console.error('[EyeLabelMapper] labelMappings 必須是對象');
+        return false;
+      }
+
+      // 驗證並合併映射
+      let mergedCount = 0;
+      for (const [labelId, labelData] of Object.entries(mappings)) {
+        if (labelData && typeof labelData === 'object') {
+          // 確保必要欄位存在
+          if (labelData.position && labelData.position.x !== undefined && labelData.position.y !== undefined) {
+            this.labelMappings[labelId] = {
+              ...this.labelMappings[labelId],
+              ...labelData
+            };
+            mergedCount++;
+          }
+        }
+      }
+
+      if (this.debug) {
+        console.log(`[EyeLabelMapper] 已加載 ${mergedCount} 個自定義標籤映射`);
+      }
+
+      return mergedCount > 0;
+    } catch (error) {
+      console.error('[EyeLabelMapper] 加載自定義映射失敗:', error);
+      return false;
+    }
+  }
+
+  /**
    * 匯出標籤映射為 JSON 格式（用於校正後的備份）
    * @returns {string} JSON 字串
    */
