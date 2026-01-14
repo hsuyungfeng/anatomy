@@ -161,20 +161,35 @@ class ImageAnnotator {
     // 保存當前狀態
     ctx.save();
 
-    // 計算縮放後的尺寸
-    const scaledWidth = this.imageElement.width / window.devicePixelRatio * this.zoom;
-    const scaledHeight = this.imageElement.height / window.devicePixelRatio * this.zoom;
+    // 計算縮放後的尺寸（基於原始圖像，而非 canvas）
+    const canvasWidth = this.imageElement.width / window.devicePixelRatio;
+    const canvasHeight = this.imageElement.height / window.devicePixelRatio;
 
-    // 繪製圖像
-    const x = (this.imageElement.width / window.devicePixelRatio - scaledWidth) / 2 + this.panX;
-    const y = (this.imageElement.height / window.devicePixelRatio - scaledHeight) / 2 + this.panY;
+    // 計算適應 canvas 的圖像尺寸（保持縱橫比）
+    const imgAspectRatio = this.imageData.width / this.imageData.height;
+    const canvasAspectRatio = canvasWidth / canvasHeight;
+
+    let displayWidth, displayHeight;
+    if (imgAspectRatio > canvasAspectRatio) {
+      // 圖像較寬，限制寬度
+      displayWidth = canvasWidth * this.zoom;
+      displayHeight = displayWidth / imgAspectRatio;
+    } else {
+      // 圖像較高，限制高度
+      displayHeight = canvasHeight * this.zoom;
+      displayWidth = displayHeight * imgAspectRatio;
+    }
+
+    // 繪製圖像（居中）
+    const x = (canvasWidth - displayWidth) / 2 + this.panX;
+    const y = (canvasHeight - displayHeight) / 2 + this.panY;
 
     ctx.drawImage(
       this.imageData,
       x,
       y,
-      scaledWidth,
-      scaledHeight
+      displayWidth,
+      displayHeight
     );
 
     // 繪製標註點
