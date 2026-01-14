@@ -1,0 +1,245 @@
+{
+  "version": "1.0",
+  "description": "眼睛图像中识别的英文文字标签与解剖结构的映射表",
+  "lastUpdated": "2026-01-14",
+  "source": "3Deye.png (1313x664)",
+  "recognitionMethod": "Tesseract.js OCR",
+
+  "englishLabels": [
+    {
+      "id": "label-001",
+      "englishText": "Lacrimal gland",
+      "chineseName": "淚腺",
+      "anatomicalStructure": "泪腺",
+      "description": "产生泪液的腺体，位于眼球上方外侧",
+      "position": {
+        "estimated": "左上方或右上方",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-002",
+      "englishText": "Hyalid canal",
+      "chineseName": "玻璃管／透明管",
+      "anatomicalStructure": "玻璃体管（胎儿遗迹血管）",
+      "description": "胎儿时期的残留血管通道，在玻璃体内",
+      "position": {
+        "estimated": "眼球内部",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-003",
+      "englishText": "Retina",
+      "chineseName": "視網膜",
+      "anatomicalStructure": "视网膜",
+      "description": "眼球后部的感光组织，将光转换为神经信号",
+      "position": {
+        "estimated": "眼球后部内侧",
+        "userInput": "待确认"
+      },
+      "structureId": "left-eye-retina / right-eye-retina",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-004",
+      "englishText": "Choroid",
+      "chineseName": "脈絡膜",
+      "anatomicalStructure": "脉络膜",
+      "description": "眼球中层的血管层，供应营养给视网膜",
+      "position": {
+        "estimated": "眼球中层",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-005",
+      "englishText": "Sclera",
+      "chineseName": "鞏膜",
+      "anatomicalStructure": "巩膜",
+      "description": "眼球外层的白色纤维组织，提供结构支撑",
+      "position": {
+        "estimated": "眼球外部",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-006",
+      "englishText": "Cranial nerve",
+      "chineseName": "腦神經",
+      "anatomicalStructure": "脑神经（视神经）",
+      "description": "连接眼球和大脑的神经束，传输视觉信号",
+      "position": {
+        "estimated": "眼球后部",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-007",
+      "englishText": "Muscle",
+      "chineseName": "肌肉",
+      "anatomicalStructure": "眼外肌",
+      "description": "控制眼球运动的肌肉群",
+      "position": {
+        "estimated": "眼球周围",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-008",
+      "englishText": "Vitreous body",
+      "chineseName": "玻璃體",
+      "anatomicalStructure": "玻璃体",
+      "description": "填充眼球内部的透明凝胶物质，维持眼球形状",
+      "position": {
+        "estimated": "眼球内部中央",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-009",
+      "englishText": "Ciliary processes",
+      "chineseName": "睫狀突",
+      "anatomicalStructure": "睫状突",
+      "description": "睫状体的凸起部分，分泌房水",
+      "position": {
+        "estimated": "眼球内部周边",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-010",
+      "englishText": "Papillary dilator",
+      "chineseName": "瞳孔擴張肌",
+      "anatomicalStructure": "瞳孔扩张肌",
+      "description": "虹膜上的放射状肌肉，使瞳孔扩大",
+      "position": {
+        "estimated": "虹膜外周",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-011",
+      "englishText": "Lens",
+      "chineseName": "水晶體",
+      "anatomicalStructure": "晶状体",
+      "description": "透明的凸透镜，能够改变形状以调节焦点",
+      "position": {
+        "estimated": "眼球内部前方",
+        "userInput": "待确认"
+      },
+      "structureId": "left-eye-lens / right-eye-lens",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-012",
+      "englishText": "Iris",
+      "chineseName": "虹膜",
+      "anatomicalStructure": "虹膜",
+      "description": "决定眼睛颜色的部分，控制瞳孔大小以调节光线进入量",
+      "position": {
+        "estimated": "眼球前部",
+        "userInput": "待确认"
+      },
+      "structureId": "left-eye-iris / right-eye-iris",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-013",
+      "englishText": "Blood vessels",
+      "chineseName": "血管",
+      "anatomicalStructure": "血管",
+      "description": "为眼球提供血液和营养的脉管系统",
+      "position": {
+        "estimated": "眼球各层",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-014",
+      "englishText": "Pupil",
+      "chineseName": "瞳孔",
+      "anatomicalStructure": "瞳孔",
+      "description": "虹膜中央的开口，允许光进入眼球",
+      "position": {
+        "estimated": "虹膜中央",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-015",
+      "englishText": "Cornea",
+      "chineseName": "角膜",
+      "anatomicalStructure": "角膜",
+      "description": "眼球最外层透明膜，主要负责光线折射",
+      "position": {
+        "estimated": "眼球前表面",
+        "userInput": "待确认"
+      },
+      "structureId": "left-eye-cornea / right-eye-cornea",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-016",
+      "englishText": "Ciliary muscle",
+      "chineseName": "睫狀肌",
+      "anatomicalStructure": "睫状肌",
+      "description": "控制晶状体形状的肌肉，用于调节焦点",
+      "position": {
+        "estimated": "眼球内部周边",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    },
+    {
+      "id": "label-017",
+      "englishText": "Nasolacrimal duct",
+      "chineseName": "鼻淚管",
+      "anatomicalStructure": "鼻泪管",
+      "description": "将泪液从眼睛排入鼻腔的管道",
+      "position": {
+        "estimated": "下方或侧面",
+        "userInput": "待确认"
+      },
+      "structureId": "待配对",
+      "confidence": "待用户确认"
+    }
+  ],
+
+  "nextSteps": "用户需要将每个英文文字标签映射到图像中的具体位置和眼睛结构",
+
+  "mappingTemplate": {
+    "id": "label-XXX",
+    "englishText": "文字内容",
+    "position": {
+      "estimated": "预估位置（左上、中央等）",
+      "userInput": "用户确认的具体位置"
+    },
+    "pointsTo": "该标签指向的眼睛部分",
+    "structureId": "对应的解剖结构 ID",
+    "confidence": "用户确认程度"
+  }
+}

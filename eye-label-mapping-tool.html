@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>眼睛標籤配對工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 0;
+      min-height: 800px;
+    }
+
+    .image-area {
+      position: relative;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #eyeImageContainer {
+      position: relative;
+      display: inline-block;
+    }
+
+    #eyeImage {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .label-marker {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: rgba(102, 126, 234, 0.8);
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .label-marker:hover {
+      background: rgba(102, 126, 234, 1);
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .label-marker.active {
+      background: #ff6b6b;
+      box-shadow: 0 0 25px rgba(255, 107, 107, 0.8);
+    }
+
+    .sidebar {
+      background: #fafafa;
+      border-left: 1px solid #e0e0e0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background: white;
+      border-bottom: 2px solid #e0e0e0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .sidebar-header h3 {
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .label-list {
+      padding: 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .label-item {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .label-item:hover {
+      background: #e8eef7;
+      border-left-color: #667eea;
+    }
+
+    .label-item.active {
+      background: #e8eef7;
+      border-left-color: #ff6b6b;
+    }
+
+    .label-item-number {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .label-item-text {
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .label-item-chinese {
+      color: #666;
+      font-size: 12px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-top: 5px;
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.mapped {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+      flex: 1;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .bottom-actions {
+      padding: 20px;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #1565c0;
+      margin-bottom: 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #f5f5f5;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #667eea;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>👁️ 眼睛標籤配對工具</h1>
+      <p>點擊圖像上的圓點標記，設定每個英文標籤的位置和對應的眼睛結構</p>
+    </div>
+
+    <div class="progress-info">
+      <span id="progressText">已配對: 0 / 18</span>
+      <div class="progress-bar" style="flex: 1; margin: 0 15px;">
+        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+      </div>
+      <span id="progressPercent">0%</span>
+    </div>
+
+    <div class="content">
+      <!-- 左側：圖像區域 -->
+      <div class="image-area">
+        <div id="eyeImageContainer">
+          <img id="eyeImage" src="assets/images/eye/3Deye.png" alt="眼睛3D圖像">
+        </div>
+      </div>
+
+      <!-- 右側：標籤列表 -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h3>英文標籤列表</h3>
+          <small style="color: #666;">共 18 個結構</small>
+        </div>
+        <div class="label-list" id="labelList"></div>
+        <div class="bottom-actions">
+          <button class="btn-success" onclick="exportMapping()">匯出配對結果</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配對編輯對話框 -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modalTitle">編輯標籤配對</span>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+
+      <div class="info-box" id="labelInfo"></div>
+
+      <div class="form-group">
+        <label>標籤在圖像中的位置（例：左上角、中央、右側）</label>
+        <input type="text" id="labelPosition" placeholder="例：左眼上方" />
+      </div>
+
+      <div class="form-group">
+        <label>該標籤指向的眼睛結構（例：Retina）</label>
+        <input type="text" id="pointsTo" placeholder="例：視網膜、眼球後部" />
+      </div>
+
+      <div class="form-group">
+        <label>對應的結構 ID（如適用）</label>
+        <input type="text" id="structureId" placeholder="例：left-eye-retina" />
+      </div>
+
+      <div class="form-group">
+        <label>備註（可選）</label>
+        <textarea id="notes" placeholder="添加任何額外的配對信息..."></textarea>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-secondary" onclick="closeModal()">取消</button>
+        <button class="btn-primary" onclick="saveMapping()">保存配對</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 18 個英文標籤
+    const labels = [
+      { id: 1, text: "Lacrimal gland", chinese: "淚腺" },
+      { id: 2, text: "Hyalid canal", chinese: "玻璃管" },
+      { id: 3, text: "Retina", chinese: "視網膜" },
+      { id: 4, text: "Choroid", chinese: "脈絡膜" },
+      { id: 5, text: "Sclera", chinese: "鞏膜" },
+      { id: 6, text: "Cranial nerve", chinese: "腦神經" },
+      { id: 7, text: "Muscle", chinese: "肌肉" },
+      { id: 8, text: "Vitreous body", chinese: "玻璃體" },
+      { id: 9, text: "Ciliary processes", chinese: "睫狀突" },
+      { id: 10, text: "Papillary dilator", chinese: "瞳孔擴張肌" },
+      { id: 11, text: "Lens", chinese: "水晶體" },
+      { id: 12, text: "Iris", chinese: "虹膜" },
+      { id: 13, text: "Blood vessels", chinese: "血管" },
+      { id: 14, text: "Pupil", chinese: "瞳孔" },
+      { id: 15, text: "Cornea", chinese: "角膜" },
+      { id: 16, text: "Ciliary muscle", chinese: "睫狀肌" },
+      { id: 17, text: "Nasolacrimal duct", chinese: "鼻淚管" }
+    ];
+
+    let mappings = {};
+    let currentEditingId = null;
+
+    // 初始化
+    function initializeMapping() {
+      // 初始化映射物件
+      labels.forEach(label => {
+        mappings[label.id] = {
+          id: label.id,
+          text: label.text,
+          chinese: label.chinese,
+          position: "",
+          pointsTo: "",
+          structureId: "",
+          notes: "",
+          mapped: false
+        };
+      });
+
+      renderLabelList();
+      createMarkers();
+    }
+
+    // 渲染標籤列表
+    function renderLabelList() {
+      const listContainer = document.getElementById('labelList');
+      listContainer.innerHTML = '';
+
+      labels.forEach(label => {
+        const mapping = mappings[label.id];
+        const div = document.createElement('div');
+        div.className = `label-item ${currentEditingId === label.id ? 'active' : ''}`;
+        div.onclick = () => editMapping(label.id);
+
+        let html = `
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <div class="label-item-number">${label.id}</div>
+            <div style="flex: 1;">
+              <div class="label-item-text">${label.text}</div>
+              <div class="label-item-chinese">${label.chinese}</div>
+              ${mapping.mapped ? '<span class="status-badge mapped">✓ 已配對</span>' : '<span class="status-badge">⏳ 待配對</span>'}
+            </div>
+          </div>
+        `;
+        div.innerHTML = html;
+        listContainer.appendChild(div);
+      });
+
+      updateProgress();
+    }
+
+    // 創建標籤標記
+    function createMarkers() {
+      const container = document.getElementById('eyeImageContainer');
+
+      // 清除舊標記
+      const oldMarkers = container.querySelectorAll('.label-marker');
+      oldMarkers.forEach(m => m.remove());
+
+      // 根據標籤 ID 創建標記（預設位置，待用戶調整）
+      const positions = {
+        1: { x: '10%', y: '15%' },      // Lacrimal gland
+        2: { x: '25%', y: '20%' },      // Hyalid canal
+        3: { x: '50%', y: '70%' },      // Retina
+        4: { x: '50%', y: '60%' },      // Choroid
+        5: { x: '40%', y: '50%' },      // Sclera
+        6: { x: '30%', y: '75%' },      // Cranial nerve
+        7: { x: '20%', y: '50%' },      // Muscle
+        8: { x: '50%', y: '55%' },      // Vitreous body
+        9: { x: '45%', y: '45%' },      // Ciliary processes
+        10: { x: '55%', y: '45%' },     // Papillary dilator
+        11: { x: '50%', y: '40%' },     // Lens
+        12: { x: '50%', y: '35%' },     // Iris
+        13: { x: '60%', y: '50%' },     // Blood vessels
+        14: { x: '50%', y: '32%' },     // Pupil
+        15: { x: '50%', y: '25%' },     // Cornea
+        16: { x: '48%', y: '48%' },     // Ciliary muscle
+        17: { x: '35%', y: '80%' }      // Nasolacrimal duct
+      };
+
+      labels.forEach(label => {
+        const pos = positions[label.id];
+        const marker = document.createElement('div');
+        marker.className = 'label-marker';
+        marker.textContent = label.id;
+        marker.style.left = pos.x;
+        marker.style.top = pos.y;
+        marker.style.transform = 'translate(-50%, -50%)';
+        marker.dataset.labelId = label.id;
+        marker.onclick = (e) => {
+          e.stopPropagation();
+          editMapping(label.id);
+        };
+        container.appendChild(marker);
+      });
+    }
+
+    // 編輯映射
+    function editMapping(labelId) {
+      currentEditingId = labelId;
+      const label = labels.find(l => l.id === labelId);
+      const mapping = mappings[labelId];
+
+      document.getElementById('modalTitle').textContent = `編輯: ${label.text}`;
+      document.getElementById('labelInfo').innerHTML = `
+        <strong>${label.text}</strong><br/>
+        <span style="color: #666;">${label.chinese}</span>
+      `;
+      document.getElementById('labelPosition').value = mapping.position;
+      document.getElementById('pointsTo').value = mapping.pointsTo;
+      document.getElementById('structureId').value = mapping.structureId;
+      document.getElementById('notes').value = mapping.notes;
+
+      document.getElementById('editModal').classList.add('active');
+      renderLabelList();
+    }
+
+    // 保存映射
+    function saveMapping() {
+      if (currentEditingId === null) return;
+
+      const mapping = mappings[currentEditingId];
+      mapping.position = document.getElementById('labelPosition').value;
+      mapping.pointsTo = document.getElementById('pointsTo').value;
+      mapping.structureId = document.getElementById('structureId').value;
+      mapping.notes = document.getElementById('notes').value;
+      mapping.mapped = !!(mapping.position || mapping.pointsTo);
+
+      closeModal();
+      renderLabelList();
+    }
+
+    // 關閉對話框
+    function closeModal() {
+      document.getElementById('editModal').classList.remove('active');
+      currentEditingId = null;
+      renderLabelList();
+    }
+
+    // 更新進度
+    function updateProgress() {
+      const mapped = Object.values(mappings).filter(m => m.mapped).length;
+      const total = labels.length;
+      const percentage = Math.round((mapped / total) * 100);
+
+      document.getElementById('progressText').textContent = `已配對: ${mapped} / ${total}`;
+      document.getElementById('progressPercent').textContent = `${percentage}%`;
+      document.getElementById('progressFill').style.width = `${percentage}%`;
+    }
+
+    // 匯出結果
+    function exportMapping() {
+      const data = {
+        timestamp: new Date().toISOString(),
+        totalLabels: labels.length,
+        mappedCount: Object.values(mappings).filter(m => m.mapped).length,
+        labels: Object.values(mappings)
+      };
+
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `eye-label-mapping-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      alert('配對結果已匯出！');
+    }
+
+    // 頁面加載
+    window.addEventListener('DOMContentLoaded', initializeMapping);
+  </script>
+</body>
+</html>
