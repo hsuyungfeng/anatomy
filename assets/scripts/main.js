@@ -1197,6 +1197,11 @@ class MedicalRecordApp {
     const modal = $('#disease-modal');
     const overlay = $('#modal-overlay');
 
+    // 在隱藏模態視窗前，清除焦點以避免 aria-hidden 衝突
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+
     if (modal) {
       modal.setAttribute('aria-hidden', 'true');
     }

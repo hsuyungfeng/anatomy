@@ -319,6 +319,12 @@ class DiseaseVisualizationManager {
         return;
       }
 
+      // 只處理牙齒系統的標註（跳過眼睛等其他系統）
+      if (annotation.structureId || !annotation.fdiNumber) {
+        // 這是眼睛系統或其他非牙齒系統的標註，跳過
+        return;
+      }
+
       // 獲取牙齒位置
       const toothPos = this.getToothPosition(annotation.locationName);
       if (!toothPos) {
