@@ -796,6 +796,146 @@ console.log(document.getElementById('diseaseList'));  // 檢查 DOM
 
 ---
 
+## 🎯 Phase 6+ 眼睛系統功能改進計畫
+
+### Task 6B: 修復病例列表保存問題 ✅ 已完成
+
+#### 🎯 實現的功能
+
+**1. 保存邏輯完善 ✅**
+- ✅ 增強 `saveDiseaseAnnotation()` 方法支持眼睛系統
+- ✅ 添加眼睛結構信息驗證
+- ✅ 支持眼睛系統和牙齒系統的差異化保存
+
+**2. 本地存儲實現 ✅**
+- ✅ 實現 `saveMedicalRecord()` 方法 - 保存記錄到 localStorage
+- ✅ 實現 `loadMedicalRecords()` 方法 - 從 localStorage 加載記錄
+- ✅ 實現 `loadAndDisplayRecords()` 方法 - 更新病例列表顯示
+
+**3. 錯誤處理與日誌 ✅**
+- ✅ 添加完整的錯誤處理機制
+- ✅ 詳細的調試日誌輸出 (每步都有日誌)
+- ✅ 用戶提示信息改進
+
+#### 實現詳情
+
+**修改的方法：`saveDiseaseAnnotation()`**
+
+```javascript
+// 支持眼睛系統的完整保存流程
+1. 驗證表單初始化
+2. 驗證疾病選擇
+3. 根據系統類型構建標註對象
+   - 眼睛系統：包含結構ID、側眼、結構類型等
+   - 牙齒系統：包含FDI編號、象限等
+4. 保存到記錄管理器（內存）
+5. 保存到本地存儲（持久化）  ← 新增
+6. 添加視覺標註到圖像
+7. 更新疾病可視化
+8. 關閉模態視窗
+9. 更新病例列表
+10. 顯示成功提示
+```
+
+**新增的方法：**
+
+```javascript
+// 1. saveMedicalRecord(record) - 保存到 localStorage
+// 功能：將醫療記錄持久化到瀏覽器存儲
+// 存儲鍵：'medicalRecords'
+// 返回：boolean
+
+// 2. loadMedicalRecords() - 從 localStorage 加載
+// 功能：讀取已保存的所有醫療記錄
+// 返回：Record[] 或 []
+
+// 3. loadAndDisplayRecords() - 更新列表顯示
+// 功能：加載記錄並更新 UI 中的列表視圖
+// 返回：Promise<Record[]>
+```
+
+#### 核心修改點
+
+**眼睛系統標註對象結構：**
+```javascript
+{
+  annotationId: UUID,
+  position: {x, y},
+
+  // 眼睛專用字段
+  locationName: "角膜",           // 中文名稱
+  locationNameEn: "cornea",      // 英文名稱
+  structureId: "left-eye-cornea", // 結構ID
+  structureType: "cornea",        // 結構類型
+  side: "left",                    // left/right/bilateral
+
+  // 通用字段
+  detectionConfidence: 1.0,
+  fromLabel: true,
+  diseases: [...],
+  treatmentNotes: "...",
+  createdAt: "ISO string",
+  updatedAt: "ISO string"
+}
+```
+
+**localStorage 存儲格式：**
+```javascript
+localStorage.getItem('medicalRecords')
+// 返回：JSON 字串，包含所有保存的醫療記錄數組
+```
+
+#### 測試保存功能步驟
+
+**a) 開啟瀏覽器開發工具：** F12
+
+**b) 進行保存測試：**
+1. 點擊「眼睛系統」標籤頁
+2. 點擊「左眼」或按鈕選擇一個眼睛結構（如 Cornea）
+3. 在疾病表單中選擇一種疾病
+4. 點擊「儲存」按鈕
+5. 檢查控制台日誌：
+   - [saveDiseaseAnnotation] 眼睛系統記錄
+   - [saveMedicalRecord] 已保存醫療記錄
+   - ✅ 成功提示信息
+
+**c) 驗證數據持久化：**
+- 打開瀏覽器開發工具 → Storage → Local Storage
+- 檢查 `medicalRecords` 鍵
+- 應能看到 JSON 數組，包含保存的記錄
+
+**d) 驗證持久性（重要）：**
+- 保存一筆眼睛病例
+- 刷新頁面 (F5)
+- 打開開發工具檢查 localStorage
+- 記錄應仍然存在
+
+#### 📊 修改文件統計
+
+| 文件 | 變更 | 行數 |
+|------|------|------|
+| `assets/scripts/main.js` | 增強 saveDiseaseAnnotation；新增 3 個方法 | +258 |
+
+#### ✅ 驗證結果
+
+- ✅ JavaScript 語法檢查通過
+- ✅ 所有 3 個新方法實現完成
+- ✅ 眼睛系統保存邏輯完善
+- ✅ localStorage 持久化完整
+- ✅ 錯誤處理和日誌完善
+- ✅ Git 提交成功
+
+#### 🔄 功能驗證清單
+
+- [ ] 眼睛病例能正確保存到 localStorage
+- [ ] 牙齒病例保存功能未受影響
+- [ ] 保存後顯示成功提示
+- [ ] 模態視窗正確關閉
+- [ ] 刷新後記錄仍然存在
+- [ ] 沒有 JavaScript 錯誤
+
+---
+
 ## 🎯 Phase 6+ 簡化眼睛標籤面板系統
 
 ### Task 3: 眼睛標籤面板顯示/隱藏邏輯 ✅ 已完成
