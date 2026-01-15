@@ -697,8 +697,8 @@ class MedicalRecordApp {
       });
     });
 
-    // 更新疾病可視化
-    if (this.diseaseVisualizer) {
+    // 更新疾病可視化（僅限牙齒系統）
+    if (this.diseaseVisualizer && systemId === 'teeth') {
       this.diseaseVisualizer.render(annotations);
     }
 
@@ -1495,8 +1495,8 @@ class MedicalRecordApp {
       });
       console.log('[saveDiseaseAnnotation] 已添加視覺標註到圖像');
 
-      // 更新疾病可視化
-      if (this.diseaseVisualizer) {
+      // 更新疾病可視化（僅限牙齒系統）
+      if (this.diseaseVisualizer && this.currentSystemId === 'teeth') {
         const annotations = this.recordManager.getAnnotationsBySystem(this.currentSystemId);
         this.diseaseVisualizer.render(annotations);
         console.log('[saveDiseaseAnnotation] 已更新疾病可視化');
