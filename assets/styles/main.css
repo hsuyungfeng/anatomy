@@ -1264,17 +1264,29 @@ body {
   background: #f9f9f9;
 }
 
-.record-item__timestamp {
-  font-weight: 600;
+.record-item__title {
+  font-weight: 700;
   color: #0066cc;
   margin-bottom: 6px;
-  font-size: 0.85em;
+  font-size: 0.95em;
+}
+
+.record-item__side {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.record-item__timestamp {
+  font-size: 0.8em;
+  color: #999;
   font-family: 'Courier New', monospace;
+  margin-bottom: 8px;
 }
 
 .record-item__disease {
   color: #333;
-  margin-bottom: 4px;
+  margin: 6px 0;
   font-weight: 500;
 }
 

@@ -1369,7 +1369,7 @@ class MedicalRecordApp {
   /**
    * 保存疾病標註
    */
-  saveDiseaseAnnotation() {
+  async saveDiseaseAnnotation() {
     // 收集表單資料
     if (!this.diseaseForm) {
       console.error('[saveDiseaseAnnotation] 表單未初始化');
@@ -1792,6 +1792,37 @@ class MedicalRecordApp {
   }
 
   /**
+   * 修復舊格式的醫療記錄
+   * @param {Array} records - 原始記錄陣列
+   * @returns {Array} 修復後的記錄陣列
+   */
+  fixLegacyRecords(records) {
+    return records.map(record => {
+      // 修復疾病數據格式
+      if (Array.isArray(record.diseases) && record.diseases.length > 0) {
+        // 如果疾病是陣列，取第一項
+        const firstDisease = record.diseases[0];
+        if (typeof firstDisease === 'object' && !firstDisease.name) {
+          // 如果疾病對象結構不完整，嘗試修復
+          console.warn('[fixLegacyRecords] 發現不完整的疾病對象:', firstDisease);
+        }
+      }
+
+      // 修復時間戳格式
+      if (!record.timestamp && record.createdAt) {
+        record.timestamp = record.createdAt;
+      }
+
+      // 確保眼睛系統記錄有 side 信息
+      if (record.structureId && !record.side) {
+        record.side = this.getStructureSide(record.structureId);
+      }
+
+      return record;
+    });
+  }
+
+  /**
    * 渲染分組的病例列表
    * @param {Array} groupedRecords - 分組後的病例陣列
    */
@@ -1849,16 +1880,45 @@ class MedicalRecordApp {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'record-item';
 
-        const timestamp = this.formatTimestamp(record.createdAt);
-        const diseaseText = record.diseases && record.diseases.length > 0 ?
-          record.diseases.map(d => d.name).join(', ') :
-          '（無疾病信息）';
+        const timestamp = this.formatTimestamp(record.createdAt || record.timestamp);
+
+        // 處理疾病信息 - 只顯示第一個疾病，而不是所有疾病
+        let diseaseText = '';
+        if (record.diseases && Array.isArray(record.diseases)) {
+          if (record.diseases.length > 0) {
+            const disease = record.diseases[0];  // 只取第一個疾病
+            if (typeof disease === 'object' && disease.name) {
+              diseaseText = disease.name;
+              if (disease.id) {
+                diseaseText += ` (${disease.id})`;
+              }
+            } else if (typeof disease === 'string') {
+              diseaseText = disease;
+            }
+          }
+        }
+
         const notes = record.treatmentNotes || '';
 
-        let html = `
-          <div class="record-item__timestamp">⏰ ${timestamp}</div>
-          <div class="record-item__disease">🏥 ${diseaseText}</div>
-        `;
+        // 構建 HTML - 包含結構名稱和眼睛位置
+        let html = `<div class="record-item__title">${record.locationName}`;
+
+        // 為眼睛系統添加側眼信息
+        if (record.side && record.side !== 'tooth') {
+          const sideLabel = record.side === 'left' ? '左眼' :
+                           record.side === 'right' ? '右眼' :
+                           record.side === 'bilateral' ? '雙眼' : '';
+          if (sideLabel) {
+            html += ` <span class="record-item__side">(${sideLabel})</span>`;
+          }
+        }
+        html += `</div>`;
+        html += `<div class="record-item__timestamp">⏰ ${timestamp}</div>`;
+
+        // 只顯示一個疾病
+        if (diseaseText) {
+          html += `<div class="record-item__disease">🏥 ${diseaseText}</div>`;
+        }
 
         if (notes) {
           html += `<div class="record-item__notes">📝 ${notes}</div>`;
@@ -1881,7 +1941,7 @@ class MedicalRecordApp {
   async loadAndDisplayRecords() {
     try {
       // 加載所有記錄
-      const records = this.loadMedicalRecords();
+      let records = this.loadMedicalRecords();
 
       if (!records || records.length === 0) {
         const container = document.getElementById('record-list-container');
@@ -1891,6 +1951,13 @@ class MedicalRecordApp {
         console.log('[loadAndDisplayRecords] 沒有病例記錄');
         return;
       }
+
+      // 修復舊格式的記錄
+      records = this.fixLegacyRecords(records);
+
+      // 重新保存修復後的記錄
+      localStorage.setItem('medicalRecords', JSON.stringify(records));
+      console.log('[loadAndDisplayRecords] 已修復舊格式記錄並重新保存');
 
       // 分組
       const groupedRecords = this.groupRecordsByStructure(records);
