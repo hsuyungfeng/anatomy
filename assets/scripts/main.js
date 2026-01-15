@@ -46,7 +46,10 @@ class MedicalRecordApp {
       // 載入初始圖像
       await this.loadSystemImage(this.currentSystemId);
 
-      console.log('應用初始化完成');
+      // 初始加載病例列表（分組顯示）
+      await this.loadAndDisplayRecords();
+
+      console.log('應用初始化完成，病例列表已加載');
       dispatchEvent('app:ready');
     } catch (error) {
       console.error('應用初始化失敗:', error);
@@ -1491,10 +1494,10 @@ class MedicalRecordApp {
         console.log('[saveDiseaseAnnotation] 已更新疾病可視化');
       }
 
-      // 關閉模態並更新列表
+      // 關閉模態並重新加載病例列表（使用分組功能）
       this.closeDiseaseModal();
-      this.updateRecordList(this.currentSystemId);
-      console.log('[saveDiseaseAnnotation] 已關閉模態視窗並更新列表');
+      await this.loadAndDisplayRecords();
+      console.log('[saveDiseaseAnnotation] 已關閉模態視窗並重新加載分組病例列表');
 
       // 顯示成功提示
       if (this.currentSystemId === 'eye') {
@@ -1696,82 +1699,212 @@ class MedicalRecordApp {
   }
 
   /**
-   * 加載並顯示病例記錄
-   * 此方法用於更新病例列表的顯示
+   * 按結構位置對病例進行分組
+   * @param {Array} records - 所有病例記錄
+   * @returns {Array} 分組後的病例組 (依降序排列)
+   */
+  groupRecordsByStructure(records) {
+    const grouped = {};
+
+    // 按 structureId 分組
+    records.forEach(record => {
+      // 區分牙齒和眼睛系統
+      let groupKey = '';
+      let structureId = '';
+      let structureName = '';
+      let structureSide = '';
+
+      if (record.fdiNumber) {
+        // 牙齒系統：按 FDI 編號分組
+        groupKey = record.fdiNumber || record.locationName;
+        structureId = groupKey;
+        structureName = record.locationName;
+        structureSide = 'tooth';
+      } else if (record.structureId) {
+        // 眼睛系統：按 structureId 分組
+        groupKey = record.structureId;
+        structureId = record.structureId;
+        structureName = record.locationName;
+        structureSide = record.side;
+      } else {
+        // 其他系統：按 locationName 分組
+        groupKey = record.locationName;
+        structureId = groupKey;
+        structureName = record.locationName;
+        structureSide = 'other';
+      }
+
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = {
+          structureId,
+          structureName,
+          structureSide,
+          records: []
+        };
+      }
+
+      grouped[groupKey].records.push(record);
+    });
+
+    // 每組內按時間排序（最新在前）
+    Object.values(grouped).forEach(group => {
+      group.records.sort((a, b) => {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+    });
+
+    // 轉換為陣列並依據最新記錄排序
+    const groupedArray = Object.values(grouped);
+    groupedArray.sort((a, b) => {
+      const latestA = new Date(a.records[0].createdAt || 0);
+      const latestB = new Date(b.records[0].createdAt || 0);
+      return latestB - latestA;
+    });
+
+    return groupedArray;
+  }
+
+  /**
+   * 格式化 ISO 時間戳為可讀格式
+   * @param {string} isoString - ISO 格式的時間戳 (如 "2026-01-15T10:30:45.000Z")
+   * @returns {string} 格式化後的時間字符串 (如 "2026-01-15 10:30:45")
+   */
+  formatTimestamp(isoString) {
+    try {
+      const date = new Date(isoString);
+
+      if (isNaN(date.getTime())) {
+        return '無效的時間戳';
+      }
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    } catch (error) {
+      console.error('[formatTimestamp] 格式化失敗:', error);
+      return '時間戳格式化錯誤';
+    }
+  }
+
+  /**
+   * 渲染分組的病例列表
+   * @param {Array} groupedRecords - 分組後的病例陣列
+   */
+  renderGroupedRecords(groupedRecords) {
+    const container = document.getElementById('record-list-container');
+    if (!container) {
+      console.warn('[renderGroupedRecords] 找不到 record-list-container 容器');
+      return;
+    }
+
+    // 清空現有內容
+    container.innerHTML = '';
+
+    if (!groupedRecords || groupedRecords.length === 0) {
+      container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
+      return;
+    }
+
+    // 為每個結構群組創建 HTML
+    groupedRecords.forEach(group => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'record-group';
+
+      // 群組標題
+      const headerDiv = document.createElement('h4');
+      headerDiv.className = 'record-group__header';
+
+      let sideText = '';
+      if (group.structureSide === 'left') {
+        sideText = '左眼';
+      } else if (group.structureSide === 'right') {
+        sideText = '右眼';
+      } else if (group.structureSide === 'bilateral') {
+        sideText = '雙眼';
+      } else if (group.structureSide === 'tooth') {
+        sideText = '';
+      } else {
+        sideText = '其他';
+      }
+
+      const sideBadge = sideText ? `<span class="structure-location">${sideText}</span>` : '';
+
+      headerDiv.innerHTML = `
+        <span class="structure-name">${group.structureName}</span>
+        ${sideBadge}
+      `;
+      groupDiv.appendChild(headerDiv);
+
+      // 記錄項目容器
+      const itemsDiv = document.createElement('div');
+      itemsDiv.className = 'record-group__items';
+
+      // 為每筆記錄創建項目
+      group.records.forEach((record) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'record-item';
+
+        const timestamp = this.formatTimestamp(record.createdAt);
+        const diseaseText = record.diseases && record.diseases.length > 0 ?
+          record.diseases.map(d => d.name).join(', ') :
+          '（無疾病信息）';
+        const notes = record.treatmentNotes || '';
+
+        let html = `
+          <div class="record-item__timestamp">⏰ ${timestamp}</div>
+          <div class="record-item__disease">🏥 ${diseaseText}</div>
+        `;
+
+        if (notes) {
+          html += `<div class="record-item__notes">📝 ${notes}</div>`;
+        }
+
+        itemDiv.innerHTML = html;
+        itemsDiv.appendChild(itemDiv);
+      });
+
+      groupDiv.appendChild(itemsDiv);
+      container.appendChild(groupDiv);
+    });
+
+    console.log(`[renderGroupedRecords] 已渲染 ${groupedRecords.length} 個結構群組的病例`);
+  }
+
+  /**
+   * 加載並顯示分組的病例記錄
    */
   async loadAndDisplayRecords() {
     try {
+      // 加載所有記錄
       const records = this.loadMedicalRecords();
-      console.log(`[loadAndDisplayRecords] 已加載 ${records.length} 筆記錄`);
 
-      // 如果有記錄列表容器，更新顯示
-      const container = $('#record-list-container');
-      if (container && records.length > 0) {
-        // 按日期降序排列（最新的在上）
-        const sortedRecords = [...records].sort((a, b) => {
-          const dateA = new Date(a.createdAt || 0);
-          const dateB = new Date(b.createdAt || 0);
-          return dateB - dateA;
-        });
-
-        let html = '<div class="disease-timeline">';
-
-        sortedRecords.forEach((record, index) => {
-          const diseaseList = (record.diseases || [])
-            .map(d => `<span class="disease-tag">${d.name}</span>`)
-            .join('');
-
-          const date = new Date(record.createdAt || new Date());
-          const dateStr = date.toLocaleDateString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-
-          // 根據系統類型顯示不同的信息
-          let locationDisplay = record.locationName;
-          if (record.fdiNumber) {
-            locationDisplay += ` <span class="fdi-badge">FDI: ${record.fdiNumber}</span>`;
-          }
-          if (record.side) {
-            const sideText = record.side === 'left' ? '左眼' : record.side === 'right' ? '右眼' : '雙眼';
-            locationDisplay += ` <span class="side-badge">${sideText}</span>`;
-          }
-
-          html += `
-            <div class="timeline-item ${index === 0 ? 'timeline-item--latest' : ''}">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content">
-                <div class="timeline-header">
-                  <h4 class="timeline-location">${locationDisplay}</h4>
-                  <span class="timeline-date">${dateStr}</span>
-                </div>
-                <div class="timeline-diseases">
-                  ${diseaseList}
-                </div>
-                ${record.treatmentNotes ? `
-                  <div class="timeline-notes">
-                    <strong>療程摘要：</strong>
-                    <p>${record.treatmentNotes}</p>
-                  </div>
-                ` : ''}
-              </div>
-            </div>
-          `;
-        });
-
-        html += '</div>';
-        container.innerHTML = html;
-
-        console.log('[loadAndDisplayRecords] 已更新病例列表顯示');
+      if (!records || records.length === 0) {
+        const container = document.getElementById('record-list-container');
+        if (container) {
+          container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
+        }
+        console.log('[loadAndDisplayRecords] 沒有病例記錄');
+        return;
       }
 
-      return records;
+      // 分組
+      const groupedRecords = this.groupRecordsByStructure(records);
+
+      // 渲染
+      this.renderGroupedRecords(groupedRecords);
+
+      console.log(`[loadAndDisplayRecords] 已加載 ${records.length} 筆病例，分為 ${groupedRecords.length} 個結構群組`);
     } catch (error) {
-      console.error('[loadAndDisplayRecords] 列表更新失敗:', error);
-      return [];
+      console.error('[loadAndDisplayRecords] 加載失敗:', error);
+      const container = document.getElementById('record-list-container');
+      if (container) {
+        container.innerHTML = '<p class="empty-message">病例加載失敗</p>';
+      }
     }
   }
 }

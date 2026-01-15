@@ -1182,6 +1182,134 @@ body {
     }
 }
 
+/* ===== 病例分組列表 ===== */
+.medical-records {
+  padding: 20px;
+  background: white;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.medical-records h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #333;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 病例分組 */
+.record-group {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.record-group__header {
+  margin: 0;
+  padding: 12px 15px;
+  background: #e8f4f8;
+  border-bottom: 2px solid #0066cc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #333;
+}
+
+.structure-name {
+  font-weight: 700;
+  color: #0066cc;
+  font-size: 1em;
+}
+
+.structure-location {
+  background: #0066cc;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.record-group__items {
+  background: white;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* 單條記錄 */
+.record-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9em;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-item:hover {
+  background: #f9f9f9;
+}
+
+.record-item__timestamp {
+  font-weight: 600;
+  color: #0066cc;
+  margin-bottom: 6px;
+  font-size: 0.85em;
+  font-family: 'Courier New', monospace;
+}
+
+.record-item__disease {
+  color: #333;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.record-item__notes {
+  color: #666;
+  font-size: 0.85em;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 30px 20px;
+  font-size: 0.9em;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+  .medical-records {
+    max-height: calc(100vh - 250px);
+  }
+
+  .record-group__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .structure-location {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
 /* ===== 列印樣式 ===== */
 @media print {
   .app__header,
