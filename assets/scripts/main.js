@@ -378,6 +378,9 @@ class MedicalRecordApp {
       });
       await this.diseaseForm.render();
     } else if (this.diseaseForm) {
+      // 重置表單以清除之前的選擇
+      this.diseaseForm.reset();
+
       if (this.diseaseForm.systemId !== diseaseSystemId) {
         this.diseaseForm.systemId = diseaseSystemId;
         this.diseaseForm.diseases = [];
