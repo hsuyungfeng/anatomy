@@ -1707,6 +1707,33 @@ class MedicalRecordApp {
   }
 
   /**
+   * 按系統 ID 過濾病例記錄
+   * @param {Array} records - 所有病例記錄
+   * @param {string} systemId - 系統 ID ('eye' 或 'teeth')
+   * @returns {Array} 過濾後的病例記錄
+   */
+  filterRecordsBySystem(records, systemId) {
+    if (!records || records.length === 0) {
+      return [];
+    }
+
+    // 根據系統 ID 過濾記錄
+    const filtered = records.filter(record => {
+      if (systemId === 'eye') {
+        // 眼睛系統：有 structureId 或 side，沒有 fdiNumber
+        return record.structureId || (record.side && !record.fdiNumber);
+      } else if (systemId === 'teeth') {
+        // 牙齒系統：有 fdiNumber 或 universalNumber
+        return record.fdiNumber || record.universalNumber;
+      }
+      return false;
+    });
+
+    console.log(`[filterRecordsBySystem] 從 ${records.length} 筆記錄中過濾出 ${filtered.length} 筆${systemId}系統的記錄`);
+    return filtered;
+  }
+
+  /**
    * 按結構位置對病例進行分組
    * @param {Array} records - 所有病例記錄
    * @returns {Array} 分組後的病例組 (依降序排列)
@@ -1949,9 +1976,9 @@ class MedicalRecordApp {
   async loadAndDisplayRecords() {
     try {
       // 加載所有記錄
-      let records = this.loadMedicalRecords();
+      let allRecords = this.loadMedicalRecords();
 
-      if (!records || records.length === 0) {
+      if (!allRecords || allRecords.length === 0) {
         const container = document.getElementById('record-list-container');
         if (container) {
           container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
@@ -1961,11 +1988,23 @@ class MedicalRecordApp {
       }
 
       // 修復舊格式的記錄
-      records = this.fixLegacyRecords(records);
+      allRecords = this.fixLegacyRecords(allRecords);
 
       // 重新保存修復後的記錄
-      localStorage.setItem('medicalRecords', JSON.stringify(records));
+      localStorage.setItem('medicalRecords', JSON.stringify(allRecords));
       console.log('[loadAndDisplayRecords] 已修復舊格式記錄並重新保存');
+
+      // 按當前系統過濾記錄（只顯示該系統的記錄）
+      let records = this.filterRecordsBySystem(allRecords, this.currentSystemId);
+
+      if (!records || records.length === 0) {
+        const container = document.getElementById('record-list-container');
+        if (container) {
+          container.innerHTML = `<p class="empty-message">暫無${this.currentSystemId === 'eye' ? '眼睛' : '牙齒'}系統的病例記錄</p>`;
+        }
+        console.log(`[loadAndDisplayRecords] 沒有${this.currentSystemId}系統的病例記錄`);
+        return;
+      }
 
       // 分組
       const groupedRecords = this.groupRecordsByStructure(records);
@@ -1973,7 +2012,7 @@ class MedicalRecordApp {
       // 渲染
       this.renderGroupedRecords(groupedRecords);
 
-      console.log(`[loadAndDisplayRecords] 已加載 ${records.length} 筆病例，分為 ${groupedRecords.length} 個結構群組`);
+      console.log(`[loadAndDisplayRecords] 已加載 ${records.length} 筆${this.currentSystemId}系統的病例，分為 ${groupedRecords.length} 個結構群組`);
     } catch (error) {
       console.error('[loadAndDisplayRecords] 加載失敗:', error);
       const container = document.getElementById('record-list-container');
