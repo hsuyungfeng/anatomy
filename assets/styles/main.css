@@ -1081,59 +1081,6 @@ body {
   line-height: 1.5;
 }
 
-/* ===== Eye Selection UI ===== */
-.eye-selector-container {
-    margin-bottom: var(--spacing-md);
-    display: none;
-}
-
-.eye-selector-container--visible {
-    display: block;
-}
-
-.eye-selector {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin: var(--spacing-sm) 0;
-    justify-content: center;
-}
-
-.eye-btn {
-    padding: 10px 20px;
-    border: 2px solid #ccc;
-    background: #f5f5f5;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all var(--transition-base);
-    font-family: inherit;
-}
-
-.eye-btn:hover {
-    border-color: var(--color-primary);
-    background: #e8f0ff;
-}
-
-.eye-btn.active {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
-    color: white;
-    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
-}
-
-@media (max-width: 480px) {
-    .eye-selector {
-        gap: var(--spacing-xs);
-        margin: var(--spacing-xs) 0;
-    }
-
-    .eye-btn {
-        padding: 8px 16px;
-        font-size: 12px;
-    }
-}
-
 /* ===== 圖像查看器佈局 ===== */
 .image-viewer-wrapper {
     display: grid;
