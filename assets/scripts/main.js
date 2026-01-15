@@ -220,6 +220,9 @@ class MedicalRecordApp {
 
     // 設置眼睛標籤按鈕事件監聽
     this.setupEyeLabelButtonListeners();
+
+    // 設置身體部位按鈕事件監聽
+    this.setupBodyRegionButtonListeners();
   }
 
   /**
@@ -551,6 +554,13 @@ class MedicalRecordApp {
       this.toggleEyeInfoPanel(true);
     } else {
       this.toggleEyeInfoPanel(false);
+    }
+
+    // 顯示或隱藏身體部位選擇面板
+    if (systemId === 'body') {
+      this.toggleBodyRegionPanel(true);
+    } else {
+      this.toggleBodyRegionPanel(false);
     }
 
     // 初始化疾病表單（當系統切換時）
@@ -2021,7 +2031,443 @@ class MedicalRecordApp {
       }
     }
   }
+  // ===================================================
+  // 身體系統 (Body System) 實現
+  // ===================================================
+
+  /**
+   * 初始化身體部位按鈕事件監聽
+   */
+  setupBodyRegionButtonListeners() {
+    document.querySelectorAll('.body-region-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bodyPart = btn.dataset.bodyPart;
+        const side = btn.dataset.side;
+
+        // 移除舊選擇
+        document.querySelectorAll('.body-region-btn')
+          .forEach(b => b.classList.remove('selected'));
+
+        // 標記新選擇
+        btn.classList.add('selected');
+
+        // 打開疾病記錄模態視窗
+        this.openDiseaseModalWithBodyRegion({
+          bodyPart,
+          side
+        });
+      });
+    });
+    console.log('[setupBodyRegionButtonListeners] 身體部位按鈕事件已初始化');
+  }
+
+  /**
+   * 打開疾病記錄模態，顯示身體部位信息
+   */
+  openDiseaseModalWithBodyRegion(regionInfo) {
+    try {
+      // 構建結構信息對象
+      const structureInfo = {
+        type: 'body',
+        bodyPart: regionInfo.bodyPart,
+        side: regionInfo.side,
+        nameZh: this.getChineseBodyRegionName(regionInfo.bodyPart, regionInfo.side),
+        nameEn: this.getEnglishBodyRegionName(regionInfo.bodyPart, regionInfo.side)
+      };
+
+      // 顯示身體結構信息
+      this.displayBodyStructureInfo(structureInfo);
+
+      // 動態加載該部位的常見疾病
+      this.loadBodyRegionDiseases(regionInfo.bodyPart);
+
+      // 存儲當前選擇
+      this.currentBodyRegion = regionInfo;
+
+      // 打開模態視窗
+      this.diseaseModal.style.display = 'block';
+      this.modalOverlay.classList.add('visible');
+      this.diseaseModal.setAttribute('aria-hidden', 'false');
+
+      console.log('[openDiseaseModalWithBodyRegion] 已打開疾病模態，選擇:', regionInfo);
+    } catch (error) {
+      console.error('[openDiseaseModalWithBodyRegion] 打開失敗:', error);
+    }
+  }
+
+  /**
+   * 顯示身體結構信息（在疾病模態中）
+   */
+  displayBodyStructureInfo(regionInfo) {
+    const infoContainer = document.getElementById('disease-structure-info');
+    if (!infoContainer) return;
+
+    infoContainer.innerHTML = `
+      <div class="body-structure-info">
+        <div class="info-title">身體位置</div>
+        <div class="info-item">
+          <strong>部位：</strong> ${regionInfo.nameZh}
+        </div>
+        <div class="info-item">
+          <strong>English：</strong> ${regionInfo.nameEn}
+        </div>
+        <div class="info-item">
+          <strong>側邊：</strong> ${regionInfo.side === 'mid' ? '中線' : (regionInfo.side === 'left' ? '左側' : '右側')}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 動態加載身體部位常見疾病
+   */
+  async loadBodyRegionDiseases(bodyPart) {
+    try {
+      // 加載 body-systems.json
+      if (!this.bodySystemsData) {
+        const response = await fetch('/data/body-systems.json');
+        this.bodySystemsData = await response.json();
+      }
+
+      // 查找身體部位
+      const region = this.bodySystemsData.bodyRegions.find(r => r.id === bodyPart);
+      if (!region) {
+        console.warn('[loadBodyRegionDiseases] 找不到部位:', bodyPart);
+        return;
+      }
+
+      // 獲取容器
+      const skinContainer = document.getElementById('skinDiseases');
+      const subContainer = document.getElementById('subDiseases');
+
+      // 清空舊內容
+      if (skinContainer) skinContainer.innerHTML = '';
+      if (subContainer) subContainer.innerHTML = '';
+
+      // 填入表皮疾病
+      if (region.commonDiseases.skin && skinContainer) {
+        region.commonDiseases.skin.forEach(disease => {
+          skinContainer.innerHTML += `
+            <label>
+              <input type="checkbox" value="${disease}"> ${disease}
+            </label><br>
+          `;
+        });
+      }
+
+      // 填入皮下疾病
+      if (region.commonDiseases.subcutaneous && subContainer) {
+        region.commonDiseases.subcutaneous.forEach(disease => {
+          subContainer.innerHTML += `
+            <label>
+              <input type="checkbox" value="${disease}"> ${disease}
+            </label><br>
+          `;
+        });
+      }
+
+      console.log('[loadBodyRegionDiseases] 已加載', bodyPart, '的疾病列表');
+    } catch (error) {
+      console.error('[loadBodyRegionDiseases] 加載失敗:', error);
+    }
+  }
+
+  /**
+   * 取得中文身體部位名稱
+   */
+  getChineseBodyRegionName(bodyPart, side) {
+    const nameMap = {
+      'head-mid': '頭部',
+      'neck-mid': '頸部',
+      'chest-mid': '胸部',
+      'abdomen-mid': '腹部',
+      'arm-left': '左臂',
+      'arm-right': '右臂',
+      'leg-left': '左腿',
+      'leg-right': '右腿'
+    };
+    return nameMap[`${bodyPart}-${side}`] || bodyPart;
+  }
+
+  /**
+   * 取得英文身體部位名稱
+   */
+  getEnglishBodyRegionName(bodyPart, side) {
+    const nameMap = {
+      'head-mid': 'Head',
+      'neck-mid': 'Neck',
+      'chest-mid': 'Chest',
+      'abdomen-mid': 'Abdomen',
+      'arm-left': 'Left Arm',
+      'arm-right': 'Right Arm',
+      'leg-left': 'Left Leg',
+      'leg-right': 'Right Leg'
+    };
+    return nameMap[`${bodyPart}-${side}`] || bodyPart;
+  }
+
+  /**
+   * 保存身體系統疾病記錄
+   */
+  saveDiseaseAnnotation(annotation) {
+    if (this.currentSystemId !== 'body') {
+      console.warn('[saveDiseaseAnnotation] 非身體系統，操作被略過');
+      return;
+    }
+
+    try {
+      // 蒐集選中的疾病並轉換為 ICD-10
+      const selectedDiseases = [
+        ...document.querySelectorAll('#diseaseArea input:checked')
+      ].map(input => ({
+        name: input.value,
+        icd10: this.bodyDiseaseICD[input.value] || 'UNKNOWN'
+      }));
+
+      // 構建完整的身體標註對象
+      const fullAnnotation = {
+        annotationId: this.generateUUID(),
+
+        // 身體系統專用欄位
+        bodyPart: this.currentBodyRegion.bodyPart,
+        side: this.currentBodyRegion.side,
+        nameZh: this.getChineseBodyRegionName(this.currentBodyRegion.bodyPart, this.currentBodyRegion.side),
+        nameEn: this.getEnglishBodyRegionName(this.currentBodyRegion.bodyPart, this.currentBodyRegion.side),
+
+        // 疾病信息
+        diseases: selectedDiseases,
+        treatmentNotes: document.getElementById('treatment-notes-input')?.value || '',
+
+        // 系統標識
+        system: 'body',
+
+        // 時間戳
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // 保存到記錄管理器
+      this.recordManager.addAnnotation(fullAnnotation);
+
+      // 保存到 localStorage
+      this.saveMedicalRecord(fullAnnotation);
+
+      // 更新 UI
+      this.loadAndDisplayRecords();
+
+      // 顯示成功提示
+      alert('✅ 身體系統病例已保存');
+
+      console.log('[saveDiseaseAnnotation] 身體系統記錄已保存:', fullAnnotation);
+    } catch (error) {
+      console.error('[saveDiseaseAnnotation] 保存失敗:', error);
+      alert('❌ 保存失敗，請重試');
+    }
+  }
+
+  /**
+   * 保存醫療記錄到 localStorage
+   */
+  saveMedicalRecord(record) {
+    try {
+      const records = this.loadMedicalRecords();
+      records.push(record);
+      localStorage.setItem('medicalRecords', JSON.stringify(records));
+      console.log('[saveMedicalRecord] 已保存到 localStorage');
+      return true;
+    } catch (error) {
+      console.error('[saveMedicalRecord] 保存失敗:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 從 localStorage 加載醫療記錄
+   */
+  loadMedicalRecords() {
+    try {
+      const data = localStorage.getItem('medicalRecords');
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('[loadMedicalRecords] 加載失敗:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 加載並顯示身體系統的病例
+   */
+  loadAndDisplayRecords() {
+    if (this.currentSystemId !== 'body') return;
+
+    try {
+      const allRecords = this.loadMedicalRecords();
+      const bodyRecords = this.filterRecordsBySystem(allRecords, 'body');
+
+      // 按身體部位分組
+      const groupedRecords = this.groupRecordsByBodyPart(bodyRecords);
+
+      this.displayBodyRecords(groupedRecords);
+      console.log('[loadAndDisplayRecords] 身體系統病例已加載');
+    } catch (error) {
+      console.error('[loadAndDisplayRecords] 加載失敗:', error);
+    }
+  }
+
+  /**
+   * 按身體部位分組病例
+   */
+  groupRecordsByBodyPart(records) {
+    const grouped = {};
+
+    records.forEach(record => {
+      const key = `${record.bodyPart}-${record.side}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          location: record.nameZh,
+          records: []
+        };
+      }
+      grouped[key].records.push(record);
+    });
+
+    // 按時間倒序排列
+    Object.keys(grouped).forEach(key => {
+      grouped[key].records.sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    });
+
+    return grouped;
+  }
+
+  /**
+   * 顯示身體系統病例列表
+   */
+  displayBodyRecords(groupedRecords) {
+    const container = document.getElementById('record-list-container');
+    if (!container) return;
+
+    let html = '';
+
+    Object.keys(groupedRecords).forEach(key => {
+      const group = groupedRecords[key];
+      html += `
+        <div class="record-group">
+          <h4 class="record-group-title">${group.location}</h4>
+          <div class="record-group-content">
+      `;
+
+      group.records.forEach(record => {
+        const diseaseList = record.diseases
+          .map(d => `${d.name} <span class="icd-code">[${d.icd10}]</span>`)
+          .join('、');
+
+        html += `
+          <div class="record-item">
+            <div class="record-time">
+              ${new Date(record.createdAt).toLocaleString('zh-Hant-TW')}
+            </div>
+            <div class="record-details">
+              <strong>疾病：</strong> ${diseaseList || '無'}<br>
+              <strong>備註：</strong> ${record.treatmentNotes || '—'}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html || '<p class="no-records">暫無身體系統病例記錄</p>';
+  }
+
+  /**
+   * 根據系統類型過濾記錄
+   */
+  filterRecordsBySystem(records, systemType) {
+    switch(systemType) {
+      case 'body':
+        return records.filter(r => r.system === 'body' || (r.bodyPart && r.side && !r.fdiNumber && !r.structureId));
+      case 'eye':
+        return records.filter(r => r.system === 'eye' || r.structureId || (r.side && ['left', 'right', 'bilateral'].includes(r.side)));
+      case 'tooth':
+        return records.filter(r => r.system === 'tooth' || r.fdiNumber);
+      default:
+        return [];
+    }
+  }
+
+  /**
+   * 控制身體系統面板顯示/隱藏
+   */
+  toggleBodyRegionPanel(visible = true) {
+    const panelContainer = document.getElementById('body-region-panel-container');
+    if (!panelContainer) {
+      console.warn('[toggleBodyRegionPanel] 找不到身體部位面板容器');
+      return;
+    }
+
+    if (visible) {
+      panelContainer.style.display = 'block';
+      console.log('[toggleBodyRegionPanel] 身體部位面板已顯示');
+    } else {
+      panelContainer.style.display = 'none';
+      console.log('[toggleBodyRegionPanel] 身體部位面板已隱藏');
+    }
+  }
 }
+
+// ICD-10 疾病代碼對照表（身體系統）
+const bodyDiseaseICD = {
+  '脂漏性皮膚炎': 'L21.9',
+  '頭皮癬': 'B35.0',
+  '毛囊炎': 'L73.9',
+  '痤瘡': 'L70.9',
+  '皮下囊腫': 'L72.9',
+  '血腫': 'T14.8',
+  '皮脂腺囊腫': 'L72.1',
+  '頸部皮炎': 'L23.9',
+  '扁平疣': 'B07.8',
+  '淋巴結腫大': 'R59.1',
+  '甲狀腺結節': 'E04.1',
+  '頸部膿腫': 'L02.1',
+  '濕疹': 'L30.9',
+  '帶狀疱疹': 'B02.9',
+  '接觸性皮膚炎': 'L25.9',
+  '乳頭濕疹': 'L30.1',
+  '脂肪瘤': 'D17.9',
+  '乳腺結節': 'N63',
+  '乳腺炎': 'N61',
+  '乳房膿腫': 'N61.1',
+  '蕁麻疹': 'L50.9',
+  '皮膚感染': 'L08.9',
+  '腹部皮炎': 'L23.9',
+  '色素沉著': 'L81.9',
+  '疝氣': 'K40.9',
+  '皮下膿瘍': 'L02.2',
+  '腹部腫塊': 'R19.0',
+  '蚊蟲叮咬': 'L30.2',
+  '蜂窩性組織炎': 'L03.9',
+  '皮膚真菌感染': 'B35.9',
+  '肌肉挫傷': 'S46.9',
+  '皮下血腫': 'T14.8',
+  '肌腱炎': 'M76.9',
+  '滑囊炎': 'M71.9',
+  '靜脈炎皮膚變化': 'I87.2',
+  '黴菌感染': 'B35.9',
+  '運動員腳': 'B35.3',
+  '深層靜脈栓塞': 'I82.4',
+  '肌肉拉傷': 'S76.9',
+  '膝蓋關節炎': 'M17.9',
+  '踝關節扭傷': 'S93.4'
+};
+
+// 將 ICD 對照表添加到 MedicalRecordApp 的原型
+MedicalRecordApp.prototype.bodyDiseaseICD = bodyDiseaseICD;
 
 // 應用啟動
 document.addEventListener('DOMContentLoaded', () => {

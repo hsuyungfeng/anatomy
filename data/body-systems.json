@@ -1,0 +1,139 @@
+{
+  "systemId": "body",
+  "systemName": "身體系統",
+  "systemNameEn": "Body System",
+  "description": "體表解剖系統，包含 8 個基本身體部位",
+  "lastUpdated": "2026-01-15",
+  "version": "1.0.0",
+  "bodyRegions": [
+    {
+      "id": "head",
+      "nameZh": "頭部",
+      "nameEn": "Head",
+      "side": "mid",
+      "description": "頭部及頭皮區域",
+      "commonDiseases": {
+        "skin": ["脂漏性皮膚炎", "頭皮癬", "毛囊炎", "痤瘡"],
+        "subcutaneous": ["皮下囊腫", "血腫", "皮脂腺囊腫"]
+      },
+      "icdCodes": {
+        "脂漏性皮膚炎": "L21.9",
+        "頭皮癬": "B35.0",
+        "毛囊炎": "L73.9",
+        "痤瘡": "L70.9",
+        "皮下囊腫": "L72.9",
+        "血腫": "T14.8",
+        "皮脂腺囊腫": "L72.1"
+      }
+    },
+    {
+      "id": "neck",
+      "nameZh": "頸部",
+      "nameEn": "Neck",
+      "side": "mid",
+      "description": "頸部皮膚及頸部結構",
+      "commonDiseases": {
+        "skin": ["頸部皮炎", "扁平疣", "脂漏性皮膚炎"],
+        "subcutaneous": ["淋巴結腫大", "甲狀腺結節", "頸部膿腫"]
+      },
+      "icdCodes": {
+        "頸部皮炎": "L23.9",
+        "扁平疣": "B07.8",
+        "脂漏性皮膚炎": "L21.9",
+        "淋巴結腫大": "R59.1",
+        "甲狀腺結節": "E04.1",
+        "頸部膿腫": "L02.1"
+      }
+    },
+    {
+      "id": "chest",
+      "nameZh": "胸部",
+      "nameEn": "Chest",
+      "side": "mid",
+      "description": "胸部皮膚及胸腔",
+      "commonDiseases": {
+        "skin": ["濕疹", "帶狀疱疹", "接觸性皮膚炎", "乳頭濕疹"],
+        "subcutaneous": ["脂肪瘤", "乳腺結節", "乳腺炎", "乳房膿腫"]
+      },
+      "icdCodes": {
+        "濕疹": "L30.9",
+        "帶狀疱疹": "B02.9",
+        "接觸性皮膚炎": "L25.9",
+        "乳頭濕疹": "L30.1",
+        "脂肪瘤": "D17.9",
+        "乳腺結節": "N63",
+        "乳腺炎": "N61",
+        "乳房膿腫": "N61.1"
+      }
+    },
+    {
+      "id": "abdomen",
+      "nameZh": "腹部",
+      "nameEn": "Abdomen",
+      "side": "mid",
+      "description": "腹部皮膚及腹部結構",
+      "commonDiseases": {
+        "skin": ["蕁麻疹", "皮膚感染", "腹部皮炎", "色素沉著"],
+        "subcutaneous": ["疝氣", "皮下膿瘍", "腹部腫塊", "脂肪瘤"]
+      },
+      "icdCodes": {
+        "蕁麻疹": "L50.9",
+        "皮膚感染": "L08.9",
+        "腹部皮炎": "L23.9",
+        "色素沉著": "L81.9",
+        "疝氣": "K40.9",
+        "皮下膿瘍": "L02.2",
+        "腹部腫塊": "R19.0",
+        "脂肪瘤": "D17.9"
+      }
+    },
+    {
+      "id": "arm",
+      "nameZh": "手臂",
+      "nameEn": "Arm",
+      "side": "both",
+      "description": "上肢（肩膀、手臂、手）",
+      "commonDiseases": {
+        "skin": ["濕疹", "蚊蟲叮咬", "蜂窩性組織炎", "皮膚真菌感染"],
+        "subcutaneous": ["肌肉挫傷", "皮下血腫", "肌腱炎", "滑囊炎"]
+      },
+      "icdCodes": {
+        "濕疹": "L30.9",
+        "蚊蟲叮咬": "L30.2",
+        "蜂窩性組織炎": "L03.9",
+        "皮膚真菌感染": "B35.9",
+        "肌肉挫傷": "S46.9",
+        "皮下血腫": "T14.8",
+        "肌腱炎": "M76.9",
+        "滑囊炎": "M71.9"
+      }
+    },
+    {
+      "id": "leg",
+      "nameZh": "腿部",
+      "nameEn": "Leg",
+      "side": "both",
+      "description": "下肢（大腿、小腿、腳）",
+      "commonDiseases": {
+        "skin": ["靜脈炎皮膚變化", "黴菌感染", "運動員腳", "濕疹"],
+        "subcutaneous": ["深層靜脈栓塞", "肌肉拉傷", "膝蓋關節炎", "踝關節扭傷"]
+      },
+      "icdCodes": {
+        "靜脈炎皮膚變化": "I87.2",
+        "黴菌感染": "B35.9",
+        "運動員腳": "B35.3",
+        "濕疹": "L30.9",
+        "深層靜脈栓塞": "I82.4",
+        "肌肉拉傷": "S76.9",
+        "膝蓋關節炎": "M17.9",
+        "踝關節扭傷": "S93.4"
+      }
+    }
+  ],
+  "metadata": {
+    "totalRegions": 6,
+    "diseaseCategories": ["skin", "subcutaneous"],
+    "icdVersion": "ICD-10",
+    "language": ["zh-TW", "en"]
+  }
+}
