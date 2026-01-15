@@ -501,6 +501,10 @@ class MedicalRecordApp {
     try {
       this.currentSystemId = systemId;
 
+      // 控制眼睛標籤面板的可見性
+      // 只有在眼睛系統時才顯示面板
+      this.toggleEyeLabelPanel(systemId === 'eye');
+
       // 找到系統配置
       const system = this.anatomicalSystems.systems.find(
         s => s.id === systemId
@@ -596,6 +600,26 @@ class MedicalRecordApp {
 
     // 更新列表
     this.updateRecordList(systemId);
+  }
+
+  /**
+   * 切換眼睛標籤面板的可見性
+   * @param {boolean} visible - 是否顯示面板
+   */
+  toggleEyeLabelPanel(visible = true) {
+    const panelContainer = document.getElementById('eye-label-panel-container');
+    if (!panelContainer) {
+      console.warn('[toggleEyeLabelPanel] 找不到眼睛標籤面板容器');
+      return;
+    }
+
+    if (visible) {
+      panelContainer.style.display = 'block';
+      console.log('[toggleEyeLabelPanel] 眼睛標籤面板已顯示');
+    } else {
+      panelContainer.style.display = 'none';
+      console.log('[toggleEyeLabelPanel] 眼睛標籤面板已隱藏');
+    }
   }
 
   /**
