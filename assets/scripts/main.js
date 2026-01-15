@@ -218,6 +218,183 @@ class MedicalRecordApp {
 
     // 初始化眼睛選擇器
     this.initializeEyeSelector();
+
+    // 設置眼睛標籤按鈕事件監聽
+    this.setupEyeLabelButtonListeners();
+  }
+
+  /**
+   * 設置眼睛標籤按鈕的事件監聽
+   * 為所有 .eye-label-btn 按鈕添加點擊事件處理
+   */
+  setupEyeLabelButtonListeners() {
+    const buttons = document.querySelectorAll('.eye-label-btn');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const structureId = button.dataset.structureId;
+        const structureNameEn = button.dataset.structureNameEn;
+
+        console.log(`[setupEyeLabelButtonListeners] 點擊標籤: ${structureNameEn} (ID: ${structureId})`);
+
+        // 創建結構信息對象
+        const structureInfo = {
+          structureId: structureId,
+          name: this.getChineseStructureName(structureId),
+          nameEn: structureNameEn,
+          type: this.getStructureType(structureId),
+          side: this.getStructureSide(structureId),
+          confidence: 1.0  // 按鈕點擊的信心度為100%
+        };
+
+        // 打開疾病記錄表單
+        await this.openDiseaseModalWithStructure(structureInfo);
+      });
+    });
+
+    console.log(`[setupEyeLabelButtonListeners] 已為 ${buttons.length} 個眼睛標籤按鈕添加點擊事件監聽`);
+  }
+
+  /**
+   * 根據 structureId 獲取中文名稱
+   * @param {string} structureId - 結構唯一標識符
+   * @returns {string} 中文名稱
+   */
+  getChineseStructureName(structureId) {
+    const nameMap = {
+      'left-eye': '左眼',
+      'left-eye-cornea': '角膜',
+      'left-eye-iris': '虹膜',
+      'left-eye-lens': '水晶體',
+      'left-eye-retina': '視網膜',
+      'left-eye-lacrimal': '淚腺',
+      'right-eye': '右眼',
+      'right-eye-cornea': '角膜',
+      'right-eye-iris': '虹膜',
+      'right-eye-lens': '水晶體',
+      'right-eye-retina': '視網膜',
+      'right-eye-lacrimal': '淚腺',
+      'eye-choroid': '脈絡膜',
+      'eye-sclera': '鞏膜',
+      'eye-optic-nerve': '視神經',
+      'eye-vitreous': '玻璃體',
+      'eye-ciliary-body': '睫狀體',
+      'eye-extraocular-muscles': '眼肌',
+      'eye-blood-vessels': '血管',
+      'eye-pupil': '瞳孔',
+      'eye-dilator-pupillae': '瞳孔擴張肌',
+      'eye-nasolacrimal-duct': '鼻淚管',
+      'eye-vitreous-hyaloid': '玻璃管',
+      'eye-ciliary-muscle': '睫狀肌'
+    };
+
+    return nameMap[structureId] || structureId;
+  }
+
+  /**
+   * 根據 structureId 獲取結構類型
+   * @param {string} structureId - 結構唯一標識符
+   * @returns {string} 結構類型
+   */
+  getStructureType(structureId) {
+    if (structureId.includes('cornea')) return 'cornea';
+    if (structureId.includes('iris')) return 'iris';
+    if (structureId.includes('lens')) return 'lens';
+    if (structureId.includes('retina')) return 'retina';
+    if (structureId.includes('lacrimal')) return 'lacrimal';
+    if (structureId.includes('choroid')) return 'choroid';
+    if (structureId.includes('sclera')) return 'sclera';
+    if (structureId.includes('optic-nerve')) return 'optic-nerve';
+    if (structureId.includes('vitreous')) return 'vitreous';
+    if (structureId.includes('ciliary')) return 'ciliary';
+    if (structureId.includes('muscle')) return 'muscle';
+    if (structureId.includes('blood-vessel')) return 'blood-vessel';
+    if (structureId.includes('pupil')) return 'pupil';
+    if (structureId.includes('dilator')) return 'dilator';
+    if (structureId.includes('nasolacrimal')) return 'nasolacrimal';
+    return 'unknown';
+  }
+
+  /**
+   * 根據 structureId 確定左眼/右眼/雙眼
+   * @param {string} structureId - 結構唯一標識符
+   * @returns {string} 'left', 'right', 或 'bilateral'
+   */
+  getStructureSide(structureId) {
+    if (structureId.startsWith('left-eye')) return 'left';
+    if (structureId.startsWith('right-eye')) return 'right';
+    return 'bilateral';
+  }
+
+  /**
+   * 打開疾病記錄模態視窗，並直接使用傳入的結構信息
+   * @param {object} structureInfo - 結構信息對象
+   */
+  async openDiseaseModalWithStructure(structureInfo) {
+    const modal = $('#disease-modal');
+    if (!modal) {
+      console.error('[openDiseaseModalWithStructure] 找不到疾病記錄模態視窗');
+      return;
+    }
+
+    // 設置位置資訊
+    const locationDiv = $('#modal-location');
+    if (locationDiv) {
+      const englishName = structureInfo.nameEn.toLowerCase();
+      const sideBadge = structureInfo.side === 'left' ? '左眼' :
+                        structureInfo.side === 'right' ? '右眼' :
+                        '雙眼';
+
+      const locationText = `
+        <div class="eye-structure-info">
+          <p class="structure-info__main">
+            <strong>${structureInfo.name}</strong>
+            <span class="side-badge">${sideBadge}</span>
+          </p>
+          <p class="structure-info__english">
+            <em>English: ${englishName}</em>
+          </p>
+          <p class="structure-info__type">
+            結構類型: ${structureInfo.type}
+          </p>
+        </div>
+      `;
+      locationDiv.innerHTML = locationText;
+    }
+
+    // 保存結構信息供後續使用
+    this.currentEyeStructure = structureInfo;
+
+    // 初始化或更新疾病表單
+    const formContainer = $('#disease-form-container');
+    const diseaseSystemId = 'eye';
+
+    if (formContainer && !this.diseaseForm) {
+      this.diseaseForm = new DiseaseForm({
+        container: formContainer,
+        systemId: diseaseSystemId,
+        diseaseData: this.anatomicalSystems
+      });
+      await this.diseaseForm.render();
+    } else if (this.diseaseForm) {
+      if (this.diseaseForm.systemId !== diseaseSystemId) {
+        this.diseaseForm.systemId = diseaseSystemId;
+        this.diseaseForm.diseases = [];
+        await this.diseaseForm.loadDiseases(diseaseSystemId);
+      }
+      await this.diseaseForm.render();
+    }
+
+    // 顯示模態視窗
+    const overlay = $('#modal-overlay');
+    if (overlay) {
+      overlay.classList.add('visible');
+    }
+    modal.setAttribute('aria-hidden', 'false');
+
+    console.log(`[openDiseaseModalWithStructure] 打開疾病記錄: ${structureInfo.name} (${englishName})`);
   }
 
   /**
