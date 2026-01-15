@@ -1369,6 +1369,7 @@ class MedicalRecordApp {
   saveDiseaseAnnotation() {
     // 收集表單資料
     if (!this.diseaseForm) {
+      console.error('[saveDiseaseAnnotation] 表單未初始化');
       showNotification('表單未初始化', 'error');
       return;
     }
@@ -1377,80 +1378,139 @@ class MedicalRecordApp {
 
     // 驗證是否選擇了疾病
     if (!formData.diseases || formData.diseases.length === 0) {
+      console.warn('[saveDiseaseAnnotation] 未選擇疾病');
       showNotification('請選擇至少一種疾病', 'warning');
       return;
     }
 
-    // 構建標註對象（包含完整牙齒資訊）
-    const annotation = {
-      annotationId: generateUUID(),
-      position: this.currentClickPosition,
+    // 根據系統類型構建標註對象
+    let annotation;
 
-      // 使用檢測到的牙齒資訊
-      locationName: this.currentToothInfo ? this.currentToothInfo.name :
-                    this.getLocationName(this.currentClickPosition),
-      locationNameEn: this.currentToothInfo ? this.currentToothInfo.nameEn : '',
+    if (this.currentSystemId === 'eye') {
+      // 眼睛系統的標註對象
+      if (!this.currentEyeStructure) {
+        console.error('[saveDiseaseAnnotation] 眼睛系統缺少結構信息');
+        showNotification('請先選擇眼睛結構', 'warning');
+        return;
+      }
 
-      // 編號系統（新增）
-      fdiNumber: this.currentToothInfo ? this.currentToothInfo.fdi : null,
-      universalNumber: this.currentToothInfo ? this.currentToothInfo.number : null,
+      annotation = {
+        annotationId: generateUUID(),
+        position: this.currentClickPosition || { x: 0, y: 0 },
 
-      // 牙齒資訊（新增）
-      toothType: this.currentToothInfo ? this.currentToothInfo.type : null,
-      quadrant: this.currentToothInfo ? this.currentToothInfo.quadrant : null,
+        // 眼睛結構資訊
+        locationName: this.currentEyeStructure.name,
+        locationNameEn: this.currentEyeStructure.nameEn,
+        structureId: this.currentEyeStructure.structureId,
+        structureType: this.currentEyeStructure.type,
+        side: this.currentEyeStructure.side,
 
-      // 檢測元數據（新增，僅後台）
-      detectionConfidence: this.currentToothInfo ? this.currentToothInfo.confidence : null,
-      manualSelection: this.currentToothInfo ? (this.currentToothInfo.manualSelection || false) : false,
+        // 檢測元數據
+        detectionConfidence: this.currentEyeStructure.confidence || 1.0,
+        fromLabel: this.currentEyeStructure.fromLabel || false,
 
-      // 疾病和療程
-      diseases: formData.diseases,
-      treatmentNotes: formData.treatmentNotes,
+        // 疾病和療程
+        diseases: formData.diseases,
+        treatmentNotes: formData.treatmentNotes,
 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
 
-    // 後台記錄完整資訊
-    console.log('保存標註:', {
-      牙齒: annotation.locationName,
-      FDI: annotation.fdiNumber,
-      信心度: annotation.detectionConfidence ?
-              `${(annotation.detectionConfidence * 100).toFixed(1)}%` : 'N/A',
-      手動選擇: annotation.manualSelection ? '是' : '否',
-      疾病數量: annotation.diseases.length
-    });
+      console.log('[saveDiseaseAnnotation] 眼睛系統記錄:', {
+        結構: annotation.locationName,
+        側眼: annotation.side,
+        疾病數量: annotation.diseases.length,
+        信心度: `${(annotation.detectionConfidence * 100).toFixed(1)}%`
+      });
+    } else {
+      // 牙齒系統的標註對象（原有邏輯）
+      annotation = {
+        annotationId: generateUUID(),
+        position: this.currentClickPosition,
 
-    // 保存到記錄管理器
-    this.recordManager.addAnnotation(this.currentSystemId, annotation);
+        // 使用檢測到的牙齒資訊
+        locationName: this.currentToothInfo ? this.currentToothInfo.name :
+                      this.getLocationName(this.currentClickPosition),
+        locationNameEn: this.currentToothInfo ? this.currentToothInfo.nameEn : '',
 
-    // 添加視覺標註到圖像
-    const system = this.anatomicalSystems.systems.find(
-      s => s.id === this.currentSystemId
-    );
+        // 編號系統
+        fdiNumber: this.currentToothInfo ? this.currentToothInfo.fdi : null,
+        universalNumber: this.currentToothInfo ? this.currentToothInfo.number : null,
 
-    this.annotator.addAnnotation({
-      ...annotation,
-      color: system?.color || '#ff0000'
-    });
+        // 牙齒資訊
+        toothType: this.currentToothInfo ? this.currentToothInfo.type : null,
+        quadrant: this.currentToothInfo ? this.currentToothInfo.quadrant : null,
 
-    // 更新疾病可視化
-    if (this.diseaseVisualizer) {
-      const annotations = this.recordManager.getAnnotationsBySystem(this.currentSystemId);
-      this.diseaseVisualizer.render(annotations);
+        // 檢測元數據
+        detectionConfidence: this.currentToothInfo ? this.currentToothInfo.confidence : null,
+        manualSelection: this.currentToothInfo ? (this.currentToothInfo.manualSelection || false) : false,
+
+        // 疾病和療程
+        diseases: formData.diseases,
+        treatmentNotes: formData.treatmentNotes,
+
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      console.log('[saveDiseaseAnnotation] 牙齒系統記錄:', {
+        牙齒: annotation.locationName,
+        FDI: annotation.fdiNumber,
+        信心度: annotation.detectionConfidence ?
+                `${(annotation.detectionConfidence * 100).toFixed(1)}%` : 'N/A',
+        手動選擇: annotation.manualSelection ? '是' : '否',
+        疾病數量: annotation.diseases.length
+      });
     }
 
-    // 關閉模態並更新列表
-    this.closeDiseaseModal();
-    this.updateRecordList(this.currentSystemId);
+    try {
+      // 保存到記錄管理器（內存）
+      this.recordManager.addAnnotation(this.currentSystemId, annotation);
+      console.log('[saveDiseaseAnnotation] 已保存到記錄管理器');
 
-    // 根據信心度顯示不同的提示
-    if (annotation.manualSelection) {
-      showNotification('✓ 疾病記錄已保存（手動選擇）', 'success');
-    } else if (annotation.detectionConfidence && annotation.detectionConfidence > 0.8) {
-      showNotification('✓ 疾病記錄已保存（高信心度）', 'success');
-    } else {
-      showNotification('✓ 疾病記錄已保存', 'success');
+      // 保存到本地存儲（持久化）
+      this.saveMedicalRecord(annotation);
+      console.log('[saveDiseaseAnnotation] 已保存到本地存儲');
+
+      // 添加視覺標註到圖像
+      const system = this.anatomicalSystems.systems.find(
+        s => s.id === this.currentSystemId
+      );
+
+      this.annotator.addAnnotation({
+        ...annotation,
+        color: system?.color || '#ff0000'
+      });
+      console.log('[saveDiseaseAnnotation] 已添加視覺標註到圖像');
+
+      // 更新疾病可視化
+      if (this.diseaseVisualizer) {
+        const annotations = this.recordManager.getAnnotationsBySystem(this.currentSystemId);
+        this.diseaseVisualizer.render(annotations);
+        console.log('[saveDiseaseAnnotation] 已更新疾病可視化');
+      }
+
+      // 關閉模態並更新列表
+      this.closeDiseaseModal();
+      this.updateRecordList(this.currentSystemId);
+      console.log('[saveDiseaseAnnotation] 已關閉模態視窗並更新列表');
+
+      // 顯示成功提示
+      if (this.currentSystemId === 'eye') {
+        showNotification('✓ 眼睛病例已成功保存', 'success');
+      } else if (annotation.manualSelection) {
+        showNotification('✓ 疾病記錄已保存（手動選擇）', 'success');
+      } else if (annotation.detectionConfidence && annotation.detectionConfidence > 0.8) {
+        showNotification('✓ 疾病記錄已保存（高信心度）', 'success');
+      } else {
+        showNotification('✓ 疾病記錄已保存', 'success');
+      }
+
+      console.log('[saveDiseaseAnnotation] 保存流程完成 ✓');
+    } catch (error) {
+      console.error('[saveDiseaseAnnotation] 保存失敗:', error);
+      showNotification('保存失敗，請重試', 'error');
     }
   }
 
@@ -1571,6 +1631,147 @@ class MedicalRecordApp {
     const panel = $(`#${panelId}`);
     if (panel) {
       panel.classList.add('record-panel--active');
+    }
+  }
+
+  /**
+   * 保存醫療記錄到本地存儲
+   * @param {Object} record - 醫療記錄對象（標註對象）
+   * @returns {boolean} 是否保存成功
+   */
+  saveMedicalRecord(record) {
+    try {
+      // 驗證記錄對象
+      if (!record) {
+        throw new Error('記錄對象為空');
+      }
+
+      // 讀取現有記錄
+      const storageKey = 'medicalRecords';
+      const existingRecords = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+      // 添加新記錄
+      existingRecords.push(record);
+
+      // 保存回本地存儲
+      localStorage.setItem(storageKey, JSON.stringify(existingRecords));
+
+      console.log(`[saveMedicalRecord] 已保存醫療記錄到 localStorage (總計: ${existingRecords.length} 筆)`);
+      console.log('[saveMedicalRecord] 記錄詳情:', {
+        ID: record.annotationId,
+        位置: record.locationName,
+        疾病: record.diseases.length,
+        時間: record.createdAt
+      });
+
+      return true;
+    } catch (error) {
+      console.error('[saveMedicalRecord] 保存失敗:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 從本地存儲加載醫療記錄
+   * @returns {Array} 醫療記錄陣列
+   */
+  loadMedicalRecords() {
+    try {
+      const storageKey = 'medicalRecords';
+      const records = JSON.parse(localStorage.getItem(storageKey)) || [];
+      console.log(`[loadMedicalRecords] 已加載 ${records.length} 筆醫療記錄`);
+
+      if (records.length > 0) {
+        console.log('[loadMedicalRecords] 記錄摘要:');
+        records.forEach((record, index) => {
+          console.log(`  ${index + 1}. ${record.locationName} - ${record.diseases.length} 種疾病 (${record.createdAt})`);
+        });
+      }
+
+      return records;
+    } catch (error) {
+      console.error('[loadMedicalRecords] 加載失敗:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 加載並顯示病例記錄
+   * 此方法用於更新病例列表的顯示
+   */
+  async loadAndDisplayRecords() {
+    try {
+      const records = this.loadMedicalRecords();
+      console.log(`[loadAndDisplayRecords] 已加載 ${records.length} 筆記錄`);
+
+      // 如果有記錄列表容器，更新顯示
+      const container = $('#record-list-container');
+      if (container && records.length > 0) {
+        // 按日期降序排列（最新的在上）
+        const sortedRecords = [...records].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0);
+          const dateB = new Date(b.createdAt || 0);
+          return dateB - dateA;
+        });
+
+        let html = '<div class="disease-timeline">';
+
+        sortedRecords.forEach((record, index) => {
+          const diseaseList = (record.diseases || [])
+            .map(d => `<span class="disease-tag">${d.name}</span>`)
+            .join('');
+
+          const date = new Date(record.createdAt || new Date());
+          const dateStr = date.toLocaleDateString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          // 根據系統類型顯示不同的信息
+          let locationDisplay = record.locationName;
+          if (record.fdiNumber) {
+            locationDisplay += ` <span class="fdi-badge">FDI: ${record.fdiNumber}</span>`;
+          }
+          if (record.side) {
+            const sideText = record.side === 'left' ? '左眼' : record.side === 'right' ? '右眼' : '雙眼';
+            locationDisplay += ` <span class="side-badge">${sideText}</span>`;
+          }
+
+          html += `
+            <div class="timeline-item ${index === 0 ? 'timeline-item--latest' : ''}">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <h4 class="timeline-location">${locationDisplay}</h4>
+                  <span class="timeline-date">${dateStr}</span>
+                </div>
+                <div class="timeline-diseases">
+                  ${diseaseList}
+                </div>
+                ${record.treatmentNotes ? `
+                  <div class="timeline-notes">
+                    <strong>療程摘要：</strong>
+                    <p>${record.treatmentNotes}</p>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+
+        console.log('[loadAndDisplayRecords] 已更新病例列表顯示');
+      }
+
+      return records;
+    } catch (error) {
+      console.error('[loadAndDisplayRecords] 列表更新失敗:', error);
+      return [];
     }
   }
 }
