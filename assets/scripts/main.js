@@ -14,6 +14,7 @@ class MedicalRecordApp {
     this.diseaseVisualizer = null; // 疾病可視化管理器
     this.dentalMapper = null; // 牙齒圖像映射器
     this.eyeMapper = null; // 眼睛圖像映射器 [新增]
+    this.bodyImageMapper = null; // 身體圖像映射器 [新增]
 
     this.currentSystemId = 'teeth';
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
@@ -156,6 +157,23 @@ class MedicalRecordApp {
       console.log('✓ 眼睛標籤映射器已初始化');
     }
 
+    // 身體圖像映射器 [新增] - 用於識別身體圖像中的部位點擊區域
+    if (typeof BodyImageMapper !== 'undefined') {
+      this.bodyImageMapper = new BodyImageMapper({
+        coordinatesUrl: '/data/body-coordinates.json',
+        debug: true
+      });
+
+      // 預加載座標數據
+      this.bodyImageMapper.loadCoordinates().then(success => {
+        if (success) {
+          console.log('✓ 身體座標數據加載成功');
+        } else {
+          console.error('✗ 身體座標數據加載失敗');
+        }
+      });
+    }
+
     // 病歷管理器
     this.recordManager = new RecordManager();
 
@@ -220,9 +238,6 @@ class MedicalRecordApp {
 
     // 設置眼睛標籤按鈕事件監聽
     this.setupEyeLabelButtonListeners();
-
-    // 設置身體部位按鈕事件監聽
-    this.setupBodyRegionButtonListeners();
   }
 
   /**
@@ -556,13 +571,6 @@ class MedicalRecordApp {
       this.toggleEyeInfoPanel(false);
     }
 
-    // 顯示或隱藏身體部位選擇面板
-    if (systemId === 'body') {
-      this.toggleBodyRegionPanel(true);
-    } else {
-      this.toggleBodyRegionPanel(false);
-    }
-
     // 初始化疾病表單（當系統切換時）
     this.initializeDiseaseForm(systemId);
 
@@ -748,6 +756,14 @@ class MedicalRecordApp {
       const structure = this.detectEyeStructure(position);
       if (structure) {
         this.displayEyeStructureInfo(structure);
+      }
+    }
+
+    // 如果是身體系統，偵測身體部位並顯示結構資訊 [新增]
+    if (this.currentSystemId === 'body') {
+      const bodyRegion = this.detectBodyRegion(position);
+      if (bodyRegion) {
+        this.displayBodyStructureInfo(bodyRegion);
       }
     }
 
@@ -997,6 +1013,95 @@ class MedicalRecordApp {
   }
 
   /**
+   * 使用 BodyImageMapper 精確識別身體部位位置 [新增方法]
+   * @param {object} position - 點擊位置 {x, y}
+   * @returns {object|null} 身體部位資訊或 null
+   */
+  detectBodyRegion(position) {
+    // 檢查 BodyImageMapper 是否已加載
+    if (!this.bodyImageMapper || !this.bodyImageMapper.isLoaded) {
+      console.warn('BodyImageMapper 尚未加載');
+      showNotification('身體系統尚未就緒，請稍候...', 'warning');
+      return null;
+    }
+
+    const canvas = document.getElementById('image-canvas');
+    if (!canvas) return null;
+
+    // 獲取原始圖像的實際尺寸（bodysurface.png 尺寸）
+    let naturalWidth = 600;   // bodysurface.png 寬度
+    let naturalHeight = 800;  // bodysurface.png 高度
+
+    // 嘗試從 ImageAnnotator 實例中獲取原始圖像尺寸
+    if (this.annotator && this.annotator.imageData) {
+      naturalWidth = this.annotator.imageData.naturalWidth || naturalWidth;
+      naturalHeight = this.annotator.imageData.naturalHeight || naturalHeight;
+    }
+
+    // 取得 canvas 的顯示尺寸
+    const canvasDisplayWidth = canvas.offsetWidth;
+    const canvasDisplayHeight = canvas.offsetHeight;
+
+    // 獲取 ImageAnnotator 的 zoom 和 pan 參數
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+    if (this.annotator) {
+      zoom = this.annotator.zoom || 1;
+      panX = this.annotator.panX || 0;
+      panY = this.annotator.panY || 0;
+    }
+
+    // 計算縮放後的圖像尺寸
+    const scaledWidth = (canvasDisplayWidth / window.devicePixelRatio) * zoom;
+    const scaledHeight = (canvasDisplayHeight / window.devicePixelRatio) * zoom;
+
+    // 計算圖像在 canvas 中的位置（相對於 canvas 左上角）
+    const imgX = (canvasDisplayWidth / window.devicePixelRatio - scaledWidth) / 2 + panX;
+    const imgY = (canvasDisplayHeight / window.devicePixelRatio - scaledHeight) / 2 + panY;
+
+    // 將點擊坐標轉換回原始圖像座標
+    // 第1步：從 canvas 座標轉換回未縮放的圖像位置
+    const relX = (position.x / window.devicePixelRatio - imgX) / scaledWidth * (canvasDisplayWidth / window.devicePixelRatio);
+    const relY = (position.y / window.devicePixelRatio - imgY) / scaledHeight * (canvasDisplayHeight / window.devicePixelRatio);
+
+    // 第2步：從顯示座標轉換回原始圖像座標
+    const scaleX = canvasDisplayWidth / naturalWidth;
+    const scaleY = canvasDisplayHeight / naturalHeight;
+
+    const adjustedPos = {
+      x: relX / scaleX,
+      y: relY / scaleY
+    };
+
+    if (this.bodyImageMapper.debug) {
+      console.log('[detectBodyRegion] 坐標轉換詳情：');
+      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}, Canvas: ${canvasDisplayWidth}x${canvasDisplayHeight}`);
+      console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
+      console.log(`  點擊座標 (原始): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
+      console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
+    }
+
+    // 使用 BodyImageMapper 識別身體部位
+    const regionInfo = this.bodyImageMapper.getRegionAtPosition(
+      adjustedPos.x,
+      adjustedPos.y
+    );
+
+    if (regionInfo) {
+      return {
+        id: regionInfo.id,
+        name: regionInfo.name,           // 中文名稱
+        nameEn: regionInfo.nameEn,       // 英文名稱
+        side: regionInfo.side,           // left, right, mid
+        confidence: regionInfo.confidence // 信心度（0-1）
+      };
+    }
+
+    return null;
+  }
+
+  /**
    * 打開疾病記錄模態視窗
    * @param {object} position - 點擊位置
    */
@@ -1013,6 +1118,9 @@ class MedicalRecordApp {
     } else if (this.currentSystemId === 'eye') {
       // 眼睛系統 [新增] 使用 EyeImageMapper 識別
       structureInfo = this.detectEyeStructure(position);
+    } else if (this.currentSystemId === 'body') {
+      // 身體系統 [新增] 使用 BodyImageMapper 識別
+      structureInfo = this.detectBodyRegion(position);
     }
 
     // 設置位置資訊
@@ -1059,6 +1167,21 @@ class MedicalRecordApp {
 
           console.log(`眼睛結構檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
         }
+        // 身體系統特定的顯示格式 [新增]
+        else if (this.currentSystemId === 'body') {
+          locationText = `
+            <div class="body-region-info">
+              <p class="structure-info__main">
+                <strong>${structureInfo.name}</strong>
+                <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
+              </p>
+              ${structureInfo.confidence < 0.5 ?
+                '<p class="structure-info__warning">⚠️ 檢測信心度較低，請重新點擊</p>' : ''}
+            </div>
+          `;
+
+          console.log(`身體部位檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
+        }
       } else {
         // 無法識別 [修改]
         if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
@@ -1069,6 +1192,10 @@ class MedicalRecordApp {
         } else if (this.currentSystemId === 'eye') {
           locationText = `
             <p class="structure-info__error">無法自動識別眼睛結構位置，請重新點擊</p>
+          `;
+        } else if (this.currentSystemId === 'body') {
+          locationText = `
+            <p class="structure-info__error">無法自動識別身體部位，請重新點擊</p>
           `;
         }
       }
@@ -1084,6 +1211,8 @@ class MedicalRecordApp {
       this.currentToothInfo = structureInfo;
     } else if (this.currentSystemId === 'eye') {
       this.currentEyeStructure = structureInfo;
+    } else if (this.currentSystemId === 'body') {
+      this.currentBodyRegion = structureInfo;
     }
 
     // 初始化或更新疾病表單
@@ -2036,32 +2165,6 @@ class MedicalRecordApp {
   // ===================================================
 
   /**
-   * 初始化身體部位按鈕事件監聽
-   */
-  setupBodyRegionButtonListeners() {
-    document.querySelectorAll('.body-region-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const bodyPart = btn.dataset.bodyPart;
-        const side = btn.dataset.side;
-
-        // 移除舊選擇
-        document.querySelectorAll('.body-region-btn')
-          .forEach(b => b.classList.remove('selected'));
-
-        // 標記新選擇
-        btn.classList.add('selected');
-
-        // 打開疾病記錄模態視窗
-        this.openDiseaseModalWithBodyRegion({
-          bodyPart,
-          side
-        });
-      });
-    });
-    console.log('[setupBodyRegionButtonListeners] 身體部位按鈕事件已初始化');
-  }
-
-  /**
    * 打開疾病記錄模態，顯示身體部位信息
    */
   openDiseaseModalWithBodyRegion(regionInfo) {
@@ -2386,39 +2489,24 @@ class MedicalRecordApp {
   }
 
   /**
-   * 根據系統類型過濾記錄
+   * 根據系統類型過濾記錄（修正污染問題）
    */
   filterRecordsBySystem(records, systemType) {
     switch(systemType) {
       case 'body':
-        return records.filter(r => r.system === 'body' || (r.bodyPart && r.side && !r.fdiNumber && !r.structureId));
+        // ✅ 只過濾明確標記為身體系統的記錄
+        return records.filter(r => r.system === 'body' && r.bodyPart && r.side);
       case 'eye':
-        return records.filter(r => r.system === 'eye' || r.structureId || (r.side && ['left', 'right', 'bilateral'].includes(r.side)));
+        // ✅ 只過濾明確標記為眼睛系統的記錄（或有 structureId）
+        return records.filter(r => r.system === 'eye' || (r.structureId && !r.fdiNumber && !r.bodyPart));
       case 'tooth':
-        return records.filter(r => r.system === 'tooth' || r.fdiNumber);
+        // ✅ 只過濾明確標記為牙齒系統的記錄（或有 fdiNumber）
+        return records.filter(r => r.system === 'tooth' || (r.fdiNumber && !r.bodyPart && !r.structureId));
       default:
         return [];
     }
   }
 
-  /**
-   * 控制身體系統面板顯示/隱藏
-   */
-  toggleBodyRegionPanel(visible = true) {
-    const panelContainer = document.getElementById('body-region-panel-container');
-    if (!panelContainer) {
-      console.warn('[toggleBodyRegionPanel] 找不到身體部位面板容器');
-      return;
-    }
-
-    if (visible) {
-      panelContainer.style.display = 'block';
-      console.log('[toggleBodyRegionPanel] 身體部位面板已顯示');
-    } else {
-      panelContainer.style.display = 'none';
-      console.log('[toggleBodyRegionPanel] 身體部位面板已隱藏');
-    }
-  }
 }
 
 // ICD-10 疾病代碼對照表（身體系統）

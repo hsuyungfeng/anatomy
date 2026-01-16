@@ -685,62 +685,6 @@
    身體系統樣式 (Body System)
    ================================================ */
 
-/* 身體部位面板容器 */
-.body-region-panel-container {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.body-region-panel-container h3,
-.body-region-panel__title {
-  margin-top: 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* 身體部位按鈕網格 */
-.body-region-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  margin-top: 15px;
-}
-
-/* 身體部位按鈕 */
-.body-region-btn {
-  padding: 12px 16px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: #333;
-  transition: all 0.2s ease;
-}
-
-.body-region-btn:hover {
-  background-color: #e3f2fd;
-  border-color: #2196F3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.body-region-btn:active {
-  background-color: #bbdefb;
-  transform: translateY(0);
-}
-
-.body-region-btn.selected {
-  background-color: #2196F3;
-  color: white;
-  border-color: #1976D2;
-}
-
 /* 身體結構信息面板 (在疾病模態中顯示) */
 .body-structure-info {
   background-color: #f0f7ff;
@@ -840,19 +784,3 @@
   font-size: 13px;
 }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .body-region-grid {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 8px;
-  }
-
-  .body-region-btn {
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-
-  .body-region-panel-container {
-    padding: 15px;
-  }
-}

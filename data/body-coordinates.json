@@ -1,0 +1,171 @@
+{
+  "systemId": "body",
+  "systemName": "身體系統",
+  "imageIds": {
+    "bodysurface": {
+      "width": 600,
+      "height": 800,
+      "regions": [
+        {
+          "id": "head",
+          "name": "頭部",
+          "nameEn": "Head",
+          "side": "mid",
+          "type": "region",
+          "boundingBox": {
+            "x": 200,
+            "y": 20,
+            "width": 200,
+            "height": 120
+          },
+          "centerPoint": {
+            "x": 300,
+            "y": 80
+          },
+          "clickRadius": 80,
+          "polygon": [
+            {"x": 220, "y": 50},
+            {"x": 300, "y": 20},
+            {"x": 380, "y": 50},
+            {"x": 380, "y": 140},
+            {"x": 300, "y": 160},
+            {"x": 220, "y": 140}
+          ]
+        },
+        {
+          "id": "neck",
+          "name": "頸部",
+          "nameEn": "Neck",
+          "side": "mid",
+          "type": "region",
+          "boundingBox": {
+            "x": 250,
+            "y": 140,
+            "width": 100,
+            "height": 50
+          },
+          "centerPoint": {
+            "x": 300,
+            "y": 165
+          },
+          "clickRadius": 50
+        },
+        {
+          "id": "chest",
+          "name": "胸部",
+          "nameEn": "Chest",
+          "side": "mid",
+          "type": "region",
+          "boundingBox": {
+            "x": 200,
+            "y": 190,
+            "width": 200,
+            "height": 120
+          },
+          "centerPoint": {
+            "x": 300,
+            "y": 250
+          },
+          "clickRadius": 90
+        },
+        {
+          "id": "abdomen",
+          "name": "腹部",
+          "nameEn": "Abdomen",
+          "side": "mid",
+          "type": "region",
+          "boundingBox": {
+            "x": 200,
+            "y": 310,
+            "width": 200,
+            "height": 120
+          },
+          "centerPoint": {
+            "x": 300,
+            "y": 370
+          },
+          "clickRadius": 90
+        },
+        {
+          "id": "arm",
+          "name": "左臂",
+          "nameEn": "Left Arm",
+          "side": "left",
+          "type": "region",
+          "boundingBox": {
+            "x": 70,
+            "y": 200,
+            "width": 80,
+            "height": 200
+          },
+          "centerPoint": {
+            "x": 110,
+            "y": 300
+          },
+          "clickRadius": 70
+        },
+        {
+          "id": "arm",
+          "name": "右臂",
+          "nameEn": "Right Arm",
+          "side": "right",
+          "type": "region",
+          "boundingBox": {
+            "x": 450,
+            "y": 200,
+            "width": 80,
+            "height": 200
+          },
+          "centerPoint": {
+            "x": 490,
+            "y": 300
+          },
+          "clickRadius": 70
+        },
+        {
+          "id": "leg",
+          "name": "左腿",
+          "nameEn": "Left Leg",
+          "side": "left",
+          "type": "region",
+          "boundingBox": {
+            "x": 180,
+            "y": 430,
+            "width": 80,
+            "height": 300
+          },
+          "centerPoint": {
+            "x": 220,
+            "y": 580
+          },
+          "clickRadius": 70
+        },
+        {
+          "id": "leg",
+          "name": "右腿",
+          "nameEn": "Right Leg",
+          "side": "right",
+          "type": "region",
+          "boundingBox": {
+            "x": 340,
+            "y": 430,
+            "width": 80,
+            "height": 300
+          },
+          "centerPoint": {
+            "x": 380,
+            "y": 580
+          },
+          "clickRadius": 70
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "createdAt": "2026-01-15",
+    "lastUpdated": "2026-01-15",
+    "version": "1.0.0",
+    "description": "身體部位座標映射，用於 bodysurface.png 圖像的點擊檢測",
+    "calibrationNotes": "座標基於標準身體解剖圖比例定義，可根據實際圖像尺寸調整"
+  }
+}
