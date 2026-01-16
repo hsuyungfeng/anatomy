@@ -163,10 +163,7 @@
       "icon": "🫀",
       "color": "#ff6b9d",
       "imageIds": [
-        "allbodywithtext",
-        "bodysurface",
-        "femalebody",
-        "regionbodytext"
+        "bodysurface"
       ],
       "locations": [
         {
