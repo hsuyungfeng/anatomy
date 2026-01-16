@@ -503,7 +503,13 @@ class MedicalRecordApp {
     }
 
     if (saveBtn) {
-      saveBtn.addEventListener('click', () => this.saveDiseaseAnnotation());
+      saveBtn.addEventListener('click', () => {
+        if (this.currentSystemId === 'body') {
+          this.saveBodyOperation();
+        } else {
+          this.saveDiseaseAnnotation();
+        }
+      });
     }
 
     // 監聽按 Escape 關閉模態
@@ -1221,28 +1227,64 @@ class MedicalRecordApp {
       this.currentBodyRegion = structureInfo;
     }
 
-    // 初始化或更新疾病表單
-    const formContainer = $('#disease-form-container');
-    // 將 primary_teeth 系統轉換為 teeth（它們使用相同的疾病列表）
-    const diseaseSystemId = this.currentSystemId === 'primary_teeth' ? 'teeth' : this.currentSystemId;
-
-    if (formContainer && !this.diseaseForm) {
-      // 載入疾病資料並初始化表單（使用正確的系統 ID）
-      this.diseaseForm = new DiseaseForm({
-        container: formContainer,
-        systemId: diseaseSystemId,
-        diseaseData: this.anatomicalSystems
-      });
-      // 等待表單渲染完成
-      await this.diseaseForm.render();
-    } else if (this.diseaseForm) {
-      // 確保使用正確的系統 ID，然後重新渲染表單
-      if (this.diseaseForm.systemId !== diseaseSystemId) {
-        this.diseaseForm.systemId = diseaseSystemId;
-        this.diseaseForm.diseases = [];
-        await this.diseaseForm.loadDiseases(diseaseSystemId);
+    // 設置模態視窗標題
+    const modalTitle = document.getElementById('modal-title');
+    if (modalTitle) {
+      if (this.currentSystemId === 'body') {
+        modalTitle.textContent = this.currentLanguage === 'zh' ? '記錄操作/治療' : 'Record Operation/Treatment';
+      } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+        modalTitle.textContent = this.currentLanguage === 'zh' ? '新增疾病記錄' : 'Add Disease Record';
+      } else if (this.currentSystemId === 'eye') {
+        modalTitle.textContent = this.currentLanguage === 'zh' ? '新增眼睛結構信息' : 'Add Eye Structure Info';
       }
-      await this.diseaseForm.render();
+    }
+
+    // 初始化或更新疾病表單（身體系統使用操作表單，其他系統使用疾病表單）
+    const formContainer = $('#disease-form-container');
+    const operationFormContainer = $('#body-operation-form-container');
+
+    if (this.currentSystemId === 'body') {
+      // 身體系統 - 生成操作表單
+      if (structureInfo) {
+        const operationFormHTML = this.bodyOperationForm.generateFormHTML(structureInfo);
+        if (operationFormContainer) {
+          operationFormContainer.innerHTML = operationFormHTML;
+        }
+        if (formContainer) {
+          formContainer.innerHTML = ''; // 清空疾病表單容器
+        }
+
+        // 設置表單事件監聽
+        this.bodyOperationForm.setupSideButtonListeners();
+        this.bodyOperationForm.setupCharacterCounter();
+      }
+    } else {
+      // 其他系統 - 使用疾病表單
+      if (operationFormContainer) {
+        operationFormContainer.innerHTML = ''; // 清空操作表單容器
+      }
+
+      // 將 primary_teeth 系統轉換為 teeth（它們使用相同的疾病列表）
+      const diseaseSystemId = this.currentSystemId === 'primary_teeth' ? 'teeth' : this.currentSystemId;
+
+      if (formContainer && !this.diseaseForm) {
+        // 載入疾病資料並初始化表單（使用正確的系統 ID）
+        this.diseaseForm = new DiseaseForm({
+          container: formContainer,
+          systemId: diseaseSystemId,
+          diseaseData: this.anatomicalSystems
+        });
+        // 等待表單渲染完成
+        await this.diseaseForm.render();
+      } else if (this.diseaseForm) {
+        // 確保使用正確的系統 ID，然後重新渲染表單
+        if (this.diseaseForm.systemId !== diseaseSystemId) {
+          this.diseaseForm.systemId = diseaseSystemId;
+          this.diseaseForm.diseases = [];
+          await this.diseaseForm.loadDiseases(diseaseSystemId);
+        }
+        await this.diseaseForm.render();
+      }
     }
 
     // 顯示模態視窗和背景覆蓋
@@ -1671,6 +1713,90 @@ class MedicalRecordApp {
   }
 
   /**
+   * 保存身體系統操作記錄
+   */
+  async saveBodyOperation() {
+    try {
+      // 驗證表單
+      const validation = this.bodyOperationForm.validateForm();
+
+      if (!validation.valid) {
+        // 顯示驗證錯誤
+        const errors = validation.errors.join('\n');
+        showNotification(errors, 'warning');
+        console.warn('[saveBodyOperation] 表單驗證失敗:', validation.errors);
+        return;
+      }
+
+      // 收集表單數據
+      const operationData = this.bodyOperationForm.getFormData();
+
+      // 構建完整的操作記錄對象，與其他系統的記錄格式相容
+      const annotation = {
+        annotationId: generateUUID(),
+        position: this.currentClickPosition || { x: 0, y: 0 },
+
+        // 身體部位資訊
+        locationName: operationData.regionName,
+        locationNameEn: operationData.regionNameEn,
+        bodyRegionId: operationData.regionId,
+        side: operationData.side,
+
+        // 檢測元數據
+        detectionConfidence: this.currentBodyRegion ? (this.currentBodyRegion.confidence || 1.0) : 1.0,
+
+        // 操作資訊
+        operationType: operationData.operationType,
+        description: operationData.description,
+        notes: operationData.notes,
+
+        createdAt: operationData.timestamp,
+        updatedAt: operationData.timestamp
+      };
+
+      console.log('[saveBodyOperation] 身體系統操作記錄:', {
+        部位: annotation.locationName,
+        側邊: annotation.side,
+        操作: operationData.operationType,
+        信心度: `${(annotation.detectionConfidence * 100).toFixed(1)}%`
+      });
+
+      // 保存到記錄管理器（內存）
+      if (this.recordManager) {
+        this.recordManager.addAnnotation('body', annotation);
+        console.log('[saveBodyOperation] 已保存到記錄管理器');
+      }
+
+      // 保存到本地存儲（持久化）
+      this.saveMedicalRecord(annotation);
+      console.log('[saveBodyOperation] 已保存到本地存儲');
+
+      // 添加視覺標註到圖像
+      if (this.annotator) {
+        const system = this.anatomicalSystems.systems.find(s => s.id === 'body');
+        this.annotator.addAnnotation({
+          ...annotation,
+          color: system?.color || '#ff0000'
+        });
+        console.log('[saveBodyOperation] 已添加視覺標註到圖像');
+      }
+
+      // 關閉模態並重新加載病例列表
+      this.closeDiseaseModal();
+      await this.loadAndDisplayRecords();
+      console.log('[saveBodyOperation] 已關閉模態視窗並重新加載分組病例列表');
+
+      // 顯示成功提示
+      showNotification('✓ 身體系統操作記錄已成功保存', 'success');
+
+      console.log('[saveBodyOperation] 保存流程完成 ✓');
+    } catch (error) {
+      console.error('[saveBodyOperation] 保存失敗:', error);
+      showNotification('保存失敗，請重試', 'error');
+    }
+  }
+
+  /**
    * 更新病歷列表顯示（時間軸格式）
    * @param {string} systemId - 系統 ID
    */
@@ -1865,11 +1991,14 @@ class MedicalRecordApp {
     // 根據系統 ID 過濾記錄
     const filtered = records.filter(record => {
       if (systemId === 'eye') {
-        // 眼睛系統：有 structureId 或 side，沒有 fdiNumber
-        return record.structureId || (record.side && !record.fdiNumber);
+        // 眼睛系統：有 structureId 或 side，沒有 fdiNumber 和 bodyRegionId
+        return (record.structureId || (record.side && !record.fdiNumber)) && !record.bodyRegionId;
       } else if (systemId === 'teeth') {
         // 牙齒系統：有 fdiNumber 或 universalNumber
         return record.fdiNumber || record.universalNumber;
+      } else if (systemId === 'body') {
+        // 身體系統：有 bodyRegionId 或 operationType
+        return record.bodyRegionId || record.operationType;
       }
       return false;
     });
@@ -1888,13 +2017,19 @@ class MedicalRecordApp {
 
     // 按 structureId 分組
     records.forEach(record => {
-      // 區分牙齒和眼睛系統
+      // 區分身體、牙齒和眼睛系統
       let groupKey = '';
       let structureId = '';
       let structureName = '';
       let structureSide = '';
 
-      if (record.fdiNumber) {
+      if (record.bodyRegionId) {
+        // 身體系統：按 bodyRegionId 和 side 分組
+        groupKey = `${record.bodyRegionId}-${record.side}`;
+        structureId = record.bodyRegionId;
+        structureName = record.locationName;
+        structureSide = record.side;
+      } else if (record.fdiNumber) {
         // 牙齒系統：按 FDI 編號分組
         groupKey = record.fdiNumber || record.locationName;
         structureId = groupKey;
@@ -2039,8 +2174,14 @@ class MedicalRecordApp {
         sideText = '雙眼';
       } else if (group.structureSide === 'tooth') {
         sideText = '';
+      } else if (group.structureSide === 'mid') {
+        sideText = '中線';
+      } else if (group.structureSide === 'left') {
+        sideText = '左側';
+      } else if (group.structureSide === 'right') {
+        sideText = '右側';
       } else {
-        sideText = '其他';
+        sideText = '';
       }
 
       const sideBadge = sideText ? `<span class="structure-location">${sideText}</span>` : '';
@@ -2062,11 +2203,51 @@ class MedicalRecordApp {
 
         const timestamp = this.formatTimestamp(record.createdAt || record.timestamp);
 
-        // 處理疾病信息 - 只顯示第一個疾病，而不是所有疾病
-        let diseaseText = '';
-        if (record.diseases && Array.isArray(record.diseases)) {
+        // 構建 HTML
+        let html = `<div class="record-item__title">${record.locationName}`;
+
+        // 為眼睛和身體系統添加側邊信息
+        if (record.side && record.side !== 'tooth') {
+          let sideLabel = '';
+          if (['left', 'right', 'bilateral'].includes(record.side)) {
+            // 眼睛系統
+            sideLabel = record.side === 'left' ? '左眼' :
+                       record.side === 'right' ? '右眼' :
+                       record.side === 'bilateral' ? '雙眼' : '';
+          } else if (['mid', 'left', 'right'].includes(record.side)) {
+            // 身體系統
+            sideLabel = record.side === 'mid' ? '中線' :
+                       record.side === 'left' ? '左側' :
+                       record.side === 'right' ? '右側' : '';
+          }
+          if (sideLabel) {
+            html += ` <span class="record-item__side">(${sideLabel})</span>`;
+          }
+        }
+        html += `</div>`;
+        html += `<div class="record-item__timestamp">⏰ ${timestamp}</div>`;
+
+        // 處理疾病信息或操作類型
+        if (record.operationType) {
+          // 身體系統操作記錄
+          const operationTypes = {
+            'surgery': '手術',
+            'therapy': '治療',
+            'procedure': '程序',
+            'examination': '檢查',
+            'medication': '用藥',
+            'other': '其他'
+          };
+          const operationName = operationTypes[record.operationType] || record.operationType;
+          html += `<div class="record-item__disease">🏥 ${operationName}</div>`;
+          if (record.description) {
+            html += `<div class="record-item__description">📋 ${record.description}</div>`;
+          }
+        } else if (record.diseases && Array.isArray(record.diseases)) {
+          // 牙齒和眼睛系統疾病記錄
           if (record.diseases.length > 0) {
             const disease = record.diseases[0];  // 只取第一個疾病
+            let diseaseText = '';
             if (typeof disease === 'object' && disease.name) {
               diseaseText = disease.name;
               if (disease.id) {
@@ -2075,31 +2256,14 @@ class MedicalRecordApp {
             } else if (typeof disease === 'string') {
               diseaseText = disease;
             }
+            if (diseaseText) {
+              html += `<div class="record-item__disease">🏥 ${diseaseText}</div>`;
+            }
           }
         }
 
-        const notes = record.treatmentNotes || '';
-
-        // 構建 HTML - 包含結構名稱和眼睛位置
-        let html = `<div class="record-item__title">${record.locationName}`;
-
-        // 為眼睛系統添加側眼信息
-        if (record.side && record.side !== 'tooth') {
-          const sideLabel = record.side === 'left' ? '左眼' :
-                           record.side === 'right' ? '右眼' :
-                           record.side === 'bilateral' ? '雙眼' : '';
-          if (sideLabel) {
-            html += ` <span class="record-item__side">(${sideLabel})</span>`;
-          }
-        }
-        html += `</div>`;
-        html += `<div class="record-item__timestamp">⏰ ${timestamp}</div>`;
-
-        // 只顯示一個疾病
-        if (diseaseText) {
-          html += `<div class="record-item__disease">🏥 ${diseaseText}</div>`;
-        }
-
+        // 顯示備註（疾病系統使用 treatmentNotes，操作系統使用 notes）
+        const notes = record.treatmentNotes || record.notes || '';
         if (notes) {
           html += `<div class="record-item__notes">📝 ${notes}</div>`;
         }
@@ -2145,7 +2309,17 @@ class MedicalRecordApp {
       if (!records || records.length === 0) {
         const container = document.getElementById('record-list-container');
         if (container) {
-          container.innerHTML = `<p class="empty-message">暫無${this.currentSystemId === 'eye' ? '眼睛' : '牙齒'}系統的病例記錄</p>`;
+          let systemName = '';
+          if (this.currentSystemId === 'eye') {
+            systemName = '眼睛';
+          } else if (this.currentSystemId === 'body') {
+            systemName = '身體';
+          } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+            systemName = '牙齒';
+          } else {
+            systemName = '目前';
+          }
+          container.innerHTML = `<p class="empty-message">暫無${systemName}系統的病例記錄</p>`;
         }
         console.log(`[loadAndDisplayRecords] 沒有${this.currentSystemId}系統的病例記錄`);
         return;
