@@ -182,6 +182,12 @@ class MedicalRecordApp {
       this.diseaseVisualizer = new DiseaseVisualizationManager($('#image-canvas'));
     }
 
+    // 身體系統操作表單
+    if (typeof BodyOperationForm !== 'undefined') {
+      this.bodyOperationForm = new BodyOperationForm();
+      this.bodyOperationForm.init();
+    }
+
     // 疾病表單 (稍後初始化)
     // this.diseaseForm = new DiseaseForm();
 
