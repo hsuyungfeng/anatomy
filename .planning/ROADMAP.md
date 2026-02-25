@@ -56,8 +56,8 @@
 | Phase | Requirements | Status |
 |-------|--------------|--------|
 | (existing) | 牙齒/眼睛/身體系統 | ✓ Complete |
-| 1 | 數據導出 | Planned |
-| 2 | 數據分析 | Planned |
+| 1 | 數據導出 | ✓ Complete |
+| 2 | 數據分析 | ✓ Complete |
 | 3 | 權限管理 | Planned |
 
 **Total:** 7 requirements | 3 phases
