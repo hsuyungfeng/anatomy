@@ -6,6 +6,7 @@ class RecordStatistics {
   constructor() {
     this.dateFrom = null;
     this.dateTo = null;
+    this.systemFilter = '';
     this.barChart = null;
     this.pieChart = null;
   }
@@ -24,6 +25,30 @@ class RecordStatistics {
       console.error('[RecordStatistics] 獲取病歷失敗:', error);
       return [];
     }
+  }
+
+  /**
+   * 按系統篩選病歷
+   * @param {Array} records 病歷陣列
+   * @returns {Array} 篩選後的病歷
+   */
+  filterBySystem(records) {
+    if (!this.systemFilter) {
+      return records;
+    }
+
+    return records.map(record => {
+      if (!record.anatomicalSystems) return null;
+      
+      const filteredSystems = record.anatomicalSystems.filter(
+        system => system.systemId === this.systemFilter
+      );
+      
+      return {
+        ...record,
+        anatomicalSystems: filteredSystems
+      };
+    }).filter(r => r && r.anatomicalSystems && r.anatomicalSystems.length > 0);
   }
 
   /**
@@ -198,7 +223,8 @@ class RecordStatistics {
    */
   updateDisplay() {
     const records = this.getAllRecords();
-    const filteredRecords = this.filterByDateRange(records);
+    let filteredRecords = this.filterBySystem(records);
+    filteredRecords = this.filterByDateRange(filteredRecords);
     const stats = this.calculateStatistics(filteredRecords);
     const chartData = this.getChartData(stats);
 
@@ -208,6 +234,15 @@ class RecordStatistics {
 
     this.renderBarChart(chartData.barChart);
     this.renderPieChart(chartData.pieChart);
+  }
+
+  /**
+   * 設定系統篩選
+   * @param {string} system 系統 ID
+   */
+  setSystemFilter(system) {
+    this.systemFilter = system;
+    this.updateDisplay();
   }
 
   /**
@@ -227,8 +262,10 @@ class RecordStatistics {
   clearFilter() {
     this.dateFrom = null;
     this.dateTo = null;
+    this.systemFilter = '';
     document.getElementById('date-from').value = '';
     document.getElementById('date-to').value = '';
+    document.getElementById('system-filter').value = '';
     this.updateDisplay();
   }
 }

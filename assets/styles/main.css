@@ -474,6 +474,7 @@ body {
   border: 1px solid var(--color-border);
   border-radius: var(--size-border-radius-sm);
   font-size: var(--font-size-sm);
+  background: white;
 }
 
 .statistics-summary {

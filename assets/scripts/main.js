@@ -260,9 +260,11 @@ class MedicalRecordApp {
 
     if (applyFilterBtn) {
       applyFilterBtn.addEventListener('click', () => {
+        const systemFilter = $('#system-filter')?.value;
         const dateFrom = $('#date-from')?.value;
         const dateTo = $('#date-to')?.value;
         if (this.recordStatistics) {
+          this.recordStatistics.setSystemFilter(systemFilter);
           this.recordStatistics.setDateRange(dateFrom, dateTo);
         }
       });
