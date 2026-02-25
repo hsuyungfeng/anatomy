@@ -1,0 +1,239 @@
+/* ================================================
+   病歷統計模組
+   ================================================ */
+
+class RecordStatistics {
+  constructor() {
+    this.dateFrom = null;
+    this.dateTo = null;
+    this.barChart = null;
+    this.pieChart = null;
+  }
+
+  /**
+   * 獲取所有病歷數據
+   * @returns {Array} 病歷陣列
+   */
+  getAllRecords() {
+    try {
+      const recordIds = getFromLocalStorage('anatomy-record-ids', []);
+      return recordIds.map(id => 
+        getFromLocalStorage(`anatomy-record-${id}`)
+      ).filter(r => r !== null);
+    } catch (error) {
+      console.error('[RecordStatistics] 獲取病歷失敗:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 按時間範圍篩選病歷
+   * @param {Array} records 病歷陣列
+   * @returns {Array} 篩選後的病歷
+   */
+  filterByDateRange(records) {
+    if (!this.dateFrom && !this.dateTo) {
+      return records;
+    }
+
+    return records.filter(record => {
+      const recordDate = new Date(record.createdAt);
+      
+      if (this.dateFrom) {
+        const from = new Date(this.dateFrom);
+        from.setHours(0, 0, 0, 0);
+        if (recordDate < from) return false;
+      }
+      
+      if (this.dateTo) {
+        const to = new Date(this.dateTo);
+        to.setHours(23, 59, 59, 999);
+        if (recordDate > to) return false;
+      }
+      
+      return true;
+    });
+  }
+
+  /**
+   * 計算疾病統計
+   * @param {Array} records 病歷陣列
+   * @returns {Object} 統計結果
+   */
+  calculateStatistics(records) {
+    const diseaseCount = {};
+    let totalAnnotations = 0;
+    const systems = new Set();
+
+    records.forEach(record => {
+      if (record.anatomicalSystems) {
+        record.anatomicalSystems.forEach(system => {
+          systems.add(system.systemName || system.id);
+          
+          if (system.annotations) {
+            system.annotations.forEach(anno => {
+              totalAnnotations++;
+              
+              if (anno.diseases) {
+                anno.diseases.forEach(disease => {
+                  const key = `${disease.id} ${disease.name}`;
+                  diseaseCount[key] = (diseaseCount[key] || 0) + 1;
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+
+    return {
+      totalRecords: records.length,
+      totalAnnotations,
+      totalDiseases: Object.keys(diseaseCount).length,
+      totalSystems: systems.size,
+      diseaseCount
+    };
+  }
+
+  /**
+   * 獲取圖表數據
+   * @param {Object} stats 統計結果
+   * @returns {Object} 圖表數據
+   */
+  getChartData(stats) {
+    const sortedDiseases = Object.entries(stats.diseaseCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    const labels = sortedDiseases.map(([name]) => name);
+    const data = sortedDiseases.map(([, count]) => count);
+
+    const colors = [
+      '#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6',
+      '#1abc9c', '#34495e', '#e67e22', '#2c3e50', '#7f8c8d'
+    ];
+
+    return {
+      barChart: {
+        labels,
+        datasets: [{
+          label: '發生次數',
+          data,
+          backgroundColor: colors.slice(0, labels.length),
+          borderWidth: 1
+        }]
+      },
+      pieChart: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors.slice(0, labels.length),
+          borderWidth: 1
+        }]
+      }
+    };
+  }
+
+  /**
+   * 渲染長條圖
+   * @param {Object} chartData 圖表數據
+   */
+  renderBarChart(chartData) {
+    const ctx = document.getElementById('disease-bar-chart');
+    if (!ctx) return;
+
+    if (this.barChart) {
+      this.barChart.destroy();
+    }
+
+    this.barChart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * 渲染圓餅圖
+   * @param {Object} chartData 圖表數據
+   */
+  renderPieChart(chartData) {
+    const ctx = document.getElementById('disease-pie-chart');
+    if (!ctx) return;
+
+    if (this.pieChart) {
+      this.pieChart.destroy();
+    }
+
+    this.pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { font: { size: 10 } }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * 更新統計顯示
+   */
+  updateDisplay() {
+    const records = this.getAllRecords();
+    const filteredRecords = this.filterByDateRange(records);
+    const stats = this.calculateStatistics(filteredRecords);
+    const chartData = this.getChartData(stats);
+
+    document.getElementById('total-records').textContent = stats.totalRecords;
+    document.getElementById('total-diseases').textContent = stats.totalDiseases;
+    document.getElementById('total-annotations').textContent = stats.totalAnnotations;
+
+    this.renderBarChart(chartData.barChart);
+    this.renderPieChart(chartData.pieChart);
+  }
+
+  /**
+   * 設定日期範圍
+   * @param {string} from 開始日期
+   * @param {string} to 結束日期
+   */
+  setDateRange(from, to) {
+    this.dateFrom = from;
+    this.dateTo = to;
+    this.updateDisplay();
+  }
+
+  /**
+   * 清除篩選
+   */
+  clearFilter() {
+    this.dateFrom = null;
+    this.dateTo = null;
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
+    this.updateDisplay();
+  }
+}
+
+// 導出
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = RecordStatistics;
+}

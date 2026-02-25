@@ -182,6 +182,11 @@ class MedicalRecordApp {
       this.diseaseVisualizer = new DiseaseVisualizationManager($('#image-canvas'));
     }
 
+    // 病歷統計管理器
+    if (typeof RecordStatistics !== 'undefined') {
+      this.recordStatistics = new RecordStatistics();
+    }
+
     // 身體系統操作表單
     if (typeof BodyOperationForm !== 'undefined') {
       this.bodyOperationForm = new BodyOperationForm();
@@ -248,6 +253,28 @@ class MedicalRecordApp {
     $$('.record-tab').forEach(tab => {
       tab.addEventListener('click', (e) => this.handleRecordTabClick(e));
     });
+
+    // 統計分析篩選按鈕
+    const applyFilterBtn = $('#apply-filter-btn');
+    const clearFilterBtn = $('#clear-filter-btn');
+
+    if (applyFilterBtn) {
+      applyFilterBtn.addEventListener('click', () => {
+        const dateFrom = $('#date-from')?.value;
+        const dateTo = $('#date-to')?.value;
+        if (this.recordStatistics) {
+          this.recordStatistics.setDateRange(dateFrom, dateTo);
+        }
+      });
+    }
+
+    if (clearFilterBtn) {
+      clearFilterBtn.addEventListener('click', () => {
+        if (this.recordStatistics) {
+          this.recordStatistics.clearFilter();
+        }
+      });
+    }
 
     // 模態視窗
     this.setupDiseaseModal();
@@ -1923,6 +1950,11 @@ class MedicalRecordApp {
     const panel = $(`#${panelId}`);
     if (panel) {
       panel.classList.add('record-panel--active');
+    }
+
+    // 如果切換到統計標籤，更新統計數據
+    if (tabName === 'statistics' && this.recordStatistics) {
+      this.recordStatistics.updateDisplay();
     }
   }
 

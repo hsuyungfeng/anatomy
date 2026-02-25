@@ -232,7 +232,7 @@
 
       <!-- 右側：病歷列表和操作 -->
       <aside class="record-section" aria-label="病歷管理區域">
-        <!-- 標籤頁：僅病歷列表 -->
+        <!-- 標籤頁：病歷列表和統計分析 -->
         <div class="record-tabs" role="tablist" aria-label="病歷操作">
           <button
             class="record-tab record-tab--active"
@@ -244,6 +244,16 @@
             <i class="fas fa-list"></i>
             <span class="record-tab__label">病歷列表</span>
           </button>
+          <button
+            class="record-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="statistics-panel"
+            data-tab="statistics"
+            data-en="Statistics">
+            <i class="fas fa-chart-bar"></i>
+            <span class="record-tab__label">統計分析</span>
+          </button>
         </div>
 
         <!-- 病歷列表面板 -->
@@ -253,6 +263,58 @@
               <p class="empty-state__text" data-en="No records yet. Click on the image to add.">
                 尚無病歷記錄。點擊圖像開始標註。
               </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 統計分析面板 -->
+        <div id="statistics-panel" class="record-panel" role="tabpanel" hidden>
+          <div class="statistics-container">
+            <!-- 時間範圍篩選 -->
+            <div class="statistics-filter">
+              <h3 class="statistics-filter__title">篩選條件</h3>
+              <div class="statistics-filter__group">
+                <label for="date-from">從:</label>
+                <input type="date" id="date-from" class="statistics-filter__input">
+              </div>
+              <div class="statistics-filter__group">
+                <label for="date-to">到:</label>
+                <input type="date" id="date-to" class="statistics-filter__input">
+              </div>
+              <button class="btn btn--secondary" id="apply-filter-btn">
+                套用篩選
+              </button>
+              <button class="btn btn--secondary" id="clear-filter-btn">
+                清除
+              </button>
+            </div>
+
+            <!-- 統計摘要 -->
+            <div class="statistics-summary">
+              <div class="stat-card">
+                <div class="stat-card__value" id="total-records">0</div>
+                <div class="stat-card__label">總記錄數</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__value" id="total-diseases">0</div>
+                <div class="stat-card__label">疾病種類</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__value" id="total-annotations">0</div>
+                <div class="stat-card__label">總標註數</div>
+              </div>
+            </div>
+
+            <!-- 圖表區域 -->
+            <div class="statistics-charts">
+              <div class="chart-container">
+                <h4 class="chart-title">疾病發生頻率</h4>
+                <canvas id="disease-bar-chart"></canvas>
+              </div>
+              <div class="chart-container">
+                <h4 class="chart-title">疾病分佈</h4>
+                <canvas id="disease-pie-chart"></canvas>
+              </div>
             </div>
           </div>
         </div>
@@ -341,6 +403,9 @@
 
   <!-- Tesseract.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6"></script>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- JavaScript 模組 -->
   <script src="assets/scripts/utils.js"></script>
@@ -355,6 +420,7 @@
   <script src="assets/scripts/ocr-handler.js"></script>
   <script src="assets/scripts/disease-data-migration.js"></script>
   <script src="assets/scripts/record-manager.js"></script>
+  <script src="assets/scripts/record-statistics.js"></script>
   <script src="assets/scripts/disease-visualization.js"></script>
   <script src="assets/scripts/main.js"></script>
 </body>

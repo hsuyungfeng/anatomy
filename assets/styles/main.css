@@ -437,6 +437,94 @@ body {
   text-align: center;
 }
 
+/* 統計分析面板 */
+.statistics-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.statistics-filter {
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--size-border-radius);
+}
+
+.statistics-filter__title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.statistics-filter__group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.statistics-filter__group label {
+  min-width: 30px;
+  font-size: var(--font-size-sm);
+}
+
+.statistics-filter__input {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--size-border-radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.statistics-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.stat-card {
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--size-border-radius);
+  text-align: center;
+}
+
+.stat-card__value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.stat-card__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.statistics-charts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.chart-container {
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--size-border-radius);
+}
+
+.chart-title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
+#disease-bar-chart,
+#disease-pie-chart {
+  max-height: 200px;
+}
+
 /* ===== 按鈕樣式 ===== */
 .btn {
   display: inline-flex;
