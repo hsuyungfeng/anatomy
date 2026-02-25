@@ -219,10 +219,20 @@ class MedicalRecordApp {
 
     // 導出按鈕
     const exportTextBtn = $('#export-text-btn');
+    const exportCsvBtn = $('#export-csv-btn');
+    const exportPdfBtn = $('#export-pdf-btn');
     const clearBtn = $('#clear-records-btn');
 
     if (exportTextBtn) {
       exportTextBtn.addEventListener('click', () => this.exportRecord('text'));
+    }
+
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener('click', () => this.exportRecord('csv'));
+    }
+
+    if (exportPdfBtn) {
+      exportPdfBtn.addEventListener('click', () => this.exportRecord('pdf'));
     }
 
     if (clearBtn) {

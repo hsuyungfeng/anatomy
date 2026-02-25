@@ -336,8 +336,76 @@ class RecordManager {
   }
 
   /**
+   * 匯出病歷為 CSV 格式
+   * @param {string} recordId - 病歷 ID（若為空則匯出當前病歷）
+   * @returns {string} CSV 字串
+   */
+  exportAsCSV(recordId = null) {
+    const record = recordId
+      ? getFromLocalStorage(`${this.storageKeyPrefix}-${recordId}`)
+      : this.getCurrentRecord();
+
+    if (!record) return '';
+
+    const rows = [];
+    
+    rows.push(['病歷ID', '患者ID', '創建時間', '更新時間']);
+    rows.push([
+      record.recordId,
+      record.patientId || '',
+      record.createdAt,
+      record.updatedAt
+    ]);
+
+    rows.push([]);
+    rows.push(['系統', '位置', '疾病ID', '疾病名稱', '療程摘要', '時間']);
+
+    if (record.anatomicalSystems && record.anatomicalSystems.length > 0) {
+      record.anatomicalSystems.forEach(system => {
+        if (system.annotations && system.annotations.length > 0) {
+          system.annotations.forEach(anno => {
+            if (anno.diseases && anno.diseases.length > 0) {
+              anno.diseases.forEach(disease => {
+                rows.push([
+                  system.systemName || system.id || '',
+                  anno.locationName || '',
+                  disease.id || '',
+                  disease.name || '',
+                  anno.treatmentNotes || '',
+                  anno.createdAt || ''
+                ]);
+              });
+            } else {
+              rows.push([
+                system.systemName || system.id || '',
+                anno.locationName || '',
+                '',
+                '',
+                anno.treatmentNotes || '',
+                anno.createdAt || ''
+              ]);
+            }
+          });
+        }
+      });
+    }
+
+    const csvContent = rows.map(row => 
+      row.map(cell => {
+        const str = String(cell);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      }).join(',')
+    ).join('\r\n');
+
+    return '\ufeff' + csvContent;
+  }
+
+  /**
    * 下載病歷
-   * @param {string} format - 格式 ('json' 或 'text')
+   * @param {string} format - 格式 ('json', 'text', 'csv', 'pdf')
    * @param {string} recordId - 病歷 ID
    */
   downloadRecord(format = 'json', recordId = null) {
@@ -356,9 +424,221 @@ class RecordManager {
     } else if (format === 'text') {
       const content = this.exportAsText(recordId);
       downloadFile(content, `${filename}.txt`, 'text/plain');
+    } else if (format === 'csv') {
+      const content = this.exportAsCSV(recordId);
+      downloadFile(content, `${filename}.csv`, 'text/csv;charset=utf-8');
+    } else if (format === 'pdf') {
+      this.exportAsPDF(recordId, filename);
     }
 
     dispatchEvent('record:downloaded', { recordId, format });
+  }
+
+  /**
+   * 匯出病歷為 PDF 並下載
+   * @param {string} recordId - 病歷 ID
+   * @param {string} filename - 檔案名稱
+   */
+  exportAsPDF(recordId = null, filename = '') {
+    const record = recordId
+      ? getFromLocalStorage(`${this.storageKeyPrefix}-${recordId}`)
+      : this.getCurrentRecord();
+
+    if (!record) return;
+
+    const printContent = this.generatePDFContent(record);
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('無法開啟新視窗，請檢查瀏覽器設定');
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>醫療病歷報告</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { 
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; 
+            padding: 40px; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            line-height: 1.6;
+            color: #333;
+          }
+          h1 { 
+            text-align: center; 
+            color: #2c3e50; 
+            border-bottom: 3px solid #3498db; 
+            padding-bottom: 15px; 
+            margin-bottom: 30px;
+          }
+          h2 { 
+            color: #2980b9; 
+            margin-top: 25px; 
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+          }
+          .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+          }
+          .info-item { display: flex; }
+          .info-label { font-weight: bold; min-width: 80px; }
+          .timeline { border-left: 2px solid #3498db; padding-left: 20px; margin-left: 10px; }
+          .timeline-item { 
+            margin-bottom: 20px; 
+            position: relative;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+          }
+          .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 50%;
+          }
+          .timeline-date { color: #7f8c8d; font-size: 0.9em; }
+          .timeline-location { font-weight: bold; color: #2c3e50; }
+          .timeline-diseases { color: #e74c3c; margin: 5px 0; }
+          .timeline-notes { color: #27ae60; font-style: italic; }
+          .stats { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px;
+            margin-top: 20px;
+          }
+          .stat-box { 
+            text-align: center; 
+            padding: 15px; 
+            background: #ecf0f1; 
+            border-radius: 5px;
+          }
+          .stat-value { font-size: 2em; font-weight: bold; color: #3498db; }
+          .stat-label { color: #7f8c8d; }
+          .footer { 
+            text-align: center; 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 0.9em;
+          }
+          @media print {
+            body { padding: 20px; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+        <div class="footer">
+          <p>此報告由牙科解剖學習與診斷系統生成</p>
+          <p>生成時間: ${new Date().toLocaleString('zh-TW')}</p>
+        </div>
+        <div class="no-print" style="text-align: center; margin-top: 30px;">
+          <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+            列印 / 另存為 PDF
+          </button>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+
+  /**
+   * 生成 PDF 內容 HTML
+   * @param {object} record - 病歷資料
+   * @returns {string} HTML 內容
+   */
+  generatePDFContent(record) {
+    let html = `<h1>醫療結構化病歷報告</h1>`;
+    
+    html += `<div class="info-grid">`;
+    html += `<div class="info-item"><span class="info-label">病歷ID:</span> ${record.recordId}</div>`;
+    html += `<div class="info-item"><span class="info-label">患者ID:</span> ${record.patientId || '未指定'}</div>`;
+    html += `<div class="info-item"><span class="info-label">創建時間:</span> ${formatDateTime(new Date(record.createdAt))}</div>`;
+    html += `<div class="info-item"><span class="info-label">更新時間:</span> ${formatDateTime(new Date(record.updatedAt))}</div>`;
+    html += `</div>`;
+
+    const allAnnotations = [];
+    let totalAnnotations = 0;
+    let diseaseSet = new Set();
+
+    if (record.anatomicalSystems && record.anatomicalSystems.length > 0) {
+      record.anatomicalSystems.forEach(system => {
+        if (system.annotations && system.annotations.length > 0) {
+          system.annotations.forEach(anno => {
+            totalAnnotations++;
+            const annotation = {
+              ...anno,
+              systemName: system.systemName,
+              createdAt: anno.createdAt || new Date().toISOString()
+            };
+            allAnnotations.push(annotation);
+
+            if (anno.diseases && anno.diseases.length > 0) {
+              anno.diseases.forEach(disease => {
+                diseaseSet.add(disease.name);
+              });
+            }
+          });
+        }
+      });
+    }
+
+    allAnnotations.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    html += `<h2>治療時間軸</h2>`;
+    html += `<div class="timeline">`;
+
+    if (allAnnotations.length > 0) {
+      allAnnotations.forEach((anno, index) => {
+        const timestamp = formatDateTime(new Date(anno.createdAt), 'YYYY-MM-DD HH:mm');
+        html += `<div class="timeline-item">`;
+        html += `<div class="timeline-date">${timestamp}</div>`;
+        html += `<div class="timeline-location">${anno.systemName} - ${anno.locationName || '未知位置'}</div>`;
+        
+        if (anno.diseases && anno.diseases.length > 0) {
+          const diseaseList = anno.diseases.map(d => `${d.id} ${d.name}`).join(', ');
+          html += `<div class="timeline-diseases">疾病: ${diseaseList}</div>`;
+        }
+        
+        if (anno.treatmentNotes) {
+          html += `<div class="timeline-notes">摘要: ${anno.treatmentNotes}</div>`;
+        }
+        html += `</div>`;
+      });
+    } else {
+      html += `<p>(尚無治療記錄)</p>`;
+    }
+
+    html += `</div>`;
+
+    html += `<h2>統計資訊</h2>`;
+    html += `<div class="stats">`;
+    html += `<div class="stat-box"><div class="stat-value">${totalAnnotations}</div><div class="stat-label">總標註數</div></div>`;
+    html += `<div class="stat-box"><div class="stat-value">${record.anatomicalSystems ? record.anatomicalSystems.length : 0}</div><div class="stat-label">系統數量</div></div>`;
+    html += `<div class="stat-box"><div class="stat-value">${diseaseSet.size}</div><div class="stat-label">疾病種類</div></div>`;
+    html += `</div>`;
+
+    return html;
   }
 
   /**
