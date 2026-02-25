@@ -37,17 +37,19 @@
 
 ## Phase 3: 用戶權限管理
 
-**Goal:** 添加用戶認證與權限控制
+~~**Goal:** 添加用戶認證與權限控制~~
 
-**Requirements:**
+~~**Requirements:**
 - [ ] AUTH-01: 用戶登入/註冊
 - [ ] AUTH-02: 患者資料隔離
-- [ ] AUTH-03: 數據加密存儲
+- [ ] AUTH-03: 數據加密存儲~~
 
-**Success Criteria:**
+~~**Success Criteria:**
 1. 用戶可以創建帳戶
 2. 各用戶只能訪問自己的病歷
-3. 敏感數據加密存儲
+3. 敏感數據加密存儲~~
+
+**狀態:** 不需要（單機使用）
 
 ---
 
@@ -58,6 +60,6 @@
 | (existing) | 牙齒/眼睛/身體系統 | ✓ Complete |
 | 1 | 數據導出 | ✓ Complete |
 | 2 | 數據分析 | ✓ Complete |
-| 3 | 權限管理 | Planned |
+| 3 | 用戶權限 | ✗ Not Needed |
 
-**Total:** 7 requirements | 3 phases
+**Milestone:** Complete ✓

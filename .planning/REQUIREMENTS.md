@@ -19,13 +19,9 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: User login/registration
-- [ ] **AUTH-02**: Patient data isolation
-- [ ] **AUTH-03**: Encrypted data storage
-
-## v2 Requirements
-
-(None currently)
+~~- [ ] **AUTH-01**: User login/registration~~
+~~- [ ] **AUTH-02**: Patient data isolation~~
+~~- [ ] **AUTH-03**: Encrypted data storage~~
 
 ## Out of Scope
 
@@ -33,6 +29,7 @@
 |---------|--------|
 | Backend server | Pure client-side application |
 | Multi-user collaboration | Single-user use case |
+| User authentication | Not needed for local use |
 
 ## Traceability
 
