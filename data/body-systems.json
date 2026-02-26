@@ -2,256 +2,144 @@
   "systemId": "body",
   "systemName": "身體系統",
   "systemNameEn": "Body System",
-  "description": "體表解剖系統，包含 8 個基本身體部位及細分結構",
+  "description": "體表解剖系統，包含頭部、頸部、背部、軀幹及四肢",
   "lastUpdated": "2026-02-26",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "bodyRegions": [
     {
       "id": "head",
       "nameZh": "頭部",
       "nameEn": "Head",
       "side": "mid",
-      "description": "頭部及头皮區域",
+      "description": "頭部區域",
       "subRegions": [
-        {"id": "head-scalp", "nameZh": "头皮", "nameEn": "Scalp"},
         {"id": "head-forehead", "nameZh": "前額", "nameEn": "Forehead"},
-        {"id": "head-face", "nameZh": "面部", "nameEn": "Face"},
+        {"id": "head-eyebrow", "nameZh": "眉毛", "nameEn": "Eyebrow"},
+        {"id": "head-eyebrow-r", "nameZh": "右眉毛", "nameEn": "Right Eyebrow"},
+        {"id": "head-eye", "nameZh": "眼睛", "nameEn": "Eye"},
+        {"id": "head-eye-r", "nameZh": "右眼", "nameEn": "Right Eye"},
         {"id": "head-ear", "nameZh": "耳朵", "nameEn": "Ear"},
-        {"id": "head-skull", "nameZh": "顱骨", "nameEn": "Skull"}
-      ],
-      "commonDiseases": {
-        "skin": ["脂漏性皮膚炎", "头皮癬", "毛囊炎", "痤瘡", "單純疱疹"],
-        "subcutaneous": ["皮下囊腫", "血腫", "皮脂腺囊腫", "脂肪瘤"]
-      },
-      "icdCodes": {
-        "脂漏性皮膚炎": "L21.9",
-        "头皮癬": "B35.0",
-        "毛囊炎": "L73.9",
-        "痤瘡": "L70.9",
-        "單純疱疹": "B00.9",
-        "皮下囊腫": "L72.9",
-        "血腫": "T14.8",
-        "皮脂腺囊腫": "L72.1",
-        "脂肪瘤": "D17.9"
-      }
+        {"id": "head-ear-r", "nameZh": "右耳朵", "nameEn": "Right Ear"},
+        {"id": "head-nose", "nameZh": "鼻子", "nameEn": "Nose"},
+        {"id": "head-cheek", "nameZh": "臉頰", "nameEn": "Cheek"},
+        {"id": "head-cheek-r", "nameZh": "右臉頰", "nameEn": "Right Cheek"},
+        {"id": "head-lips", "nameZh": "嘴唇", "nameEn": "Lips"},
+        {"id": "head-chin", "nameZh": "下巴", "nameEn": "Chin"}
+      ]
     },
     {
       "id": "neck",
       "nameZh": "頸部",
       "nameEn": "Neck",
       "side": "mid",
-      "description": "頸部皮膚及頸部結構",
+      "description": "頸部區域",
       "subRegions": [
-        {"id": "neck-anterior", "nameZh": "頸前", "nameEn": "Anterior Neck"},
-        {"id": "neck-posterior", "nameZh": "頸後", "nameEn": "Posterior Neck"},
-        {"id": "neck-lateral", "nameZh": "頸側", "nameEn": "Lateral Neck"},
-        {"id": "neck-throat", "nameZh": "喉嚨", "nameEn": "Throat"}
-      ],
-      "commonDiseases": {
-        "skin": ["頸部皮炎", "扁平疣", "脂漏性皮膚炎", "帶狀疱疹"],
-        "subcutaneous": ["淋巴結腫大", "甲狀腺結節", "頸部膿腫", "囊腫"]
-      },
-      "icdCodes": {
-        "頸部皮炎": "L23.9",
-        "扁平疣": "B07.8",
-        "脂漏性皮膚炎": "L21.9",
-        "帶狀疱疹": "B02.9",
-        "淋巴結腫大": "R59.1",
-        "甲狀腺結節": "E04.1",
-        "頸部膿腫": "L02.1",
-        "囊腫": "L72.9"
-      }
+        {"id": "neck", "nameZh": "頸部", "nameEn": "Neck"},
+        {"id": "neck-nape", "nameZh": "後頸", "nameEn": "Nape"}
+      ]
     },
     {
-      "id": "chest",
-      "nameZh": "胸部",
-      "nameEn": "Chest",
+      "id": "back",
+      "nameZh": "背部",
+      "nameEn": "Back",
       "side": "mid",
-      "description": "胸部皮膚及胸腔",
+      "description": "背部區域",
       "subRegions": [
+        {"id": "back", "nameZh": "背部", "nameEn": "Back"}
+      ]
+    },
+    {
+      "id": "torso",
+      "nameZh": "軀幹",
+      "nameEn": "Torso",
+      "side": "mid",
+      "description": "軀幹區域（胸、腹、鼠蹊）",
+      "subRegions": [
+        {"id": "chest", "nameZh": "胸", "nameEn": "Chest"},
         {"id": "chest-breast", "nameZh": "乳房", "nameEn": "Breast"},
-        {"id": "chest-sternum", "nameZh": "胸骨", "nameEn": "Sternum"},
-        {"id": "chest-ribs", "nameZh": "肋骨", "nameEn": "Ribs"},
-        {"id": "chest-upper", "nameZh": "上胸", "nameEn": "Upper Chest"},
-        {"id": "chest-lateral", "nameZh": "側胸", "nameEn": "Lateral Chest"}
-      ],
-      "commonDiseases": {
-        "skin": ["濕疹", "帶狀疱疹", "接觸性皮膚炎", "乳頭濕疹", "皮膚結節"],
-        "subcutaneous": ["脂肪瘤", "乳腺結節", "乳腺炎", "乳房膿腫", "淋巴結"]
-      },
-      "icdCodes": {
-        "濕疹": "L30.9",
-        "帶狀疱疹": "B02.9",
-        "接觸性皮膚炎": "L25.9",
-        "乳頭濕疹": "L30.1",
-        "皮膚結節": "L91.9",
-        "脂肪瘤": "D17.9",
-        "乳腺結節": "N63",
-        "乳腺炎": "N61",
-        "乳房膿腫": "N61.1",
-        "淋巴結": "R59.1"
-      }
-    },
-    {
-      "id": "abdomen",
-      "nameZh": "腹部",
-      "nameEn": "Abdomen",
-      "side": "mid",
-      "description": "腹部皮膚及腹部結構",
-      "subRegions": [
+        {"id": "chest-breast-r", "nameZh": "右乳房", "nameEn": "Right Breast"},
         {"id": "abdomen-upper", "nameZh": "上腹", "nameEn": "Upper Abdomen"},
-        {"id": "abdomen-lower", "nameZh": "下腹", "nameEn": "Lower Abdomen"},
+        {"id": "abdomen", "nameZh": "腹部", "nameEn": "Abdominal"},
         {"id": "abdomen-umbilical", "nameZh": "肚臍", "nameEn": "Umbilical"},
-        {"id": "abdomen-flank", "nameZh": "側腹", "nameEn": "Flank"},
-        {"id": "abdomen-inguinal", "nameZh": "腹股溝", "nameEn": "Inguinal"}
-      ],
-      "commonDiseases": {
-        "skin": ["蕁麻疹", "皮膚感染", "腹部皮炎", "色素沉著", "妊娠紋"],
-        "subcutaneous": ["疝氣", "皮下膿瘍", "腹部腫塊", "脂肪瘤", "疤痕"]
-      },
-      "icdCodes": {
-        "蕁麻疹": "L50.9",
-        "皮膚感染": "L08.9",
-        "腹部皮炎": "L23.9",
-        "色素沉著": "L81.9",
-        "妊娠紋": "L90.6",
-        "疝氣": "K40.9",
-        "皮下膿瘍": "L02.2",
-        "腹部腫塊": "R19.0",
-        "脂肪瘤": "D17.9",
-        "疤痕": "L90.5"
-      }
+        {"id": "groin-mons", "nameZh": "恥丘", "nameEn": "Mons"},
+        {"id": "groin", "nameZh": "腹股溝", "nameEn": "Groin"},
+        {"id": "groin-vulva", "nameZh": "外陰", "nameEn": "Vulva"},
+        {"id": "groin-penis", "nameZh": "陰莖", "nameEn": "Penis"},
+        {"id": "groin-scrotum", "nameZh": "陰囊", "nameEn": "Scrotum"}
+      ]
     },
     {
-      "id": "arm-left",
-      "nameZh": "左手臂",
-      "nameEn": "Left Arm",
+      "id": "upper-limb-l",
+      "nameZh": "左上肢",
+      "nameEn": "Left Upper Limb",
       "side": "left",
-      "description": "左上肢（肩膀、手臂、手）",
+      "description": "左上肢（肩、腋、手臂、肘、前臂、腕、手、指）",
       "subRegions": [
-        {"id": "arm-left-shoulder", "nameZh": "左肩", "nameEn": "Left Shoulder"},
-        {"id": "arm-left-upper", "nameZh": "左上臂", "nameEn": "Left Upper Arm"},
-        {"id": "arm-left-elbow", "nameZh": "左肘", "nameEn": "Left Elbow"},
-        {"id": "arm-left-forearm", "nameZh": "左前臂", "nameEn": "Left Forearm"},
-        {"id": "arm-left-wrist", "nameZh": "左手腕", "nameEn": "Left Wrist"},
-        {"id": "arm-left-hand", "nameZh": "左手", "nameEn": "Left Hand"},
-        {"id": "arm-left-fingers", "nameZh": "左手指", "nameEn": "Left Fingers"}
-      ],
-      "commonDiseases": {
-        "skin": ["濕疹", "蚊蟲叮咬", "蜂窩性組織炎", "皮膚真菌感染", "單純疱疹"],
-        "subcutaneous": ["肌肉挫傷", "皮下血腫", "肌腱炎", "滑囊炎", "腕隧道症候群"]
-      },
-      "icdCodes": {
-        "濕疹": "L30.9",
-        "蚊蟲叮咬": "L30.2",
-        "蜂窩性組織炎": "L03.9",
-        "皮膚真菌感染": "B35.9",
-        "單純疱疹": "B00.9",
-        "肌肉挫傷": "S46.9",
-        "皮下血腫": "T14.8",
-        "肌腱炎": "M76.9",
-        "滑囊炎": "M71.9",
-        "腕隧道症候群": "G56.0"
-      }
+        {"id": "shoulder-l", "nameZh": "左肩", "nameEn": "Left Shoulder"},
+        {"id": "axilla-l", "nameZh": "左腋下", "nameEn": "Left Axilla"},
+        {"id": "arm-l", "nameZh": "左上臂", "nameEn": "Left Arm"},
+        {"id": "elbow-l", "nameZh": "左手肘", "nameEn": "Left Elbow"},
+        {"id": "forearm-l", "nameZh": "左前臂", "nameEn": "Left Forearm"},
+        {"id": "wrist-l", "nameZh": "左手腕", "nameEn": "Left Wrist"},
+        {"id": "hand-l", "nameZh": "左手", "nameEn": "Left Hand"},
+        {"id": "fingers-l", "nameZh": "左手指", "nameEn": "Left Fingers"}
+      ]
     },
     {
-      "id": "arm-right",
-      "nameZh": "右手臂",
-      "nameEn": "Right Arm",
+      "id": "upper-limb-r",
+      "nameZh": "右上肢",
+      "nameEn": "Right Upper Limb",
       "side": "right",
-      "description": "右上肢（肩膀、手臂、手）",
+      "description": "右上肢（肩、腋、手臂、肘、前臂、腕、手、指）",
       "subRegions": [
-        {"id": "arm-right-shoulder", "nameZh": "右肩", "nameEn": "Right Shoulder"},
-        {"id": "arm-right-upper", "nameZh": "右上臂", "nameEn": "Right Upper Arm"},
-        {"id": "arm-right-elbow", "nameZh": "右肘", "nameEn": "Right Elbow"},
-        {"id": "arm-right-forearm", "nameZh": "右前臂", "nameEn": "Right Forearm"},
-        {"id": "arm-right-wrist", "nameZh": "右手腕", "nameEn": "Right Wrist"},
-        {"id": "arm-right-hand", "nameZh": "右手", "nameEn": "Right Hand"},
-        {"id": "arm-right-fingers", "nameZh": "右手指", "nameEn": "Right Fingers"}
-      ],
-      "commonDiseases": {
-        "skin": ["濕疹", "蚊蟲叮咬", "蜂窩性組織炎", "皮膚真菌感染", "單純疱疹"],
-        "subcutaneous": ["肌肉挫傷", "皮下血腫", "肌腱炎", "滑囊炎", "腕隧道症候群"]
-      },
-      "icdCodes": {
-        "濕疹": "L30.9",
-        "蚊蟲叮咬": "L30.2",
-        "蜂窩性組織炎": "L03.9",
-        "皮膚真菌感染": "B35.9",
-        "單純疱疹": "B00.9",
-        "肌肉挫傷": "S46.9",
-        "皮下血腫": "T14.8",
-        "肌腱炎": "M76.9",
-        "滑囊炎": "M71.9",
-        "腕隧道症候群": "G56.0"
-      }
+        {"id": "shoulder-r", "nameZh": "右肩", "nameEn": "Right Shoulder"},
+        {"id": "axilla-r", "nameZh": "右腋下", "nameEn": "Right Axilla"},
+        {"id": "arm-r", "nameZh": "右上臂", "nameEn": "Right Arm"},
+        {"id": "elbow-r", "nameZh": "右手肘", "nameEn": "Right Elbow"},
+        {"id": "forearm-r", "nameZh": "右前臂", "nameEn": "Right Forearm"},
+        {"id": "wrist-r", "nameZh": "右手腕", "nameEn": "Right Wrist"},
+        {"id": "hand-r", "nameZh": "右手", "nameEn": "Right Hand"},
+        {"id": "fingers-r", "nameZh": "右手指", "nameEn": "Right Fingers"}
+      ]
     },
     {
-      "id": "leg-left",
-      "nameZh": "左腿部",
-      "nameEn": "Left Leg",
+      "id": "lower-limb-l",
+      "nameZh": "左下肢",
+      "nameEn": "Left Lower Limb",
       "side": "left",
-      "description": "左下肢（大腿、小腿、腳）",
+      "description": "左下肢（髖、臀、腿、膝、腿、踝、腳、跟）",
       "subRegions": [
-        {"id": "leg-left-thigh", "nameZh": "左大腿", "nameEn": "Left Thigh"},
-        {"id": "leg-left-knee", "nameZh": "左膝蓋", "nameEn": "Left Knee"},
-        {"id": "leg-left-calf", "nameZh": "左小腿", "nameEn": "Left Calf"},
-        {"id": "leg-left-ankle", "nameZh": "左腳踝", "nameEn": "Left Ankle"},
-        {"id": "leg-left-foot", "nameZh": "左腳", "nameEn": "Left Foot"},
-        {"id": "leg-left-toes", "nameZh": "左腳趾", "nameEn": "Left Toes"}
-      ],
-      "commonDiseases": {
-        "skin": ["靜脈炎皮膚變化", "黴菌感染", "運動員腳", "濕疹", "皮膚潰瘍"],
-        "subcutaneous": ["深層靜脈栓塞", "肌肉拉傷", "膝蓋關節炎", "踝關節扭傷", "半月板損傷"]
-      },
-      "icdCodes": {
-        "靜脈炎皮膚變化": "I87.2",
-        "黴菌感染": "B35.9",
-        "運動員腳": "B35.3",
-        "濕疹": "L30.9",
-        "皮膚潰疹": "L89.9",
-        "深層靜脈栓塞": "I82.4",
-        "肌肉拉傷": "S76.9",
-        "膝蓋關節炎": "M17.9",
-        "踝關節扭傷": "S93.4",
-        "半月板損傷": "M23.3"
-      }
+        {"id": "hip-l", "nameZh": "左髖", "nameEn": "Left Hip"},
+        {"id": "buttock-l", "nameZh": "左臀部", "nameEn": "Left Buttock"},
+        {"id": "thigh-l", "nameZh": "左大腿", "nameEn": "Left Thigh"},
+        {"id": "knee-l", "nameZh": "左膝蓋", "nameEn": "Left Knee"},
+        {"id": "leg-l", "nameZh": "左小腿", "nameEn": "Left Leg"},
+        {"id": "ankle-l", "nameZh": "左腳踝", "nameEn": "Left Ankle"},
+        {"id": "foot-l", "nameZh": "左腳", "nameEn": "Left Foot"},
+        {"id": "heel-l", "nameZh": "左腳跟", "nameEn": "Left Heel"}
+      ]
     },
     {
-      "id": "leg-right",
-      "nameZh": "右腿部",
-      "nameEn": "Right Leg",
+      "id": "lower-limb-r",
+      "nameZh": "右下肢",
+      "nameEn": "Right Lower Limb",
       "side": "right",
-      "description": "右下肢（大腿、小腿、腳）",
+      "description": "右下肢（髖、臀、腿、膝、腿、踝、腳、跟）",
       "subRegions": [
-        {"id": "leg-right-thigh", "nameZh": "右大腿", "nameEn": "Right Thigh"},
-        {"id": "leg-right-knee", "nameZh": "右膝蓋", "nameEn": "Right Knee"},
-        {"id": "leg-right-calf", "nameZh": "右小腿", "nameEn": "Right Calf"},
-        {"id": "leg-right-ankle", "nameZh": "右腳踝", "nameEn": "Right Ankle"},
-        {"id": "leg-right-foot", "nameZh": "右腳", "nameEn": "Right Foot"},
-        {"id": "leg-right-toes", "nameZh": "右腳趾", "nameEn": "Right Toes"}
-      ],
-      "commonDiseases": {
-        "skin": ["靜脈炎皮膚變化", "黴菌感染", "運動員腳", "濕疹", "皮膚潰疹"],
-        "subcutaneous": ["深層靜脈栓塞", "肌肉拉傷", "膝蓋關節炎", "踝關節扭傷", "半月板損傷"]
-      },
-      "icdCodes": {
-        "靜脈炎皮膚變化": "I87.2",
-        "黴菌感染": "B35.9",
-        "運動員腳": "B35.3",
-        "濕疹": "L30.9",
-        "皮膚潰疹": "L89.9",
-        "深層靜脈栓塞": "I82.4",
-        "肌肉拉傷": "S76.9",
-        "膝蓋關節炎": "M17.9",
-        "踝關節扭傷": "S93.4",
-        "半月板損傷": "M23.3"
-      }
+        {"id": "hip-r", "nameZh": "右髖", "nameEn": "Right Hip"},
+        {"id": "buttock-r", "nameZh": "右臀部", "nameEn": "Right Buttock"},
+        {"id": "thigh-r", "nameZh": "右大腿", "nameEn": "Right Thigh"},
+        {"id": "knee-r", "nameZh": "右膝蓋", "nameEn": "Right Knee"},
+        {"id": "leg-r", "nameZh": "右小腿", "nameEn": "Right Leg"},
+        {"id": "ankle-r", "nameZh": "右腳踝", "nameEn": "Right Ankle"},
+        {"id": "foot-r", "nameZh": "右腳", "nameEn": "Right Foot"},
+        {"id": "heel-r", "nameZh": "右腳跟", "nameEn": "Right Heel"}
+      ]
     }
   ],
   "metadata": {
     "totalRegions": 8,
-    "totalSubRegions": 42,
+    "totalSubRegions": 57,
     "diseaseCategories": ["skin", "subcutaneous"],
     "icdVersion": "ICD-10",
     "language": ["zh-TW", "en"]
