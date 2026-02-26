@@ -401,6 +401,12 @@ class MedicalRecordApp {
       return;
     }
 
+    // 獲取詳細結構資訊
+    let detailedInfo = null;
+    if (typeof EyeStructureInfo !== 'undefined') {
+      detailedInfo = EyeStructureInfo.getInfo(structureInfo.structureId || structureInfo.type);
+    }
+
     // 設置位置資訊
     const locationDiv = $('#modal-location');
     if (locationDiv) {
@@ -409,7 +415,7 @@ class MedicalRecordApp {
                         structureInfo.side === 'right' ? '右眼' :
                         '雙眼';
 
-      const locationText = `
+      let locationText = `
         <div class="eye-structure-info">
           <p class="structure-info__main">
             <strong>${structureInfo.name}</strong>
@@ -421,8 +427,26 @@ class MedicalRecordApp {
           <p class="structure-info__type">
             結構類型: ${structureInfo.type}
           </p>
-        </div>
       `;
+
+      // 添加詳細資訊（如果存在）
+      if (detailedInfo) {
+        locationText += `
+          <div class="structure-info__details">
+            <p class="structure-info__desc">${detailedInfo.description}</p>
+            <p class="structure-info__func">
+              <strong>功能：</strong>${detailedInfo.function}
+            </p>
+            ${detailedInfo.diseases && detailedInfo.diseases.length > 0 ? `
+              <p class="structure-info__diseases">
+                <strong>常見疾病：</strong>${detailedInfo.diseases.join('、')}
+              </p>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      locationText += `</div>`;
       locationDiv.innerHTML = locationText;
     }
 

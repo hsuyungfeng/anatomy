@@ -600,6 +600,33 @@
   margin-bottom: 1rem;
 }
 
+.structure-info__details {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #3498db;
+}
+
+.structure-info__desc {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.structure-info__func,
+.structure-info__diseases {
+  font-size: 0.8rem;
+  margin: 0.4rem 0;
+  color: #666;
+}
+
+.structure-info__func strong,
+.structure-info__diseases strong {
+  color: #2c3e50;
+}
+
 /* ================================================
    眼睛標籤選擇面板樣式
    ================================================ */

@@ -8,52 +8,100 @@
       "imageId": "allteeth",
       "diseases": [
         {
-          "id": "K00",
-          "icd10": "K00",
-          "name": "牙齒發育及萌發疾患",
-          "nameEn": "Disorders of tooth development and eruption"
+          "id": "dental_caries",
+          "name": "齲齒（蛀牙）",
+          "nameEn": "Dental Caries",
+          "description": "牙齒硬組織被酸蝕形成的病變，是最常見的牙科疾病。",
+          "descriptionEn": "Destructive process of tooth hard tissue by acids, the most common dental disease.",
+          "subcategories": [
+            {"id": "caries_initial", "name": "初期齲齒", "nameEn": "Initial Caries"},
+            {"id": "caries_intermediate", "name": "中期齲齒", "nameEn": "Intermediate Caries"},
+            {"id": "caries_deep", "name": "深度齲齒", "nameEn": "Deep Caries"},
+            {"id": "caries_recurrent", "name": "復發性齲齒", "nameEn": "Recurrent Caries"}
+          ]
         },
         {
-          "id": "K01",
-          "icd10": "K01",
-          "name": "埋伏牙",
-          "nameEn": "Embedded teeth"
+          "id": "pulpitis",
+          "name": "牙髓炎",
+          "nameEn": "Pulpitis",
+          "description": "牙髓組織的炎症，常由齲齒引起，表現為牙痛。",
+          "descriptionEn": "Inflammation of dental pulp, usually caused by caries, presenting as toothache.",
+          "subcategories": [
+            {"id": "pulpitis_reversible", "name": "可逆性牙髓炎", "nameEn": "Reversible Pulpitis"},
+            {"id": "pulpitis_irreversible", "name": "不可逆性牙髓炎", "nameEn": "Irreversible Pulpitis"},
+            {"id": "pulpitis_suppurative", "name": "化膿性牙髓炎", "nameEn": "Suppurative Pulpitis"}
+          ]
         },
         {
-          "id": "K02",
-          "icd10": "K02",
-          "name": "牙根齲齒",
-          "nameEn": "Dental root caries"
+          "id": "periodontitis",
+          "name": "牙周炎",
+          "nameEn": "Periodontitis",
+          "description": "牙周組織的慢性炎症，導致牙齦退縮和牙齒鬆動。",
+          "descriptionEn": "Chronic inflammation of periodontal tissues, causing gum recession and tooth mobility.",
+          "subcategories": [
+            {"id": "periodontitis_chronic", "name": "慢性牙周炎", "nameEn": "Chronic Periodontitis"},
+            {"id": "periodontitis_aggressive", "name": "侵襲性牙周炎", "nameEn": "Aggressive Periodontitis"},
+            {"id": "periodontitis_necrotizing", "name": "壞死性牙周炎", "nameEn": "Necrotizing Periodontitis"}
+          ]
         },
         {
-          "id": "K03",
-          "icd10": "K03",
-          "name": "牙齒硬組織其他疾病",
-          "nameEn": "Other diseases of hard tissues of teeth"
+          "id": "gingivitis",
+          "name": "牙齦炎",
+          "nameEn": "Gingivitis",
+          "description": "牙齦的炎症，通常由牙菌斑引起。",
+          "descriptionEn": "Inflammation of gingiva, usually caused by dental plaque.",
+          "subcategories": [
+            {"id": "gingivitis_plaque", "name": "菌斑性牙齦炎", "nameEn": "Plaque-Induced Gingivitis"},
+            {"id": "gingivitis_pregnancy", "name": "妊娠性牙齦炎", "nameEn": "Pregnancy Gingivitis"},
+            {"id": "gingivitis_ulcerative", "name": "潰瘍性牙齦炎", "nameEn": "Ulcerative Gingivitis"}
+          ]
         },
         {
-          "id": "K04",
-          "icd10": "K04",
-          "name": "齒髓性急性根尖牙周組織炎",
-          "nameEn": "Acute apical periodontitis of pulpal origin"
+          "id": "tooth_sensitivity",
+          "name": "牙本質敏感",
+          "nameEn": "Dentin Hypersensitivity",
+          "description": "牙本質暴露導致的牙齒敏感疼痛。",
+          "descriptionEn": "Painful sensitivity of teeth due to exposed dentin.",
+          "subcategories": [
+            {"id": "sensitivity_cervical", "name": "牙頸部敏感", "nameEn": "Cervical Sensitivity"},
+            {"id": "sensitivity_post_whitening", "name": "美白術後敏感", "nameEn": "Post-Whitening Sensitivity"}
+          ]
         },
         {
-          "id": "K05",
-          "icd10": "K05",
-          "name": "齒齦炎及牙周疾病",
-          "nameEn": "Gingivitis and periodontal diseases"
+          "id": "tooth_wear",
+          "name": "牙齒磨損",
+          "nameEn": "Tooth Wear",
+          "description": "牙齒表面的進行性損失。",
+          "descriptionEn": "Progressive loss of tooth structure.",
+          "subcategories": [
+            {"id": "attrition", "name": "磨損", "nameEn": "Attrition"},
+            {"id": "erosion", "name": "酸蝕", "nameEn": "Erosion"},
+            {"id": "abfraction", "name": "牙頸部磨損", "nameEn": "Abfraction"}
+          ]
         },
         {
-          "id": "K06",
-          "icd10": "K06",
-          "name": "牙齦腫大",
-          "nameEn": "Gingival enlargement"
+          "id": "tooth_discoloration",
+          "name": "牙齒變色",
+          "nameEn": "Tooth Discoloration",
+          "description": "牙齒顏色異常改變。",
+          "descriptionEn": "Abnormal change in tooth color.",
+          "subcategories": [
+            {"id": "discoloration_extrinsic", "name": "外源性變色", "nameEn": "Extrinsic Discoloration"},
+            {"id": "discoloration_intrinsic", "name": "內源性變色", "nameEn": "Intrinsic Discoloration"},
+            {"id": "discoloration_age", "name": "年齡相關變色", "nameEn": "Age-Related Discoloration"}
+          ]
         },
         {
-          "id": "K08",
-          "icd10": "K08",
-          "name": "牙齒及支持性構造其他疾患",
-          "nameEn": "Other disorders of teeth and supporting structures"
+          "id": "periapical_lesion",
+          "name": "根尖病灶",
+          "nameEn": "Periapical Lesion",
+          "description": "牙根尖周圍的病變。",
+          "descriptionEn": "Pathological changes around the tooth apex.",
+          "subcategories": [
+            {"id": "periapical_abscess", "name": "根尖膿腫", "nameEn": "Periapical Abscess"},
+            {"id": "periapical_granuloma", "name": "根尖肉芽腫", "nameEn": "Periapical Granuloma"},
+            {"id": "periapical_cyst", "name": "根尖囊腫", "nameEn": "Periapical Cyst"}
+          ]
         }
       ]
     },
