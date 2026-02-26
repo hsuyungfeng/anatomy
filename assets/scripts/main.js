@@ -1268,8 +1268,8 @@ class MedicalRecordApp {
     if (!canvas) return null;
 
     // 獲取原始圖像的實際尺寸（bodysurface.png 尺寸）
-    let naturalWidth = 600;   // bodysurface.png 寬度
-    let naturalHeight = 800;  // bodysurface.png 高度
+    let naturalWidth = 764;   // bodysurface.png 寬度
+    let naturalHeight = 602;  // bodysurface.png 高度
 
     // 嘗試從 ImageAnnotator 實例中獲取原始圖像尺寸
     if (this.annotator && this.annotator.imageData) {
