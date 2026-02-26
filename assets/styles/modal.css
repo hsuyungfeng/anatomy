@@ -539,6 +539,47 @@
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
 }
 
+/* 手動身體部位選擇器 */
+.manual-body-selector {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.manual-body-select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.manual-body-select:hover {
+  border-color: #4CAF50;
+}
+
+.manual-body-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.manual-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4CAF50;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
 .manual-selector__empty {
   color: #999;
   font-style: italic;

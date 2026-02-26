@@ -301,6 +301,9 @@ class MedicalRecordApp {
       this.bodyOperationForm.init();
     }
 
+    // 預先加載身體系統數據（用於手動選擇器）
+    this.loadBodySystemsData();
+
     // 疾病表單 (稍後初始化)
     // this.diseaseForm = new DiseaseForm();
 
@@ -1448,6 +1451,7 @@ class MedicalRecordApp {
         } else if (this.currentSystemId === 'body') {
           locationText = `
             <p class="structure-info__error">無法自動識別身體部位，請重新點擊</p>
+            ${this.renderManualBodySelector()}
           `;
         }
       }
@@ -1455,6 +1459,8 @@ class MedicalRecordApp {
       locationDiv.innerHTML = locationText;
       if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
         this.setupManualToothSelector();
+      } else if (this.currentSystemId === 'body') {
+        this.setupManualBodySelector();
       }
     }
 
@@ -1614,6 +1620,95 @@ class MedicalRecordApp {
           `;
         }
       }
+    });
+  }
+
+  /**
+   * 渲染身體部位手動選擇器（樹狀結構）
+   */
+  renderManualBodySelector() {
+    const bodyRegions = this.bodySystemsData?.bodyRegions || [];
+    
+    let html = `
+      <div class="manual-body-selector">
+        <h4 class="manual-selector__title">或選擇身體部位：</h4>
+        <select id="manual-body-select" class="manual-body-select">
+          <option value="">-- 請選擇部位 --</option>
+    `;
+
+    const sideMap = { 'left': '左', 'right': '右', 'mid': '中' };
+
+    bodyRegions.forEach(region => {
+      const sideName = sideMap[region.side] || '';
+      const regionName = region.nameZh || region.nameEn;
+      
+      // 主區域
+      html += `<optgroup label="${sideName}${regionName}">`;
+      
+      // 子區域
+      if (region.subRegions && region.subRegions.length > 0) {
+        region.subRegions.forEach(sub => {
+          html += `
+            <option value="${sub.id}" data-region-id="${region.id}" data-name-zh="${sub.nameZh}" data-name-en="${sub.nameEn}" data-side="${region.side}">
+              ${sub.nameZh} (${sub.nameEn})
+            </option>
+          `;
+        });
+      } else {
+        // 沒有子區域時，選擇主區域
+        html += `
+          <option value="${region.id}" data-region-id="${region.id}" data-name-zh="${region.nameZh}" data-name-en="${region.nameEn}" data-side="${region.side}">
+            ${region.nameZh} (${region.nameEn})
+          </option>
+        `;
+      }
+      
+      html += `</optgroup>`;
+    });
+
+    html += `</select></div>`;
+    return html;
+  }
+
+  /**
+   * 設置身體部位手動選擇器的事件監聽
+   */
+  setupManualBodySelector() {
+    const selector = document.getElementById('manual-body-select');
+    if (!selector) return;
+
+    selector.addEventListener('change', (e) => {
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      if (!selectedOption.value) return;
+
+      const bodyRegionInfo = {
+        id: selectedOption.value,
+        name: selectedOption.dataset.nameZh,
+        nameEn: selectedOption.dataset.nameEn,
+        side: selectedOption.dataset.side,
+        parentRegion: selectedOption.dataset.regionId,
+        confidence: 1.0,
+        manualSelection: true
+      };
+
+      this.currentBodyRegion = bodyRegionInfo;
+
+      // 更新顯示
+      const locationDiv = $('#modal-location');
+      if (locationDiv) {
+        const sideBadge = bodyRegionInfo.side === 'left' ? '左側' : bodyRegionInfo.side === 'right' ? '右側' : '中線';
+        locationDiv.innerHTML = `
+          <div class="body-region-info">
+            <p class="structure-info__main">
+              <strong>${bodyRegionInfo.name}</strong>
+              <span class="side-badge">${sideBadge}</span>
+              <span class="manual-badge">手動選擇</span>
+            </p>
+          </div>
+        `;
+      }
+
+      showNotification(`已選擇：${bodyRegionInfo.name}`, 'success');
     });
   }
 
@@ -2644,6 +2739,21 @@ class MedicalRecordApp {
         </div>
       </div>
     `;
+  }
+
+  /**
+   * 預先加載身體系統數據
+   */
+  async loadBodySystemsData() {
+    if (!this.bodySystemsData) {
+      try {
+        const response = await fetch('/data/body-systems.json');
+        this.bodySystemsData = await response.json();
+        console.log('✓ 身體系統數據已預加載');
+      } catch (error) {
+        console.error('✗ 身體系統數據預加載失敗:', error);
+      }
+    }
   }
 
   /**
