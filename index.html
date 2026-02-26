@@ -270,6 +270,25 @@
         <!-- 統計分析面板 -->
         <div id="statistics-panel" class="record-panel" role="tabpanel" hidden>
           <div class="statistics-container">
+            <!-- 搜尋功能 -->
+            <div class="statistics-search">
+              <h3 class="statistics-search__title">搜尋病歷</h3>
+              <div class="statistics-search__input-wrapper">
+                <input 
+                  type="text" 
+                  id="search-input" 
+                  class="statistics-search__input"
+                  placeholder="輸入關鍵字搜尋..."
+                  data-en="Search records...">
+                <button class="btn btn--primary" id="search-btn">
+                  搜尋
+                </button>
+              </div>
+              <div class="statistics-search__hint">
+                搜尋範圍：疾病名稱、位置、備註
+              </div>
+            </div>
+
             <!-- 時間範圍篩選 -->
             <div class="statistics-filter">
               <h3 class="statistics-filter__title">篩選條件</h3>
@@ -323,6 +342,13 @@
               <div class="chart-container">
                 <h4 class="chart-title">疾病分佈</h4>
                 <canvas id="disease-pie-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- 搜尋結果 -->
+            <div class="search-results" id="search-results" hidden>
+              <h4 class="search-results__title">搜尋結果</h4>
+              <div class="search-results__list" id="search-results-list">
               </div>
             </div>
           </div>

@@ -257,6 +257,140 @@ class RecordStatistics {
   }
 
   /**
+   * 搜尋病歷
+   * @param {string} keyword 搜尋關鍵字
+   * @returns {Array} 搜尋結果
+   */
+  searchRecords(keyword) {
+    if (!keyword || keyword.trim() === '') {
+      return [];
+    }
+
+    const searchTerm = keyword.toLowerCase().trim();
+    const records = this.getAllRecords();
+    const results = [];
+
+    records.forEach(record => {
+      const matchedAnnotations = [];
+
+      if (record.anatomicalSystems) {
+        record.anatomicalSystems.forEach(system => {
+          if (system.annotations) {
+            system.annotations.forEach(anno => {
+              let isMatch = false;
+              const matchReasons = [];
+
+              // 搜尋位置名稱
+              if (anno.locationName && anno.locationName.toLowerCase().includes(searchTerm)) {
+                isMatch = true;
+                matchReasons.push('位置');
+              }
+
+              // 搜尋疾病名稱
+              if (anno.diseases && anno.diseases.length > 0) {
+                anno.diseases.forEach(disease => {
+                  if (disease.name && disease.name.toLowerCase().includes(searchTerm)) {
+                    isMatch = true;
+                    matchReasons.push('疾病');
+                  }
+                  if (disease.id && disease.id.toLowerCase().includes(searchTerm)) {
+                    isMatch = true;
+                    matchReasons.push('疾病');
+                  }
+                });
+              }
+
+              // 搜尋療程摘要
+              if (anno.treatmentNotes && anno.treatmentNotes.toLowerCase().includes(searchTerm)) {
+                isMatch = true;
+                matchReasons.push('備註');
+              }
+
+              // 搜尋系統名稱
+              if (system.systemName && system.systemName.toLowerCase().includes(searchTerm)) {
+                isMatch = true;
+                matchReasons.push('系統');
+              }
+
+              if (isMatch) {
+                matchedAnnotations.push({
+                  ...anno,
+                  systemName: system.systemName,
+                  matchReasons: [...new Set(matchReasons)]
+                });
+              }
+            });
+          }
+        });
+      }
+
+      if (matchedAnnotations.length > 0) {
+        results.push({
+          record: record,
+          matchedAnnotations: matchedAnnotations,
+          matchCount: matchedAnnotations.length
+        });
+      }
+    });
+
+    return results;
+  }
+
+  /**
+   * 顯示搜尋結果
+   * @param {Array} results 搜尋結果
+   */
+  displaySearchResults(results) {
+    const container = document.getElementById('search-results');
+    const listContainer = document.getElementById('search-results-list');
+    
+    if (!container || !listContainer) return;
+
+    if (results.length === 0) {
+      container.hidden = false;
+      listContainer.innerHTML = `
+        <div class="search-result-item__empty">
+          沒有找到符合的病歷記錄
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    results.forEach(result => {
+      const record = result.record;
+      const annotations = result.matchedAnnotations;
+      
+      html += `
+        <div class="search-result-item">
+          <div class="search-result-item__title">
+            ${record.patientId || '未命名病歷'} (${annotations.length} 筆匹配)
+          </div>
+          <div class="search-result-item__info">
+            建立時間: ${formatDateTime(new Date(record.createdAt))}
+          </div>
+          <div class="search-result-item__diseases">
+            ${annotations.map(a => a.locationName + ': ' + (a.diseases?.map(d => d.name).join(', ') || '無疾病')).join(' | ')}
+          </div>
+        </div>
+      `;
+    });
+
+    container.hidden = false;
+    listContainer.innerHTML = html;
+  }
+
+  /**
+   * 隱藏搜尋結果
+   */
+  hideSearchResults() {
+    const container = document.getElementById('search-results');
+    if (container) {
+      container.hidden = true;
+    }
+  }
+
+  /**
    * 清除篩選
    */
   clearFilter() {
@@ -266,6 +400,8 @@ class RecordStatistics {
     document.getElementById('date-from').value = '';
     document.getElementById('date-to').value = '';
     document.getElementById('system-filter').value = '';
+    document.getElementById('search-input').value = '';
+    this.hideSearchResults();
     this.updateDisplay();
   }
 }

@@ -278,6 +278,31 @@ class MedicalRecordApp {
       });
     }
 
+    // 搜尋按鈕
+    const searchBtn = $('#search-btn');
+    const searchInput = $('#search-input');
+
+    if (searchBtn && searchInput) {
+      searchBtn.addEventListener('click', () => {
+        const keyword = searchInput.value.trim();
+        if (keyword && this.recordStatistics) {
+          const results = this.recordStatistics.searchRecords(keyword);
+          this.recordStatistics.displaySearchResults(results);
+        }
+      });
+
+      // 按 Enter 鍵搜尋
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const keyword = searchInput.value.trim();
+          if (keyword && this.recordStatistics) {
+            const results = this.recordStatistics.searchRecords(keyword);
+            this.recordStatistics.displaySearchResults(results);
+          }
+        }
+      });
+    }
+
     // 模態視窗
     this.setupDiseaseModal();
 

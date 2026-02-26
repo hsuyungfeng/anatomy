@@ -477,6 +477,95 @@ body {
   background: white;
 }
 
+/* 搜尋樣式 */
+.statistics-search {
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--size-border-radius);
+  margin-bottom: var(--spacing-md);
+}
+
+.statistics-search__title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.statistics-search__input-wrapper {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.statistics-search__input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--size-border-radius);
+  font-size: var(--font-size-base);
+}
+
+.statistics-search__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.statistics-search__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+/* 搜尋結果 */
+.search-results {
+  margin-top: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--size-border-radius);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-results__title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.search-results__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.search-result-item {
+  padding: var(--spacing-sm);
+  background: white;
+  border-radius: var(--size-border-radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.search-result-item__title {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+}
+
+.search-result-item__info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.search-result-item__diseases {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  margin-top: var(--spacing-xs);
+}
+
+.search-result-item__empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: var(--spacing-md);
+}
+
 .statistics-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
