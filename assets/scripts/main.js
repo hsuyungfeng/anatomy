@@ -1277,10 +1277,6 @@ class MedicalRecordApp {
       naturalHeight = this.annotator.imageData.naturalHeight || naturalHeight;
     }
 
-    // 取得 canvas 的顯示尺寸
-    const canvasDisplayWidth = canvas.offsetWidth;
-    const canvasDisplayHeight = canvas.offsetHeight;
-
     // 獲取 ImageAnnotator 的 zoom 和 pan 參數
     let zoom = 1;
     let panX = 0;
@@ -1291,33 +1287,27 @@ class MedicalRecordApp {
       panY = this.annotator.panY || 0;
     }
 
-    // 計算縮放後的圖像尺寸
-    const scaledWidth = (canvasDisplayWidth / window.devicePixelRatio) * zoom;
-    const scaledHeight = (canvasDisplayHeight / window.devicePixelRatio) * zoom;
+    // 計算顯示的圖像尺寸
+    const imageDisplayWidth = this.annotator ? this.annotator.imageElement?.width || canvas.offsetWidth : canvas.offsetWidth;
+    const imageDisplayHeight = this.annotator ? this.annotator.imageElement?.height || canvas.offsetHeight : canvas.offsetHeight;
 
-    // 計算圖像在 canvas 中的位置（相對於 canvas 左上角）
-    const imgX = (canvasDisplayWidth / window.devicePixelRatio - scaledWidth) / 2 + panX;
-    const imgY = (canvasDisplayHeight / window.devicePixelRatio - scaledHeight) / 2 + panY;
+    // 簡化的座標轉換：從顯示座標轉換到原始圖像座標
+    // position 已經是相對於 image element 的座標（除以了 devicePixelRatio）
+    const scaleX = imageDisplayWidth / naturalWidth;
+    const scaleY = imageDisplayHeight / naturalHeight;
 
-    // 將點擊坐標轉換回原始圖像座標
-    // 第1步：從 canvas 座標轉換回未縮放的圖像位置
-    const relX = (position.x / window.devicePixelRatio - imgX) / scaledWidth * (canvasDisplayWidth / window.devicePixelRatio);
-    const relY = (position.y / window.devicePixelRatio - imgY) / scaledHeight * (canvasDisplayHeight / window.devicePixelRatio);
-
-    // 第2步：從顯示座標轉換回原始圖像座標
-    const scaleX = canvasDisplayWidth / naturalWidth;
-    const scaleY = canvasDisplayHeight / naturalHeight;
-
+    // 考慮 zoom 的影響
     const adjustedPos = {
-      x: relX / scaleX,
-      y: relY / scaleY
+      x: (position.x / zoom - panX) / scaleX,
+      y: (position.y / zoom - panY) / scaleY
     };
 
     if (this.bodyImageMapper.debug) {
       console.log('[detectBodyRegion] 坐標轉換詳情：');
-      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}, Canvas: ${canvasDisplayWidth}x${canvasDisplayHeight}`);
+      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}`);
+      console.log(`  顯示圖像: ${imageDisplayWidth}x${imageDisplayHeight}`);
       console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
-      console.log(`  點擊座標 (原始): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
+      console.log(`  點擊座標 (顯示): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
       console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
     }
 
