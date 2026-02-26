@@ -12,22 +12,9 @@
           "nameEn": "Head",
           "side": "mid",
           "type": "region",
-          "centerPoint": {"x": 382, "y": 60},
-          "clickRadius": 90,
-          "subRegions": [
-            {"id": "head-forehead", "name": "前額", "nameEn": "Forehead", "centerPoint": {"x": 382, "y": 35}, "clickRadius": 28},
-            {"id": "head-eyebrow", "name": "眉毛", "nameEn": "Eyebrow", "centerPoint": {"x": 350, "y": 50}, "clickRadius": 15},
-            {"id": "head-eyebrow-r", "name": "右眉毛", "nameEn": "Right Eyebrow", "centerPoint": {"x": 414, "y": 50}, "clickRadius": 15},
-            {"id": "head-eye", "name": "眼睛", "nameEn": "Eye", "centerPoint": {"x": 350, "y": 65}, "clickRadius": 18},
-            {"id": "head-eye-r", "name": "右眼", "nameEn": "Right Eye", "centerPoint": {"x": 414, "y": 65}, "clickRadius": 18},
-            {"id": "head-ear", "name": "耳朵", "nameEn": "Ear", "centerPoint": {"x": 280, "y": 65}, "clickRadius": 18},
-            {"id": "head-ear-r", "name": "右耳朵", "nameEn": "Right Ear", "centerPoint": {"x": 484, "y": 65}, "clickRadius": 18},
-            {"id": "head-nose", "name": "鼻子", "nameEn": "Nose", "centerPoint": {"x": 382, "y": 80}, "clickRadius": 18},
-            {"id": "head-cheek", "name": "臉頰", "nameEn": "Cheek", "centerPoint": {"x": 330, "y": 85}, "clickRadius": 20},
-            {"id": "head-cheek-r", "name": "右臉頰", "nameEn": "Right Cheek", "centerPoint": {"x": 434, "y": 85}, "clickRadius": 20},
-            {"id": "head-lips", "name": "嘴唇", "nameEn": "Lips", "centerPoint": {"x": 382, "y": 98}, "clickRadius": 15},
-            {"id": "head-chin", "name": "下巴", "nameEn": "Chin", "centerPoint": {"x": 382, "y": 112}, "clickRadius": 18}
-          ]
+          "centerPoint": {"x": 382, "y": 80},
+          "clickRadius": 120,
+          "subRegions": []
         },
         {
           "id": "neck",
@@ -35,122 +22,69 @@
           "nameEn": "Neck",
           "side": "mid",
           "type": "region",
-          "centerPoint": {"x": 382, "y": 130},
-          "clickRadius": 45,
-          "subRegions": [
-            {"id": "neck", "name": "頸部", "nameEn": "Neck", "centerPoint": {"x": 382, "y": 125}, "clickRadius": 30},
-            {"id": "neck-nape", "name": "後頸", "nameEn": "Nape", "centerPoint": {"x": 382, "y": 140}, "clickRadius": 25}
-          ]
+          "centerPoint": {"x": 382, "y": 150},
+          "clickRadius": 50,
+          "subRegions": []
         },
         {
-          "id": "back",
-          "name": "背部",
-          "nameEn": "Back",
+          "id": "chest",
+          "name": "胸部",
+          "nameEn": "Chest",
           "side": "mid",
           "type": "region",
-          "centerPoint": {"x": 382, "y": 280},
-          "clickRadius": 120,
-          "subRegions": [
-            {"id": "back", "name": "背部", "nameEn": "Back", "centerPoint": {"x": 382, "y": 280}, "clickRadius": 100}
-          ]
+          "centerPoint": {"x": 382, "y": 220},
+          "clickRadius": 80,
+          "subRegions": []
         },
         {
-          "id": "torso",
-          "name": "軀幹",
-          "nameEn": "Torso",
+          "id": "abdomen",
+          "name": "腹部",
+          "nameEn": "Abdomen",
           "side": "mid",
           "type": "region",
-          "centerPoint": {"x": 382, "y": 250},
+          "centerPoint": {"x": 382, "y": 300},
+          "clickRadius": 80,
+          "subRegions": []
+        },
+        {
+          "id": "arm-left",
+          "name": "左手臂",
+          "nameEn": "Left Arm",
+          "side": "left",
+          "type": "region",
+          "centerPoint": {"x": 120, "y": 250},
           "clickRadius": 100,
-          "subRegions": [
-            {"id": "chest", "name": "胸", "nameEn": "Chest", "centerPoint": {"x": 382, "y": 180}, "clickRadius": 50},
-            {"id": "chest-breast", "name": "乳房", "nameEn": "Breast", "centerPoint": {"x": 340, "y": 195}, "clickRadius": 35},
-            {"id": "chest-breast-r", "name": "右乳房", "nameEn": "Right Breast", "centerPoint": {"x": 424, "y": 195}, "clickRadius": 35},
-            {"id": "abdomen-upper", "name": "上腹", "nameEn": "Upper Abdomen", "centerPoint": {"x": 382, "y": 230}, "clickRadius": 40},
-            {"id": "abdomen", "name": "腹部", "nameEn": "Abdominal", "centerPoint": {"x": 382, "y": 270}, "clickRadius": 45},
-            {"id": "abdomen-umbilical", "name": "肚臍", "nameEn": "Umbilical", "centerPoint": {"x": 382, "y": 290}, "clickRadius": 20},
-            {"id": "groin-mons", "name": "恥丘", "nameEn": "Mons", "centerPoint": {"x": 382, "y": 350}, "clickRadius": 25},
-            {"id": "groin", "name": "腹股溝", "nameEn": "Groin", "centerPoint": {"x": 382, "y": 325}, "clickRadius": 30},
-            {"id": "groin-vulva", "name": "外陰", "nameEn": "Vulva", "centerPoint": {"x": 370, "y": 370}, "clickRadius": 20},
-            {"id": "groin-penis", "name": "陰莖", "nameEn": "Penis", "centerPoint": {"x": 382, "y": 365}, "clickRadius": 18},
-            {"id": "groin-scrotum", "name": "陰囊", "nameEn": "Scrotum", "centerPoint": {"x": 382, "y": 380}, "clickRadius": 18}
-          ]
+          "subRegions": []
         },
         {
-          "id": "upper-limb-l",
-          "name": "左上肢",
-          "nameEn": "Left Upper Limb",
-          "side": "left",
-          "type": "region",
-          "centerPoint": {"x": 120, "y": 260},
-          "clickRadius": 80,
-          "subRegions": [
-            {"id": "shoulder-l", "name": "左肩", "nameEn": "Left Shoulder", "centerPoint": {"x": 115, "y": 155}, "clickRadius": 35},
-            {"id": "axilla-l", "name": "左腋下", "nameEn": "Left Axilla", "centerPoint": {"x": 175, "y": 170}, "clickRadius": 25},
-            {"id": "arm-l", "name": "左上臂", "nameEn": "Left Arm", "centerPoint": {"x": 125, "y": 200}, "clickRadius": 30},
-            {"id": "elbow-l", "name": "左手肘", "nameEn": "Left Elbow", "centerPoint": {"x": 120, "y": 250}, "clickRadius": 25},
-            {"id": "forearm-l", "name": "左前臂", "nameEn": "Left Forearm", "centerPoint": {"x": 115, "y": 300}, "clickRadius": 30},
-            {"id": "wrist-l", "name": "左手腕", "nameEn": "Left Wrist", "centerPoint": {"x": 110, "y": 340}, "clickRadius": 20},
-            {"id": "hand-l", "name": "左手", "nameEn": "Left Hand", "centerPoint": {"x": 105, "y": 370}, "clickRadius": 30},
-            {"id": "fingers-l", "name": "左手指", "nameEn": "Left Fingers", "centerPoint": {"x": 95, "y": 395}, "clickRadius": 25}
-          ]
-        },
-        {
-          "id": "upper-limb-r",
-          "name": "右上肢",
-          "nameEn": "Right Upper Limb",
+          "id": "arm-right",
+          "name": "右手臂",
+          "nameEn": "Right Arm",
           "side": "right",
           "type": "region",
-          "centerPoint": {"x": 644, "y": 260},
-          "clickRadius": 80,
-          "subRegions": [
-            {"id": "shoulder-r", "name": "右肩", "nameEn": "Right Shoulder", "centerPoint": {"x": 649, "y": 155}, "clickRadius": 35},
-            {"id": "axilla-r", "name": "右腋下", "nameEn": "Right Axilla", "centerPoint": {"x": 589, "y": 170}, "clickRadius": 25},
-            {"id": "arm-r", "name": "右上臂", "nameEn": "Right Arm", "centerPoint": {"x": 639, "y": 200}, "clickRadius": 30},
-            {"id": "elbow-r", "name": "右手肘", "nameEn": "Right Elbow", "centerPoint": {"x": 644, "y": 250}, "clickRadius": 25},
-            {"id": "forearm-r", "name": "右前臂", "nameEn": "Right Forearm", "centerPoint": {"x": 649, "y": 300}, "clickRadius": 30},
-            {"id": "wrist-r", "name": "右手腕", "nameEn": "Right Wrist", "centerPoint": {"x": 654, "y": 340}, "clickRadius": 20},
-            {"id": "hand-r", "name": "右手", "nameEn": "Right Hand", "centerPoint": {"x": 659, "y": 370}, "clickRadius": 30},
-            {"id": "fingers-r", "name": "右手指", "nameEn": "Right Fingers", "centerPoint": {"x": 669, "y": 395}, "clickRadius": 25}
-          ]
+          "centerPoint": {"x": 644, "y": 250},
+          "clickRadius": 100,
+          "subRegions": []
         },
         {
-          "id": "lower-limb-l",
-          "name": "左下肢",
-          "nameEn": "Left Lower Limb",
+          "id": "leg-left",
+          "name": "左腿",
+          "nameEn": "Left Leg",
           "side": "left",
           "type": "region",
-          "centerPoint": {"x": 280, "y": 470},
-          "clickRadius": 90,
-          "subRegions": [
-            {"id": "hip-l", "name": "左髖", "nameEn": "Left Hip", "centerPoint": {"x": 280, "y": 355}, "clickRadius": 35},
-            {"id": "buttock-l", "name": "左臀部", "nameEn": "Left Buttock", "centerPoint": {"x": 260, "y": 370}, "clickRadius": 35},
-            {"id": "thigh-l", "name": "左大腿", "nameEn": "Left Thigh", "centerPoint": {"x": 280, "y": 400}, "clickRadius": 40},
-            {"id": "knee-l", "name": "左膝蓋", "nameEn": "Left Knee", "centerPoint": {"x": 280, "y": 460}, "clickRadius": 30},
-            {"id": "leg-l", "name": "左小腿", "nameEn": "Left Leg", "centerPoint": {"x": 280, "y": 520}, "clickRadius": 35},
-            {"id": "ankle-l", "name": "左腳踝", "nameEn": "Left Ankle", "centerPoint": {"x": 280, "y": 560}, "clickRadius": 22},
-            {"id": "foot-l", "name": "左腳", "nameEn": "Left Foot", "centerPoint": {"x": 280, "y": 590}, "clickRadius": 30},
-            {"id": "heel-l", "name": "左腳跟", "nameEn": "Left Heel", "centerPoint": {"x": 260, "y": 598}, "clickRadius": 20}
-          ]
+          "centerPoint": {"x": 280, "y": 450},
+          "clickRadius": 100,
+          "subRegions": []
         },
         {
-          "id": "lower-limb-r",
-          "name": "右下肢",
-          "nameEn": "Right Lower Limb",
+          "id": "leg-right",
+          "name": "右腿",
+          "nameEn": "Right Leg",
           "side": "right",
           "type": "region",
-          "centerPoint": {"x": 484, "y": 470},
-          "clickRadius": 90,
-          "subRegions": [
-            {"id": "hip-r", "name": "右髖", "nameEn": "Right Hip", "centerPoint": {"x": 484, "y": 355}, "clickRadius": 35},
-            {"id": "buttock-r", "name": "右臀部", "nameEn": "Right Buttock", "centerPoint": {"x": 504, "y": 370}, "clickRadius": 35},
-            {"id": "thigh-r", "name": "右大腿", "nameEn": "Right Thigh", "centerPoint": {"x": 484, "y": 400}, "clickRadius": 40},
-            {"id": "knee-r", "name": "右膝蓋", "nameEn": "Right Knee", "centerPoint": {"x": 484, "y": 460}, "clickRadius": 30},
-            {"id": "leg-r", "name": "右小腿", "nameEn": "Right Leg", "centerPoint": {"x": 484, "y": 520}, "clickRadius": 35},
-            {"id": "ankle-r", "name": "右腳踝", "nameEn": "Right Ankle", "centerPoint": {"x": 484, "y": 560}, "clickRadius": 22},
-            {"id": "foot-r", "name": "右腳", "nameEn": "Right Foot", "centerPoint": {"x": 484, "y": 590}, "clickRadius": 30},
-            {"id": "heel-r", "name": "右腳跟", "nameEn": "Right Heel", "centerPoint": {"x": 504, "y": 598}, "clickRadius": 20}
-          ]
+          "centerPoint": {"x": 484, "y": 450},
+          "clickRadius": 100,
+          "subRegions": []
         }
       ]
     }
@@ -158,28 +92,8 @@
   "metadata": {
     "createdAt": "2026-01-15",
     "lastUpdated": "2026-02-26",
-    "version": "1.4.0",
-    "description": "完整身體部位座標映射（基於764x602實際圖像尺寸）",
-    "bodyHierarchy": {
-      "head": ["forehead", "ear", "cheek", "chin", "eyebrow", "eye", "nose", "lips"],
-      "neck": ["neck", "nape"],
-      "back": ["back"],
-      "torso": {
-        "chest_region": ["chest", "breast"],
-        "abdominal_region": ["umbilical", "abdominal"],
-        "pelvic_region": ["mons", "groin", "vulva", "penis", "scrotum"]
-      },
-      "upper_limb": ["shoulder", "axilla", "arm", "elbow", "forearm", "wrist", "hand", "fingers"],
-      "lower_limb": {
-        "hip_region": ["hip", "buttock"],
-        "thigh_region": ["thigh"],
-        "knee_region": ["knee"],
-        "leg_region": ["leg", "calf"],
-        "foot_region": ["ankle", "foot", "heel"]
-      }
-    },
-    "totalMainRegions": 8,
-    "totalSubRegions": 57,
-    "calibrationNotes": "座標已根據實際 bodysurface.png (764x602) 進行調整"
+    "version": "2.0.0",
+    "description": "身體部位座標映射（簡化版 - 只用主要區域）",
+    "note": "使用主要區域檢測，配合手動選擇子區域"
   }
 }

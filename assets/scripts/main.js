@@ -1287,28 +1287,51 @@ class MedicalRecordApp {
       panY = this.annotator.panY || 0;
     }
 
-    // 計算顯示的圖像尺寸
-    const imageDisplayWidth = this.annotator ? this.annotator.imageElement?.width || canvas.offsetWidth : canvas.offsetWidth;
-    const imageDisplayHeight = this.annotator ? this.annotator.imageElement?.height || canvas.offsetHeight : canvas.offsetHeight;
+    // 計算顯示的圖像尺寸（使用 offsetWidth/offsetHeight 獲取顯示大小）
+    const imageDisplayWidth = canvas.offsetWidth;
+    const imageDisplayHeight = canvas.offsetHeight;
 
-    // 簡化的座標轉換：從顯示座標轉換到原始圖像座標
-    // position 已經是相對於 image element 的座標（除以了 devicePixelRatio）
-    const scaleX = imageDisplayWidth / naturalWidth;
-    const scaleY = imageDisplayHeight / naturalHeight;
+    // 計算圖片在canvas中的實際顯示尺寸（維持長寬比）
+    const displayAspect = imageDisplayWidth / imageDisplayHeight;
+    const imageAspect = naturalWidth / naturalHeight;
+    
+    let displayedWidth, displayedHeight, offsetX, offsetY;
+    
+    if (displayAspect > imageAspect) {
+      // 畫面比較寬，以高度為主
+      displayedHeight = imageDisplayHeight;
+      displayedWidth = displayedHeight * imageAspect;
+      offsetX = (imageDisplayWidth - displayedWidth) / 2;
+      offsetY = 0;
+    } else {
+      // 畫面比較窄，以寬度為主
+      displayedWidth = imageDisplayWidth;
+      displayedHeight = displayedWidth / imageAspect;
+      offsetX = 0;
+      offsetY = (imageDisplayHeight - displayedHeight) / 2;
+    }
 
-    // 考慮 zoom 的影響
+    // 將點擊座標轉換到原始圖像座標
+    // 1. 首先去除偏移量
+    // 2. 然後按比例轉換
+    const scaleX = displayedWidth / naturalWidth;
+    const scaleY = displayedHeight / naturalHeight;
+
     const adjustedPos = {
-      x: (position.x / zoom - panX) / scaleX,
-      y: (position.y / zoom - panY) / scaleY
+      x: ((position.x - offsetX) / scaleX),
+      y: ((position.y - offsetY) / scaleY)
     };
 
     if (this.bodyImageMapper.debug) {
       console.log('[detectBodyRegion] 坐標轉換詳情：');
       console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}`);
-      console.log(`  顯示圖像: ${imageDisplayWidth}x${imageDisplayHeight}`);
+      console.log(`  顯示畫布: ${imageDisplayWidth}x${imageDisplayHeight}`);
+      console.log(`  實際顯示: ${displayedWidth.toFixed(1)}x${displayedHeight.toFixed(1)}`);
+      console.log(`  偏移: (${offsetX.toFixed(1)}, ${offsetY.toFixed(1)})`);
+      console.log(`  比例: scaleX=${scaleX.toFixed(3)}, scaleY=${scaleY.toFixed(3)}`);
       console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
-      console.log(`  點擊座標 (顯示): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
-      console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
+      console.log(`  點擊座標 (顯示): position.x=${position.x.toFixed(1)}, position.y=${position.y.toFixed(1)}`);
+      console.log(`  轉換後座標 (原始圖像): adjustedPos.x=${adjustedPos.x.toFixed(1)}, adjustedPos.y=${adjustedPos.y.toFixed(1)}`);
     }
 
     // 使用 BodyImageMapper 識別身體部位
