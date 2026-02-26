@@ -38,6 +38,9 @@ class MedicalRecordApp {
       // 設置主題
       this.setupTheme();
 
+      // 設置鍵盤快捷鍵
+      this.setupKeyboardShortcuts();
+
       // 加載資料
       await this.loadData();
 
@@ -117,6 +120,66 @@ class MedicalRecordApp {
     if (save) {
       localStorage.setItem('theme', theme);
     }
+  }
+
+  /**
+   * 設置鍵盤快捷鍵
+   */
+  setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + S: 儲存
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        console.log('[Keyboard] Ctrl+S 儲存');
+        showNotification('快捷鍵: 儲存', 'info');
+      }
+
+      // Ctrl/Cmd + E: 導出
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        console.log('[Keyboard] Ctrl+E 導出');
+        this.exportRecord('text');
+      }
+
+      // Ctrl/Cmd + F: 搜尋
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        console.log('[Keyboard] Ctrl+F 搜尋');
+        const searchInput = $('#search-input');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+
+      // Escape: 關閉模態
+      if (e.key === 'Escape') {
+        const modal = $('#disease-modal');
+        const overlay = $('#modal-overlay');
+        if (modal && !modal.hidden) {
+          this.closeDiseaseModal();
+        }
+      }
+
+      // Ctrl/Cmd + D: 切換主題
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        console.log('[Keyboard] Ctrl+D 主題切換');
+        const themeToggle = $('#theme-toggle');
+        if (themeToggle) {
+          themeToggle.click();
+        }
+      }
+
+      // 1/2/3: 切換系統
+      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        const systemTabs = $$('.system-tab');
+        if (e.key === '1' && systemTabs[0]) systemTabs[0].click();
+        if (e.key === '2' && systemTabs[1]) systemTabs[1].click();
+        if (e.key === '3' && systemTabs[2]) systemTabs[2].click();
+      }
+    });
+
+    console.log('[Keyboard] 鍵盤快捷鍵已設置');
   }
 
   /**
