@@ -68,6 +68,40 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
 
+  /* 當前主題 */
+  --color-surface: #ffffff;
+  --color-surface-hover: #f8f9fa;
+}
+
+/* 深色模式 */
+[data-theme="dark"] {
+  --color-primary: #4dabf7;
+  --color-primary-hover: #74c0fc;
+  --color-secondary: #868e96;
+  --color-success: #51cf66;
+  --color-danger: #ff6b6b;
+  --color-warning: #ffd43b;
+  --color-info: #22b8cf;
+
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-dark: #0f0f1a;
+
+  --color-text-primary: #e9ecef;
+  --color-text-secondary: #adb5bd;
+  --color-text-light: #f8f9fa;
+
+  --color-border: #3d4f6f;
+  --color-border-dark: #5c7080;
+
+  --color-surface: #16213e;
+  --color-surface-hover: #1f3460;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
   /* 過渡 */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 300ms ease-in-out;
@@ -190,6 +224,31 @@ body {
 .language-btn--active {
   background-color: var(--color-primary);
   color: var(--color-text-light);
+}
+
+/* 主題切換按鈕 */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--size-border-radius);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-primary);
+}
+
+.theme-toggle .fa-moon {
+  color: #ffd43b;
+}
+
+.theme-toggle .fa-sun {
+  color: #f39c12;
 }
 
 /* ===== 系統標籤頁 ===== */

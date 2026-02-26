@@ -35,6 +35,9 @@ class MedicalRecordApp {
       // 設置語言
       this.setupLanguage();
 
+      // 設置主題
+      this.setupTheme();
+
       // 加載資料
       await this.loadData();
 
@@ -72,6 +75,48 @@ class MedicalRecordApp {
         this.switchLanguage(lang);
       });
     });
+  }
+
+  /**
+   * 設置主題切換
+   */
+  setupTheme() {
+    const themeToggle = $('#theme-toggle');
+    if (!themeToggle) return;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    this.setTheme(savedTheme, false);
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      this.setTheme(newTheme, true);
+    });
+  }
+
+  /**
+   * 設置主題
+   * @param {string} theme - 'light' 或 'dark'
+   * @param {boolean} save - 是否保存到 localStorage
+   */
+  setTheme(theme, save = true) {
+    const themeToggle = $('#theme-toggle');
+    
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (themeToggle) {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      if (themeToggle) {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+    }
+
+    if (save) {
+      localStorage.setItem('theme', theme);
+    }
   }
 
   /**
