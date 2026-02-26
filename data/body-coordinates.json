@@ -30,6 +30,64 @@
             {"x": 380, "y": 140},
             {"x": 300, "y": 160},
             {"x": 220, "y": 140}
+          ],
+          "subRegions": [
+            {
+              "id": "head-scalp",
+              "name": "头皮",
+              "nameEn": "Scalp",
+              "centerPoint": {"x": 300, "y": 45},
+              "clickRadius": 35
+            },
+            {
+              "id": "head-forehead",
+              "name": "前額",
+              "nameEn": "Forehead",
+              "centerPoint": {"x": 300, "y": 70},
+              "clickRadius": 30
+            },
+            {
+              "id": "head-face",
+              "name": "面部",
+              "nameEn": "Face",
+              "centerPoint": {"x": 300, "y": 105},
+              "clickRadius": 40
+            },
+            {
+              "id": "head-ear",
+              "name": "耳朵",
+              "nameEn": "Ear",
+              "centerPoint": {"x": 375, "y": 90},
+              "clickRadius": 25
+            },
+            {
+              "id": "head-nose",
+              "name": "鼻部",
+              "nameEn": "Nose",
+              "centerPoint": {"x": 300, "y": 115},
+              "clickRadius": 20
+            },
+            {
+              "id": "head-mouth",
+              "name": "口部",
+              "nameEn": "Mouth",
+              "centerPoint": {"x": 300, "y": 135},
+              "clickRadius": 20
+            },
+            {
+              "id": "head-eye",
+              "name": "眼部",
+              "nameEn": "Eye",
+              "centerPoint": {"x": 275, "y": 95},
+              "clickRadius": 20
+            },
+            {
+              "id": "head-skull",
+              "name": "顱骨",
+              "nameEn": "Skull",
+              "centerPoint": {"x": 300, "y": 50},
+              "clickRadius": 40
+            }
           ]
         },
         {
@@ -48,7 +106,37 @@
             "x": 300,
             "y": 165
           },
-          "clickRadius": 50
+          "clickRadius": 50,
+          "subRegions": [
+            {
+              "id": "neck-anterior",
+              "name": "頸前",
+              "nameEn": "Anterior Neck",
+              "centerPoint": {"x": 300, "y": 160},
+              "clickRadius": 25
+            },
+            {
+              "id": "neck-posterior",
+              "name": "頸後",
+              "nameEn": "Posterior Neck",
+              "centerPoint": {"x": 300, "y": 175},
+              "clickRadius": 25
+            },
+            {
+              "id": "neck-lateral",
+              "name": "頸側",
+              "nameEn": "Lateral Neck",
+              "centerPoint": {"x": 320, "y": 165},
+              "clickRadius": 20
+            },
+            {
+              "id": "neck-throat",
+              "name": "喉嚨",
+              "nameEn": "Throat",
+              "centerPoint": {"x": 300, "y": 155},
+              "clickRadius": 20
+            }
+          ]
         },
         {
           "id": "chest",
@@ -66,7 +154,44 @@
             "x": 300,
             "y": 250
           },
-          "clickRadius": 90
+          "clickRadius": 90,
+          "subRegions": [
+            {
+              "id": "chest-breast",
+              "name": "乳房",
+              "nameEn": "Breast",
+              "centerPoint": {"x": 270, "y": 260},
+              "clickRadius": 35
+            },
+            {
+              "id": "chest-sternum",
+              "name": "胸骨",
+              "nameEn": "Sternum",
+              "centerPoint": {"x": 300, "y": 240},
+              "clickRadius": 25
+            },
+            {
+              "id": "chest-ribs",
+              "name": "肋骨",
+              "nameEn": "Ribs",
+              "centerPoint": {"x": 330, "y": 250},
+              "clickRadius": 35
+            },
+            {
+              "id": "chest-upper",
+              "name": "上胸",
+              "nameEn": "Upper Chest",
+              "centerPoint": {"x": 300, "y": 210},
+              "clickRadius": 40
+            },
+            {
+              "id": "chest-lateral",
+              "name": "側胸",
+              "nameEn": "Lateral Chest",
+              "centerPoint": {"x": 360, "y": 250},
+              "clickRadius": 30
+            }
+          ]
         },
         {
           "id": "abdomen",
@@ -84,10 +209,47 @@
             "x": 300,
             "y": 370
           },
-          "clickRadius": 90
+          "clickRadius": 90,
+          "subRegions": [
+            {
+              "id": "abdomen-upper",
+              "name": "上腹",
+              "nameEn": "Upper Abdomen",
+              "centerPoint": {"x": 300, "y": 330},
+              "clickRadius": 40
+            },
+            {
+              "id": "abdomen-lower",
+              "name": "下腹",
+              "nameEn": "Lower Abdomen",
+              "centerPoint": {"x": 300, "y": 400},
+              "clickRadius": 40
+            },
+            {
+              "id": "abdomen-umbilical",
+              "name": "肚臍",
+              "nameEn": "Umbilical",
+              "centerPoint": {"x": 300, "y": 370},
+              "clickRadius": 25
+            },
+            {
+              "id": "abdomen-flank",
+              "name": "側腹",
+              "nameEn": "Flank",
+              "centerPoint": {"x": 360, "y": 370},
+              "clickRadius": 30
+            },
+            {
+              "id": "abdomen-inguinal",
+              "name": "腹股溝",
+              "nameEn": "Inguinal",
+              "centerPoint": {"x": 300, "y": 420},
+              "clickRadius": 35
+            }
+          ]
         },
         {
-          "id": "arm",
+          "id": "arm-left",
           "name": "左臂",
           "nameEn": "Left Arm",
           "side": "left",
@@ -102,10 +264,54 @@
             "x": 110,
             "y": 300
           },
-          "clickRadius": 70
+          "clickRadius": 70,
+          "subRegions": [
+            {
+              "id": "arm-left-shoulder",
+              "name": "左肩",
+              "nameEn": "Left Shoulder",
+              "centerPoint": {"x": 90, "y": 200},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-left-upper",
+              "name": "左上臂",
+              "nameEn": "Left Upper Arm",
+              "centerPoint": {"x": 100, "y": 250},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-left-elbow",
+              "name": "左肘",
+              "nameEn": "Left Elbow",
+              "centerPoint": {"x": 110, "y": 300},
+              "clickRadius": 25
+            },
+            {
+              "id": "arm-left-forearm",
+              "name": "左前臂",
+              "nameEn": "Left Forearm",
+              "centerPoint": {"x": 110, "y": 350},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-left-wrist",
+              "name": "左手腕",
+              "nameEn": "Left Wrist",
+              "centerPoint": {"x": 110, "y": 390},
+              "clickRadius": 20
+            },
+            {
+              "id": "arm-left-hand",
+              "name": "左手",
+              "nameEn": "Left Hand",
+              "centerPoint": {"x": 110, "y": 420},
+              "clickRadius": 30
+            }
+          ]
         },
         {
-          "id": "arm",
+          "id": "arm-right",
           "name": "右臂",
           "nameEn": "Right Arm",
           "side": "right",
@@ -120,10 +326,54 @@
             "x": 490,
             "y": 300
           },
-          "clickRadius": 70
+          "clickRadius": 70,
+          "subRegions": [
+            {
+              "id": "arm-right-shoulder",
+              "name": "右肩",
+              "nameEn": "Right Shoulder",
+              "centerPoint": {"x": 510, "y": 200},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-right-upper",
+              "name": "右上臂",
+              "nameEn": "Right Upper Arm",
+              "centerPoint": {"x": 500, "y": 250},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-right-elbow",
+              "name": "右肘",
+              "nameEn": "Right Elbow",
+              "centerPoint": {"x": 490, "y": 300},
+              "clickRadius": 25
+            },
+            {
+              "id": "arm-right-forearm",
+              "name": "右前臂",
+              "nameEn": "Right Forearm",
+              "centerPoint": {"x": 490, "y": 350},
+              "clickRadius": 30
+            },
+            {
+              "id": "arm-right-wrist",
+              "name": "右手腕",
+              "nameEn": "Right Wrist",
+              "centerPoint": {"x": 490, "y": 390},
+              "clickRadius": 20
+            },
+            {
+              "id": "arm-right-hand",
+              "name": "右手",
+              "nameEn": "Right Hand",
+              "centerPoint": {"x": 490, "y": 420},
+              "clickRadius": 30
+            }
+          ]
         },
         {
-          "id": "leg",
+          "id": "leg-left",
           "name": "左腿",
           "nameEn": "Left Leg",
           "side": "left",
@@ -138,10 +388,47 @@
             "x": 220,
             "y": 580
           },
-          "clickRadius": 70
+          "clickRadius": 70,
+          "subRegions": [
+            {
+              "id": "leg-left-thigh",
+              "name": "左大腿",
+              "nameEn": "Left Thigh",
+              "centerPoint": {"x": 220, "y": 490},
+              "clickRadius": 40
+            },
+            {
+              "id": "leg-left-knee",
+              "name": "左膝蓋",
+              "nameEn": "Left Knee",
+              "centerPoint": {"x": 220, "y": 560},
+              "clickRadius": 30
+            },
+            {
+              "id": "leg-left-calf",
+              "name": "左小腿",
+              "nameEn": "Left Calf",
+              "centerPoint": {"x": 220, "y": 640},
+              "clickRadius": 35
+            },
+            {
+              "id": "leg-left-ankle",
+              "name": "左腳踝",
+              "nameEn": "Left Ankle",
+              "centerPoint": {"x": 220, "y": 700},
+              "clickRadius": 25
+            },
+            {
+              "id": "leg-left-foot",
+              "name": "左腳",
+              "nameEn": "Left Foot",
+              "centerPoint": {"x": 220, "y": 750},
+              "clickRadius": 35
+            }
+          ]
         },
         {
-          "id": "leg",
+          "id": "leg-right",
           "name": "右腿",
           "nameEn": "Right Leg",
           "side": "right",
@@ -156,16 +443,53 @@
             "x": 380,
             "y": 580
           },
-          "clickRadius": 70
+          "clickRadius": 70,
+          "subRegions": [
+            {
+              "id": "leg-right-thigh",
+              "name": "右大腿",
+              "nameEn": "Right Thigh",
+              "centerPoint": {"x": 380, "y": 490},
+              "clickRadius": 40
+            },
+            {
+              "id": "leg-right-knee",
+              "name": "右膝蓋",
+              "nameEn": "Right Knee",
+              "centerPoint": {"x": 380, "y": 560},
+              "clickRadius": 30
+            },
+            {
+              "id": "leg-right-calf",
+              "name": "右小腿",
+              "nameEn": "Right Calf",
+              "centerPoint": {"x": 380, "y": 640},
+              "clickRadius": 35
+            },
+            {
+              "id": "leg-right-ankle",
+              "name": "右腳踝",
+              "nameEn": "Right Ankle",
+              "centerPoint": {"x": 380, "y": 700},
+              "clickRadius": 25
+            },
+            {
+              "id": "leg-right-foot",
+              "name": "右腳",
+              "nameEn": "Right Foot",
+              "centerPoint": {"x": 380, "y": 750},
+              "clickRadius": 35
+            }
+          ]
         }
       ]
     }
   },
   "metadata": {
     "createdAt": "2026-01-15",
-    "lastUpdated": "2026-01-15",
-    "version": "1.0.0",
-    "description": "身體部位座標映射，用於 bodysurface.png 圖像的點擊檢測",
+    "lastUpdated": "2026-02-26",
+    "version": "1.1.0",
+    "description": "身體部位座標映射，包含主要區域及子區域座標",
     "calibrationNotes": "座標基於標準身體解剖圖比例定義，可根據實際圖像尺寸調整"
   }
 }

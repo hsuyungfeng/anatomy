@@ -108,6 +108,34 @@ class BodyImageMapper {
       return null;
     }
 
+    // 首先檢查子區域
+    for (const region of this.bodyRegions) {
+      if (region.subRegions) {
+        for (const subRegion of region.subRegions) {
+          const distance = Math.hypot(x - subRegion.centerPoint.x, y - subRegion.centerPoint.y);
+          if (distance <= subRegion.clickRadius) {
+            if (this.debug) {
+              console.log('[BodyImageMapper] ✓ 識別到子區域:', subRegion.name, `(${subRegion.nameEn})`);
+              console.log('  - 所屬主區域:', region.name);
+            }
+            return {
+              id: subRegion.id,
+              name: subRegion.name,
+              nameEn: subRegion.nameEn,
+              side: region.side,
+              parentRegion: region.id,
+              parentName: region.name,
+              centerPoint: subRegion.centerPoint,
+              clickRadius: subRegion.clickRadius,
+              distance,
+              confidence: Math.max(0, 1 - (distance / subRegion.clickRadius)),
+              isSubRegion: true
+            };
+          }
+        }
+      }
+    }
+
     // 遍歷所有身體部位，找到最近的點擊
     let closest = null;
     let closestDistance = Infinity;
