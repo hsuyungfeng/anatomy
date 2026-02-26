@@ -1,0 +1,23 @@
+{
+  "name": "醫療結構化病歷系統",
+  "short_name": "醫療病歷",
+  "description": "醫療結構化病歷輸入系統 - 使用圖像標註和結構化表單記錄患者狀況",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066cc",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["medical", "health", "productivity"]
+}

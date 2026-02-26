@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="醫療結構化病歷輸入系統 - 使用圖像標註和結構化表單記錄患者狀況">
   <meta name="keywords" content="病歷,解剖,標註,醫療記錄,結構化,OCR">
+  <meta name="theme-color" content="#0066cc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="醫療病歷">
 
   <title>醫療結構化病歷輸入系統</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 
   <!-- 基礎樣式 -->
   <link rel="stylesheet" href="assets/styles/main.css">
@@ -496,6 +503,21 @@
         section.setAttribute('data-print-date', dateStr);
       }
     });
+  </script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('ServiceWorker 註冊成功:', registration.scope);
+          })
+          .catch((error) => {
+            console.log('ServiceWorker 註冊失敗:', error);
+          });
+      });
+    }
   </script>
 </body>
 </html>
