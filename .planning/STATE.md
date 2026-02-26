@@ -28,3 +28,11 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Notes
 
 Brownfield project - existing features from HTML/JS implementation mapped to planning structure.
+
+## Accumulated Context
+
+### Pending Todos
+
+| Date | Area | Title | Files |
+|------|------|-------|-------|
+| 2026-02-26 | ui | 身體圖像位置點擊座標不正確 | 3 |
