@@ -1502,21 +1502,157 @@ body {
 
 /* ===== 列印樣式 ===== */
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
   .app__header,
   .system-tabs,
+  .record-tabs,
   .record-actions,
-  .image-toolbar {
-    display: none;
+  .image-toolbar,
+  .eye-label-panel-container,
+  .body-region-panel,
+  .statistics-container,
+  .search-results,
+  #apply-filter-btn,
+  #clear-filter-btn,
+  #search-btn {
+    display: none !important;
   }
 
   .app__main {
     flex-direction: column;
     padding: 0;
+    gap: 20px;
   }
 
   .image-section,
   .record-section {
     box-shadow: none;
     border-radius: 0;
+    border: 1px solid #ccc;
+  }
+
+  .image-section {
+    page-break-after: always;
+    min-height: 400px;
+  }
+
+  .record-section {
+    page-break-before: always;
+  }
+
+  .record-panel {
+    display: block !important;
+  }
+
+  .record-panel--active {
+    display: block !important;
+  }
+
+  .record-list {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .record-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    page-break-inside: avoid;
+  }
+
+  .record-item__header {
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+  }
+
+  .record-item__system {
+    background: #f5f5f5 !important;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10pt;
+  }
+
+  .record-item__annotation {
+    margin: 5px 0;
+    padding: 5px;
+    border-left: 2px solid #3498db;
+  }
+
+  .record-item__diseases {
+    color: #333;
+    font-weight: normal;
+  }
+
+  .timestamp {
+    color: #666;
+    font-size: 10pt;
+  }
+
+  /* 統計區域樣式 */
+  .statistics-summary {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+
+  .stat-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .stat-card__value {
+    font-size: 24pt;
+    color: #333;
+  }
+
+  /* 圖表樣式 */
+  .statistics-charts {
+    page-break-inside: avoid;
+  }
+
+  .chart-container {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  /* 頁面標題 */
+  .record-section::before {
+    content: "醫療病歷報告";
+    display: block;
+    font-size: 18pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+
+  .record-section::after {
+    content: "列印日期: " attr(data-print-date);
+    display: block;
+    text-align: right;
+    font-size: 10pt;
+    color: #666;
+    margin-top: 20px;
   }
 }

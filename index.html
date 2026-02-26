@@ -231,7 +231,7 @@
       </section>
 
       <!-- 右側：病歷列表和操作 -->
-      <aside class="record-section" aria-label="病歷管理區域">
+      <aside class="record-section" aria-label="病歷管理區域" id="record-section">
         <!-- 標籤頁：病歷列表和統計分析 -->
         <div class="record-tabs" role="tablist" aria-label="病歷操作">
           <button
@@ -477,5 +477,16 @@
   <script src="assets/scripts/eye-structure-info.js"></script>
   <script src="assets/scripts/disease-visualization.js"></script>
   <script src="assets/scripts/main.js"></script>
+  <script>
+    // 列印時添加日期
+    window.addEventListener('beforeprint', function() {
+      const section = document.getElementById('record-section');
+      if (section) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW');
+        section.setAttribute('data-print-date', dateStr);
+      }
+    });
+  </script>
 </body>
 </html>
