@@ -1433,6 +1433,7 @@ class MedicalRecordApp {
               ${structureInfo.confidence < 0.5 ?
                 '<p class="structure-info__warning">⚠️ 檢測信心度較低，請重新點擊</p>' : ''}
             </div>
+            ${this.renderManualBodySelector()}
           `;
 
           console.log(`身體部位檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
@@ -1450,7 +1451,7 @@ class MedicalRecordApp {
           `;
         } else if (this.currentSystemId === 'body') {
           locationText = `
-            <p class="structure-info__error">無法自動識別身體部位，請重新點擊</p>
+            <p class="structure-info__error">無法自動識別身體部位，請重新點擊或使用下方選單選擇</p>
             ${this.renderManualBodySelector()}
           `;
         }
@@ -1677,7 +1678,11 @@ class MedicalRecordApp {
     const selector = document.getElementById('manual-body-select');
     if (!selector) return;
 
-    selector.addEventListener('change', (e) => {
+    // 清除舊的事件監聽器（避免重複）
+    const newSelector = selector.cloneNode(true);
+    selector.parentNode.replaceChild(newSelector, selector);
+
+    newSelector.addEventListener('change', (e) => {
       const selectedOption = e.target.options[e.target.selectedIndex];
       if (!selectedOption.value) return;
 
@@ -1693,7 +1698,7 @@ class MedicalRecordApp {
 
       this.currentBodyRegion = bodyRegionInfo;
 
-      // 更新顯示
+      // 更新顯示（保留選單）
       const locationDiv = $('#modal-location');
       if (locationDiv) {
         const sideBadge = bodyRegionInfo.side === 'left' ? '左側' : bodyRegionInfo.side === 'right' ? '右側' : '中線';
@@ -1705,7 +1710,10 @@ class MedicalRecordApp {
               <span class="manual-badge">手動選擇</span>
             </p>
           </div>
+          ${this.renderManualBodySelector()}
         `;
+        // 重新綁定事件
+        this.setupManualBodySelector();
       }
 
       showNotification(`已選擇：${bodyRegionInfo.name}`, 'success');
