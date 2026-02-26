@@ -155,7 +155,8 @@
 
 .operation-description:focus,
 .operation-notes:focus {
-  outline: none;
+  outline: 2px solid #ff6b9d;
+  outline-offset: 2px;
   border-color: #ff6b9d;
   box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
 }

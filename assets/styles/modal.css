@@ -222,7 +222,8 @@
 }
 
 .treatment-notes-input:focus {
-  outline: none;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.1);
 }
@@ -534,7 +535,8 @@
 }
 
 .manual-tooth-select:focus {
-  outline: none;
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
   border-color: #ffd700;
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
 }
@@ -564,7 +566,8 @@
 }
 
 .manual-body-select:focus {
-  outline: none;
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
   border-color: #4CAF50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
 }

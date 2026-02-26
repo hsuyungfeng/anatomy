@@ -243,7 +243,7 @@
         </div>
 
         <!-- 幫助文本 -->
-        <div class="image-help" role="complementary">
+        <div class="image-help" role="complementary" aria-live="polite">
           <p class="image-help__text" data-en="Click on the image to add a disease record">
             💡 點擊圖像標註位置，填入疾病資訊
           </p>
@@ -294,11 +294,13 @@
             <div class="statistics-search">
               <h3 class="statistics-search__title">搜尋病歷</h3>
               <div class="statistics-search__input-wrapper">
+                <label for="search-input" class="visually-hidden">搜尋關鍵字</label>
                 <input 
                   type="text" 
                   id="search-input" 
                   class="statistics-search__input"
                   placeholder="輸入關鍵字搜尋..."
+                  aria-label="搜尋關鍵字"
                   data-en="Search records...">
                 <button class="btn btn--primary" id="search-btn">
                   搜尋
