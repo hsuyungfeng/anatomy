@@ -381,6 +381,24 @@
           </button>
 
           <button
+            class="btn btn--secondary"
+            id="backup-btn"
+            data-en="Backup">
+            <i class="fas fa-download"></i>
+            <span>備份</span>
+          </button>
+
+          <button
+            class="btn btn--secondary"
+            id="restore-btn"
+            data-en="Restore">
+            <i class="fas fa-upload"></i>
+            <span>還原</span>
+          </button>
+
+          <input type="file" id="restore-file" accept=".json" style="display: none;">
+
+          <button
             class="btn btn--danger"
             id="clear-records-btn"
             data-en="Clear">

@@ -226,6 +226,9 @@ class MedicalRecordApp {
     const exportTextBtn = $('#export-text-btn');
     const exportCsvBtn = $('#export-csv-btn');
     const exportPdfBtn = $('#export-pdf-btn');
+    const backupBtn = $('#backup-btn');
+    const restoreBtn = $('#restore-btn');
+    const restoreFile = $('#restore-file');
     const clearBtn = $('#clear-records-btn');
 
     if (exportTextBtn) {
@@ -238,6 +241,34 @@ class MedicalRecordApp {
 
     if (exportPdfBtn) {
       exportPdfBtn.addEventListener('click', () => this.exportRecord('pdf'));
+    }
+
+    if (backupBtn) {
+      backupBtn.addEventListener('click', () => {
+        if (this.recordManager) {
+          this.recordManager.downloadBackup();
+        }
+      });
+    }
+
+    if (restoreBtn && restoreFile) {
+      restoreBtn.addEventListener('click', () => {
+        restoreFile.click();
+      });
+
+      restoreFile.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file && this.recordManager) {
+          if (confirm('還原將覆蓋現有數據，確定要繼續嗎？')) {
+            await this.recordManager.restoreFromBackup(file);
+            this.updateRecordList(this.currentSystemId);
+            if (this.recordStatistics) {
+              this.recordStatistics.updateDisplay();
+            }
+          }
+        }
+        restoreFile.value = '';
+      });
     }
 
     if (clearBtn) {

@@ -689,4 +689,89 @@ class RecordManager {
       lastUpdated: record.updatedAt
     };
   }
+
+  /**
+   * 備份所有病歷數據
+   * @returns {Object} 備份資料
+   */
+  backupAllData() {
+    try {
+      const recordIds = getFromLocalStorage(`${this.storageKeyPrefix}-ids`, []);
+      const records = recordIds.map(id => 
+        getFromLocalStorage(`${this.storageKeyPrefix}-${id}`)
+      ).filter(r => r !== null);
+
+      const backupData = {
+        version: '1.0',
+        createdAt: new Date().toISOString(),
+        appName: 'Anatomy Medical System',
+        recordCount: records.length,
+        records: records
+      };
+
+      return backupData;
+    } catch (error) {
+      console.error('[backupAllData] 備份失敗:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 下載備份檔案
+   */
+  downloadBackup() {
+    const backupData = this.backupAllData();
+    if (!backupData) {
+      showNotification('備份失敗', 'error');
+      return;
+    }
+
+    const content = JSON.stringify(backupData, null, 2);
+    const timestamp = formatDateTime(new Date(), 'YYYY-MM-DD-HH-mm');
+    const filename = `anatomy-backup-${timestamp}.json`;
+    
+    downloadFile(content, filename, 'application/json');
+    showNotification(`已備份 ${backupData.recordCount} 筆病歷`, 'success');
+  }
+
+  /**
+   * 還原病歷數據
+   * @param {File} file 備份檔案
+   * @returns {Object} 還原結果
+   */
+  async restoreFromBackup(file) {
+    try {
+      const text = await file.text();
+      const backupData = JSON.parse(text);
+
+      if (!backupData.version || !backupData.records) {
+        throw new Error('無效的備份檔案格式');
+      }
+
+      let restoredCount = 0;
+
+      backupData.records.forEach(record => {
+        if (record.recordId) {
+          const storageKey = `${this.storageKeyPrefix}-${record.recordId}`;
+          saveToLocalStorage(storageKey, record);
+          restoredCount++;
+        }
+      });
+
+      const recordIds = backupData.records
+        .filter(r => r.recordId)
+        .map(r => r.recordId);
+      saveToLocalStorage(`${this.storageKeyPrefix}-ids`, recordIds);
+
+      this.loadRecords();
+      
+      showNotification(`已還原 ${restoredCount} 筆病歷`, 'success');
+      
+      return { success: true, count: restoredCount };
+    } catch (error) {
+      console.error('[restoreFromBackup] 還原失敗:', error);
+      showNotification('還原失敗: ' + error.message, 'error');
+      return { success: false, error: error.message };
+    }
+  }
 }
