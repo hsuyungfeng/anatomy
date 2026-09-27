@@ -52,6 +52,18 @@ defineAppMethods({
       onSelect: tooth => this.openToothModal(tooth)
     });
 
+    const svg = container.querySelector('svg');
+    if (svg && typeof SvgViewport !== 'undefined') {
+      if (this.svgViewport) {
+        this.svgViewport.detach();
+      }
+      this.svgViewport = SvgViewport.attach(svg, {
+        maxZoom: 4,
+        onZoomChange: () => this.updateSvgZoomDisplay()
+      });
+      this.updateSvgZoomDisplay();
+    }
+
     this.refreshOdontogramRecords();
   },
 
@@ -89,49 +101,5 @@ defineAppMethods({
       source: 'odontogram'
     };
     this.openDiseaseModal(null, this.currentToothInfo);
-  },
-
-  /**
-   * 切換參考圖（點陣圖）與牙位圖（SVG）
-   */
-  toggleReferenceImage() {
-    const isTeeth = this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth';
-    if (!isTeeth) return;
-    if (this.currentSystemId === 'primary_teeth') {
-      showNotification('乳牙沒有參考圖', 'info');
-      return;
-    }
-
-    const odontogramView = document.getElementById('odontogram-view');
-    const canvas = document.getElementById('image-canvas');
-    const toggleBtn = document.getElementById('reference-image-toggle');
-
-    this.isReferenceImageMode = !this.isReferenceImageMode;
-
-    if (this.isReferenceImageMode) {
-      if (odontogramView) odontogramView.hidden = true;
-      if (canvas) {
-        canvas.style.display = 'block';
-        if (canvas.width === 0 || canvas.height === 0) {
-          canvas.width = 800;
-          canvas.height = 600;
-        }
-      }
-      if (this.annotator) {
-        this.annotator.renderImage();
-      }
-      if (toggleBtn) {
-        toggleBtn.setAttribute('aria-pressed', 'true');
-        toggleBtn.textContent = '牙位圖';
-      }
-    } else {
-      if (canvas) canvas.style.display = 'none';
-      if (odontogramView) odontogramView.hidden = false;
-      if (toggleBtn) {
-        toggleBtn.setAttribute('aria-pressed', 'false');
-        toggleBtn.textContent = '參考圖';
-      }
-    }
   }
-
 });

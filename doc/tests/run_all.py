@@ -35,6 +35,7 @@ import odontogram_test
 import eye_diagram_test
 import body_map_test
 import legacy_mapping_test
+import legacy_map_unit_test
 import svg_viewport_test
 import ui_polish_test
 import snapshot_prototype
@@ -325,6 +326,18 @@ def main():
 
                     try:
                         test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-02 舊記錄 ID 對應單元測試 ---")
+                for test_func in legacy_map_unit_test.TESTS:
+                    test_name = test_func.__name__
+                    try:
+                        test_func()
                         print(f"[PASS] {test_name}")
                         passed += 1
                     except Exception as err:

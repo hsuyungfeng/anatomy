@@ -14,14 +14,14 @@
       "description": "頭部區域",
       "subRegions": [
         {"id": "head-forehead", "nameZh": "前額", "nameEn": "Forehead"},
-        {"id": "head-eyebrow", "nameZh": "眉毛", "nameEn": "Eyebrow"},
+        {"id": "head-eyebrow", "nameZh": "左眉毛", "nameEn": "Left Eyebrow"},
         {"id": "head-eyebrow-r", "nameZh": "右眉毛", "nameEn": "Right Eyebrow"},
-        {"id": "head-eye", "nameZh": "眼睛", "nameEn": "Eye"},
+        {"id": "head-eye", "nameZh": "左眼", "nameEn": "Left Eye"},
         {"id": "head-eye-r", "nameZh": "右眼", "nameEn": "Right Eye"},
-        {"id": "head-ear", "nameZh": "耳朵", "nameEn": "Ear"},
+        {"id": "head-ear", "nameZh": "左耳朵", "nameEn": "Left Ear"},
         {"id": "head-ear-r", "nameZh": "右耳朵", "nameEn": "Right Ear"},
         {"id": "head-nose", "nameZh": "鼻子", "nameEn": "Nose"},
-        {"id": "head-cheek", "nameZh": "臉頰", "nameEn": "Cheek"},
+        {"id": "head-cheek", "nameZh": "左臉頰", "nameEn": "Left Cheek"},
         {"id": "head-cheek-r", "nameZh": "右臉頰", "nameEn": "Right Cheek"},
         {"id": "head-lips", "nameZh": "嘴唇", "nameEn": "Lips"},
         {"id": "head-chin", "nameZh": "下巴", "nameEn": "Chin"}
@@ -56,7 +56,7 @@
       "description": "軀幹區域（胸、腹、鼠蹊）",
       "subRegions": [
         {"id": "chest", "nameZh": "胸", "nameEn": "Chest"},
-        {"id": "chest-breast", "nameZh": "乳房", "nameEn": "Breast"},
+        {"id": "chest-breast", "nameZh": "左乳房", "nameEn": "Left Breast"},
         {"id": "chest-breast-r", "nameZh": "右乳房", "nameEn": "Right Breast"},
         {"id": "abdomen-upper", "nameZh": "上腹", "nameEn": "Upper Abdomen"},
         {"id": "abdomen", "nameZh": "腹部", "nameEn": "Abdominal"},

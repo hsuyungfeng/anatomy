@@ -22,6 +22,7 @@ class MedicalRecordApp {
     this.odontogram = null;
     this.isReferenceImageMode = false;
     this.toothNames = null;
+    this.svgViewport = null;
 
     this.init();
   }
@@ -288,7 +289,43 @@ class MedicalRecordApp {
       });
     });
 
-    // 縮放按鈕已在 ImageAnnotator 中處理
+    // 縮放按鈕：在 SVG 啟用時交由 SvgViewport 處理，阻止冒泡到 ImageAnnotator
+    const zoomInBtn = $('#zoom-in-btn');
+    const zoomOutBtn = $('#zoom-out-btn');
+    const zoomResetBtn = $('#zoom-reset-btn');
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.zoomIn();
+          }
+        }
+      }, true);
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.zoomOut();
+          }
+        }
+      }, true);
+    }
+
+    if (zoomResetBtn) {
+      zoomResetBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.reset();
+          }
+        }
+      }, true);
+    }
 
     // 導出按鈕
     const exportTextBtn = $('#export-text-btn');
@@ -507,10 +544,19 @@ class MedicalRecordApp {
       const canvas = document.getElementById('image-canvas');
       const toggleBtn = document.getElementById('reference-image-toggle');
 
-      if (isTeeth) {
+      const currentSvgContainer = this.getCurrentSvgContainer();
+      if (currentSvgContainer) {
         this.isReferenceImageMode = false;
-        if (odontogramView) odontogramView.hidden = false;
+        // 隱藏其他 SVG 容器
+        if (odontogramView && odontogramView !== currentSvgContainer) odontogramView.hidden = true;
+        const eyeSvg = document.getElementById('eye-diagram-view');
+        if (eyeSvg && eyeSvg !== currentSvgContainer) eyeSvg.hidden = true;
+        const bodySvg = document.getElementById('body-map-view');
+        if (bodySvg && bodySvg !== currentSvgContainer) bodySvg.hidden = true;
+
+        currentSvgContainer.hidden = false;
         if (canvas) canvas.style.display = 'none';
+
         if (toggleBtn) {
           toggleBtn.hidden = false;
           toggleBtn.setAttribute('aria-pressed', 'false');
@@ -523,10 +569,22 @@ class MedicalRecordApp {
             toggleBtn.setAttribute('title', '切換參考圖');
           }
         }
-        await this.renderOdontogram();
+
+        if (isTeeth) {
+          await this.renderOdontogram();
+        } else if (systemId === 'eye' && typeof this.renderEyeDiagram === 'function') {
+          await this.renderEyeDiagram();
+        } else if (systemId === 'body' && typeof this.renderBodyMap === 'function') {
+          await this.renderBodyMap();
+        }
       } else {
         this.isReferenceImageMode = false;
         if (odontogramView) odontogramView.hidden = true;
+        const eyeSvg = document.getElementById('eye-diagram-view');
+        if (eyeSvg) eyeSvg.hidden = true;
+        const bodySvg = document.getElementById('body-map-view');
+        if (bodySvg) bodySvg.hidden = true;
+
         if (canvas) {
           canvas.style.display = 'block';
           if (canvas.width === 0 || canvas.height === 0) {
@@ -641,9 +699,9 @@ class MedicalRecordApp {
    * @param {Event} e - 事件
    */
   handleAnnotationClick(e) {
-    // 牙齒系統：參考圖僅供檢視，不開啟模態
-    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-      showNotification('參考圖僅供檢視，請切回牙位圖點選牙齒', 'info');
+    // 參考圖僅供檢視，不開啟模態
+    if (this.isReferenceImageMode || this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      showNotification('參考圖僅供檢視，請切回結構圖點選', 'info');
       return;
     }
 
@@ -667,6 +725,86 @@ class MedicalRecordApp {
 
     // 顯示模態視窗（openDiseaseModal 會根據系統類型進行適當的檢測）
     this.openDiseaseModal(position);
+  }
+
+  /**
+   * 取得當前系統對應的 SVG 容器元素
+   * @returns {HTMLElement|null}
+   */
+  getCurrentSvgContainer() {
+    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      return document.getElementById('odontogram-view');
+    }
+    if (this.currentSystemId === 'eye') {
+      return document.getElementById('eye-diagram-view');
+    }
+    if (this.currentSystemId === 'body') {
+      return document.getElementById('body-map-view');
+    }
+    return null;
+  }
+
+  /**
+   * 判斷當前是否處於 SVG 視口有效狀態
+   * @returns {boolean}
+   */
+  isSvgActive() {
+    if (this.isReferenceImageMode) return false;
+    const container = this.getCurrentSvgContainer();
+    return !!(container && !container.hidden && this.svgViewport);
+  }
+
+  /**
+   * 更新 SVG 縮放百分比顯示
+   */
+  updateSvgZoomDisplay() {
+    const levelEl = document.getElementById('zoom-level');
+    if (levelEl && this.svgViewport) {
+      levelEl.textContent = `${Math.round(this.svgViewport.getZoom() * 100)}%`;
+    }
+  }
+
+  /**
+   * 切換參考圖（點陣圖）與結構圖（SVG）
+   */
+  toggleReferenceImage() {
+    if (this.currentSystemId === 'primary_teeth') {
+      showNotification('乳牙沒有參考圖', 'info');
+      return;
+    }
+
+    const svgContainer = this.getCurrentSvgContainer();
+    if (!svgContainer) return;
+
+    const canvas = document.getElementById('image-canvas');
+    const toggleBtn = document.getElementById('reference-image-toggle');
+
+    this.isReferenceImageMode = !this.isReferenceImageMode;
+
+    if (this.isReferenceImageMode) {
+      svgContainer.hidden = true;
+      if (canvas) {
+        canvas.style.display = 'block';
+        if (canvas.width === 0 || canvas.height === 0) {
+          canvas.width = 800;
+          canvas.height = 600;
+        }
+      }
+      if (this.annotator) {
+        this.annotator.renderImage();
+      }
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'true');
+        toggleBtn.textContent = (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') ? '牙位圖' : '結構圖';
+      }
+    } else {
+      if (canvas) canvas.style.display = 'none';
+      svgContainer.hidden = false;
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.textContent = '參考圖';
+      }
+    }
   }
 }
 
