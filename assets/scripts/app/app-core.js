@@ -11,8 +11,6 @@ class MedicalRecordApp {
     this.recordManager = null;
     this.diseaseForm = null;
     this.ocrHandler = null;
-    this.eyeMapper = null; // 眼睛圖像映射器 [新增]
-    this.bodyImageMapper = null; // 身體圖像映射器 [新增]
 
     this.currentSystemId = 'teeth';
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
@@ -22,6 +20,7 @@ class MedicalRecordApp {
     this.odontogram = null;
     this.isReferenceImageMode = false;
     this.toothNames = null;
+    this.svgViewport = null;
 
     this.init();
   }
@@ -51,6 +50,7 @@ class MedicalRecordApp {
 
       // 載入初始圖像
       await this.loadSystemImage(this.currentSystemId);
+      this.updateTeethSubTabs(this.currentSystemId);
 
       // 初始加載病例列表（分組顯示）
       await this.loadAndDisplayRecords();
@@ -211,41 +211,6 @@ class MedicalRecordApp {
       systemId: this.currentSystemId
     });
 
-    // 眼睛圖像映射器 [新增區塊]
-    this.eyeMapper = new EyeImageMapper({
-      coordinatesUrl: '/data/eye-coordinates.json',
-      debug: true  // 開發階段啟用，生產環境改為 false
-    });
-
-    // 預加載眼睛座標數據
-    this.eyeMapper.loadCoordinates().then(success => {
-      if (!success) {
-        console.error('✗ 眼睛座標數據加載失敗');
-      }
-    });
-
-    // 眼睛標籤映射器 [新增] - 用於識別眼睛圖像中的文字標籤
-    if (typeof EyeLabelMapper !== 'undefined') {
-      this.eyeLabelMapper = new EyeLabelMapper({
-        debug: true
-      });
-    }
-
-    // 身體圖像映射器 [新增] - 用於識別身體圖像中的部位點擊區域
-    if (typeof BodyImageMapper !== 'undefined') {
-      this.bodyImageMapper = new BodyImageMapper({
-        coordinatesUrl: '/data/body-coordinates.json',
-        debug: true
-      });
-
-      // 預加載座標數據
-      this.bodyImageMapper.loadCoordinates().then(success => {
-        if (!success) {
-          console.error('✗ 身體座標數據加載失敗');
-        }
-      });
-    }
-
     // 病歷管理器
     this.recordManager = new RecordManager();
 
@@ -288,7 +253,71 @@ class MedicalRecordApp {
       });
     });
 
-    // 縮放按鈕已在 ImageAnnotator 中處理
+    // 眼睛眼別切換 (OD/OS)
+    $$('#eye-side-toggle button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (typeof this.switchEyeSide === 'function') {
+          this.switchEyeSide(e.currentTarget.dataset.side);
+        }
+      });
+    });
+
+    // 身體體型切換 (女性/男性)
+    $$('#body-sex-toggle button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (typeof this.switchBodySex === 'function') {
+          this.switchBodySex(e.currentTarget.dataset.sex);
+        }
+      });
+    });
+
+    // 放大臉部按鈕
+    const focusFaceBtn = $('#focus-face-btn');
+    if (focusFaceBtn) {
+      focusFaceBtn.addEventListener('click', () => {
+        if (typeof this.focusFace === 'function') {
+          this.focusFace();
+        }
+      });
+    }
+
+    // 縮放按鈕：在 SVG 啟用時交由 SvgViewport 處理，阻止冒泡到 ImageAnnotator
+    const zoomInBtn = $('#zoom-in-btn');
+    const zoomOutBtn = $('#zoom-out-btn');
+    const zoomResetBtn = $('#zoom-reset-btn');
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.zoomIn();
+          }
+        }
+      }, true);
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.zoomOut();
+          }
+        }
+      }, true);
+    }
+
+    if (zoomResetBtn) {
+      zoomResetBtn.addEventListener('click', (e) => {
+        if (this.isSvgActive()) {
+          e.stopImmediatePropagation();
+          if (this.svgViewport) {
+            this.svgViewport.reset();
+          }
+        }
+      }, true);
+    }
 
     // 導出按鈕
     const exportTextBtn = $('#export-text-btn');
@@ -406,9 +435,6 @@ class MedicalRecordApp {
     // 模態視窗
     this.setupDiseaseModal();
 
-    // 設置眼睛標籤按鈕事件監聽
-    this.setupEyeLabelButtonListeners();
-
     // 設置參考圖切換按鈕事件監聽
     const refToggleBtn = $('#reference-image-toggle');
     if (refToggleBtn) {
@@ -430,19 +456,7 @@ class MedicalRecordApp {
     tab.classList.add('system-tab--active');
 
     // 顯示或隱藏牙齒子標籤頁
-    const teethSubTabs = $('#teeth-sub-tabs');
-    if (systemId === 'teeth' && teethSubTabs) {
-      teethSubTabs.classList.add('teeth-sub-tabs--visible');
-      // 重置為永久齒
-      this.currentTeethType = 'permanent';
-      const tabs = $$('.teeth-tab');
-      tabs.forEach(t => t.classList.remove('teeth-tab--active'));
-      if (tabs.length > 0) {
-        tabs[0].classList.add('teeth-tab--active');
-      }
-    } else if (teethSubTabs) {
-      teethSubTabs.classList.remove('teeth-sub-tabs--visible');
-    }
+    this.updateTeethSubTabs(systemId, true);
 
     // 顯示或隱藏眼睛資訊面板
     if (systemId === 'eye') {
@@ -456,6 +470,29 @@ class MedicalRecordApp {
 
     // 切換系統
     await this.loadSystemImage(systemId);
+  }
+  /**
+   * 更新牙齒子標籤頁可見性
+   * @param {string} systemId - 系統 ID
+   * @param {boolean} resetToPermanent - 是否重置為永久齒
+   */
+  updateTeethSubTabs(systemId, resetToPermanent = false) {
+    const teethSubTabs = $('#teeth-sub-tabs');
+    if (!teethSubTabs) return;
+    const isTeeth = (systemId === 'teeth' || systemId === 'primary_teeth');
+    if (isTeeth) {
+      teethSubTabs.classList.add('teeth-sub-tabs--visible');
+      if (resetToPermanent) {
+        this.currentTeethType = 'permanent';
+        const tabs = $$('.teeth-tab');
+        tabs.forEach(t => t.classList.remove('teeth-tab--active'));
+        if (tabs.length > 0) {
+          tabs[0].classList.add('teeth-tab--active');
+        }
+      }
+    } else {
+      teethSubTabs.classList.remove('teeth-sub-tabs--visible');
+    }
   }
   /**
    * 處理牙齒類型變更 (永久齒/乳齒)
@@ -499,18 +536,39 @@ class MedicalRecordApp {
     try {
       this.currentSystemId = systemId;
 
-      // 控制眼睛標籤面板的可見性
-      this.toggleEyeLabelPanel(systemId === 'eye');
+      const eyeSideToggle = document.getElementById('eye-side-toggle');
+      if (eyeSideToggle) {
+        eyeSideToggle.hidden = (systemId !== 'eye');
+      }
+
+      const bodySexToggle = document.getElementById('body-sex-toggle');
+      if (bodySexToggle) {
+        bodySexToggle.hidden = (systemId !== 'body');
+      }
+
+      const focusFaceBtn = document.getElementById('focus-face-btn');
+      if (focusFaceBtn) {
+        focusFaceBtn.hidden = (systemId !== 'body');
+      }
 
       const isTeeth = systemId === 'teeth' || systemId === 'primary_teeth';
       const odontogramView = document.getElementById('odontogram-view');
       const canvas = document.getElementById('image-canvas');
       const toggleBtn = document.getElementById('reference-image-toggle');
 
-      if (isTeeth) {
+      const currentSvgContainer = this.getCurrentSvgContainer();
+      if (currentSvgContainer) {
         this.isReferenceImageMode = false;
-        if (odontogramView) odontogramView.hidden = false;
+        // 隱藏其他 SVG 容器
+        if (odontogramView && odontogramView !== currentSvgContainer) odontogramView.hidden = true;
+        const eyeSvg = document.getElementById('eye-diagram-view');
+        if (eyeSvg && eyeSvg !== currentSvgContainer) eyeSvg.hidden = true;
+        const bodySvg = document.getElementById('body-map-view');
+        if (bodySvg && bodySvg !== currentSvgContainer) bodySvg.hidden = true;
+
+        currentSvgContainer.hidden = false;
         if (canvas) canvas.style.display = 'none';
+
         if (toggleBtn) {
           toggleBtn.hidden = false;
           toggleBtn.setAttribute('aria-pressed', 'false');
@@ -523,10 +581,22 @@ class MedicalRecordApp {
             toggleBtn.setAttribute('title', '切換參考圖');
           }
         }
-        await this.renderOdontogram();
+
+        if (isTeeth) {
+          await this.renderOdontogram();
+        } else if (systemId === 'eye' && typeof this.renderEyeDiagram === 'function') {
+          await this.renderEyeDiagram();
+        } else if (systemId === 'body' && typeof this.renderBodyMap === 'function') {
+          await this.renderBodyMap();
+        }
       } else {
         this.isReferenceImageMode = false;
         if (odontogramView) odontogramView.hidden = true;
+        const eyeSvg = document.getElementById('eye-diagram-view');
+        if (eyeSvg) eyeSvg.hidden = true;
+        const bodySvg = document.getElementById('body-map-view');
+        if (bodySvg) bodySvg.hidden = true;
+
         if (canvas) {
           canvas.style.display = 'block';
           if (canvas.width === 0 || canvas.height === 0) {
@@ -573,24 +643,6 @@ class MedicalRecordApp {
       // 重置縮放
       this.annotator.resetZoom();
 
-      // 在眼睛系統加載後繪製標籤 [新增]
-      if (systemId === 'eye' && this.eyeLabelMapper) {
-        const c = document.getElementById('image-canvas');
-        if (c) {
-          setTimeout(() => {
-            // 延遲繪製以確保圖像已加載
-            this.eyeLabelMapper.drawLabels(c, {
-              showText: true,
-              textColor: '#333',
-              fontSize: 13,
-              backgroundColor: 'rgba(255, 255, 255, 0.85)',
-              borderColor: '#0066cc',
-              borderRadius: 4
-            });
-          }, 100);
-        }
-      }
-
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
@@ -613,6 +665,28 @@ class MedicalRecordApp {
       const annotations = this.recordManager.getAnnotationsBySystem(systemId);
       annotations.forEach(anno => this.annotator.annotations.push(anno));
       this.refreshOdontogramRecords();
+      this.updateRecordList(systemId);
+      return;
+    }
+
+    if (systemId === 'eye') {
+      this.annotator.clearAnnotations();
+      const annotations = this.recordManager.getAnnotationsBySystem(systemId);
+      annotations.forEach(anno => this.annotator.annotations.push(anno));
+      if (typeof this.refreshEyeDiagramRecords === 'function') {
+        this.refreshEyeDiagramRecords();
+      }
+      this.updateRecordList(systemId);
+      return;
+    }
+
+    if (systemId === 'body') {
+      this.annotator.clearAnnotations();
+      const annotations = this.recordManager.getAnnotationsBySystem(systemId);
+      annotations.forEach(anno => this.annotator.annotations.push(anno));
+      if (typeof this.refreshBodyMapRecords === 'function') {
+        this.refreshBodyMapRecords();
+      }
       this.updateRecordList(systemId);
       return;
     }
@@ -641,32 +715,88 @@ class MedicalRecordApp {
    * @param {Event} e - 事件
    */
   handleAnnotationClick(e) {
-    // 牙齒系統：參考圖僅供檢視，不開啟模態
+    // 參考圖僅供檢視，不開啟模態
+    showNotification('參考圖僅供檢視，請切回結構圖點選', 'info');
+  }
+
+  /**
+   * 取得當前系統對應的 SVG 容器元素
+   * @returns {HTMLElement|null}
+   */
+  getCurrentSvgContainer() {
     if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-      showNotification('參考圖僅供檢視，請切回牙位圖點選牙齒', 'info');
+      return document.getElementById('odontogram-view');
+    }
+    if (this.currentSystemId === 'eye') {
+      return document.getElementById('eye-diagram-view');
+    }
+    if (this.currentSystemId === 'body') {
+      return document.getElementById('body-map-view');
+    }
+    return null;
+  }
+
+  /**
+   * 判斷當前是否處於 SVG 視口有效狀態
+   * @returns {boolean}
+   */
+  isSvgActive() {
+    if (this.isReferenceImageMode) return false;
+    const container = this.getCurrentSvgContainer();
+    return !!(container && !container.hidden && this.svgViewport);
+  }
+
+  /**
+   * 更新 SVG 縮放百分比顯示
+   */
+  updateSvgZoomDisplay() {
+    const levelEl = document.getElementById('zoom-level');
+    if (levelEl && this.svgViewport) {
+      levelEl.textContent = `${Math.round(this.svgViewport.getZoom() * 100)}%`;
+    }
+  }
+
+  /**
+   * 切換參考圖（點陣圖）與結構圖（SVG）
+   */
+  toggleReferenceImage() {
+    if (this.currentSystemId === 'primary_teeth') {
+      showNotification('乳牙沒有參考圖', 'info');
       return;
     }
 
-    const { position } = e.detail;
+    const svgContainer = this.getCurrentSvgContainer();
+    if (!svgContainer) return;
 
-    // 如果是眼睛系統，顯示結構資訊
-    if (this.currentSystemId === 'eye') {
-      const structure = this.detectEyeStructure(position);
-      if (structure) {
-        this.displayEyeStructureInfo(structure);
+    const canvas = document.getElementById('image-canvas');
+    const toggleBtn = document.getElementById('reference-image-toggle');
+
+    this.isReferenceImageMode = !this.isReferenceImageMode;
+
+    if (this.isReferenceImageMode) {
+      svgContainer.hidden = true;
+      if (canvas) {
+        canvas.style.display = 'block';
+        if (canvas.width === 0 || canvas.height === 0) {
+          canvas.width = 800;
+          canvas.height = 600;
+        }
+      }
+      if (this.annotator) {
+        this.annotator.renderImage();
+      }
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'true');
+        toggleBtn.textContent = (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') ? '牙位圖' : '結構圖';
+      }
+    } else {
+      if (canvas) canvas.style.display = 'none';
+      svgContainer.hidden = false;
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.textContent = '參考圖';
       }
     }
-
-    // 如果是身體系統，偵測身體部位並顯示結構資訊 [新增]
-    if (this.currentSystemId === 'body') {
-      const bodyRegion = this.detectBodyRegion(position);
-      if (bodyRegion) {
-        this.displayBodyStructureInfo(bodyRegion);
-      }
-    }
-
-    // 顯示模態視窗（openDiseaseModal 會根據系統類型進行適當的檢測）
-    this.openDiseaseModal(position);
   }
 }
 

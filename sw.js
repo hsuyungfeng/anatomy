@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anatomy-v8';
+const CACHE_NAME = 'anatomy-v13';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -8,10 +8,8 @@ const ASSETS_TO_CACHE = [
   '/assets/styles/modal.css',
   '/assets/styles/body-operation-form.css',
   '/assets/styles/odontogram.css',
+  '/assets/styles/anatomy-diagrams.css',
   '/assets/scripts/utils.js',
-  '/assets/scripts/eye-image-mapper.js',
-  '/assets/scripts/eye-label-mapper.js',
-  '/assets/scripts/body-image-mapper.js',
   '/assets/scripts/eye-descriptions.js',
   '/assets/scripts/image-annotator.js',
   '/assets/scripts/disease-form.js',
@@ -22,6 +20,10 @@ const ASSETS_TO_CACHE = [
   '/assets/scripts/record-statistics.js',
   '/assets/scripts/eye-structure-info.js',
   '/assets/scripts/odontogram.js',
+  '/assets/scripts/svg-viewport.js',
+  '/assets/scripts/anatomy-mapping.js',
+  '/assets/scripts/eye-diagram.js',
+  '/assets/scripts/body-map.js',
   '/assets/scripts/app/app-core.js',
   '/assets/scripts/app/app-eye.js',
   '/assets/scripts/app/app-tooth.js',
@@ -31,6 +33,7 @@ const ASSETS_TO_CACHE = [
   '/assets/scripts/main.js',
   '/data/anatomical-systems.json',
   '/data/body-coordinates.json',
+  '/data/body-legacy-map.json',
   '/data/body-systems.json',
   '/data/dental-coordinates.json',
   '/data/disease-categories.json',

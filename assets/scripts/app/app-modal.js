@@ -83,88 +83,57 @@ defineAppMethods({
 
     this.currentClickPosition = position;
 
-    // 根據系統類型進行適當的結構檢測
-    let structureInfo = null;
-    if (presetStructure) {
-      structureInfo = presetStructure;
-    } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-      // 牙齒系統已改用牙位圖，無 preset 時直接 return
+    // 所有系統均改用 SVG 結構圖，無 presetStructure 時不開啟模態
+    if (!presetStructure) {
       return;
-    } else if (this.currentSystemId === 'eye') {
-      // 眼睛系統 [新增] 使用 EyeImageMapper 識別
-      structureInfo = this.detectEyeStructure(position);
-    } else if (this.currentSystemId === 'body') {
-      // 身體系統 [新增] 使用 BodyImageMapper 識別
-      structureInfo = this.detectBodyRegion(position);
     }
+
+    const structureInfo = presetStructure;
 
     // 設置位置資訊
     const locationDiv = $('#modal-location');
     if (locationDiv) {
       let locationText = '';
 
-      if (structureInfo) {
-        // 牙齒系統特定的顯示格式
-        if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-          locationText = `
-            <div class="tooth-info">
-              <p class="tooth-info__main">
-                <strong>${escapeHtml(structureInfo.name)}</strong>
-                ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
-              </p>
-            </div>
-          `;
-        }
-        // 眼睛系統特定的顯示格式 [新增]
-        else if (this.currentSystemId === 'eye') {
-          locationText = `
-            <div class="eye-structure-info">
-              <p class="structure-info__main">
-                <strong>${escapeHtml(structureInfo.name)}</strong>
-                <span class="side-badge">${structureInfo.side === 'left' ? '左眼' : '右眼'}</span>
-              </p>
-              <p class="structure-info__type">
-                結構類型: ${escapeHtml(structureInfo.type)}
-              </p>
-              ${structureInfo.confidence < 0.5 ?
-                '<p class="structure-info__warning">⚠️ 檢測信心度較低，請點擊重試</p>' : ''}
-            </div>
-          `;
-
-        }
-        // 身體系統特定的顯示格式 [新增]
-        else if (this.currentSystemId === 'body') {
-          locationText = `
-            <div class="body-region-info">
-              <p class="structure-info__main">
-                <strong>${escapeHtml(structureInfo.name)}</strong>
-                <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
-              </p>
-              ${structureInfo.confidence < 0.5 ?
-                '<p class="structure-info__warning">⚠️ 檢測信心度較低，請重新點擊</p>' : ''}
-            </div>
-            ${this.renderManualBodySelector()}
-          `;
-
-        }
-      } else {
-        // 無法識別 [修改]
-        if (this.currentSystemId === 'eye') {
-          locationText = `
-            <p class="structure-info__error">無法自動識別眼睛結構位置，請重新點擊</p>
-          `;
-        } else if (this.currentSystemId === 'body') {
-          locationText = `
-            <p class="structure-info__error">無法自動識別身體部位，請重新點擊或使用下方選單選擇</p>
-            ${this.renderManualBodySelector()}
-          `;
-        }
+      // 牙齒系統特定的顯示格式
+      if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+        locationText = `
+          <div class="tooth-info">
+            <p class="tooth-info__main">
+              <strong>${escapeHtml(structureInfo.name)}</strong>
+              ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
+            </p>
+          </div>
+        `;
+      }
+      // 眼睛系統特定的顯示格式
+      else if (this.currentSystemId === 'eye') {
+        locationText = `
+          <div class="eye-structure-info">
+            <p class="structure-info__main">
+              <strong>${escapeHtml(structureInfo.name)}</strong>
+              <span class="side-badge">${structureInfo.side === 'left' ? '左眼' : '右眼'}</span>
+            </p>
+            <p class="structure-info__type">
+              結構類型: ${escapeHtml(structureInfo.type)}
+            </p>
+          </div>
+        `;
+      }
+      // 身體系統特定的顯示格式
+      else if (this.currentSystemId === 'body') {
+        locationText = `
+          <div class="body-region-info">
+            <p class="structure-info__main">
+              <strong>${escapeHtml(structureInfo.name)}</strong>
+              <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
+            </p>
+            ${structureInfo.id ? `<p class="structure-info__type">${escapeHtml(structureInfo.id)}</p>` : ''}
+          </div>
+        `;
       }
 
       locationDiv.innerHTML = locationText;
-      if (this.currentSystemId === 'body') {
-        this.setupManualBodySelector();
-      }
     }
 
     // 保存結構資訊供後續使用 [修改變數名]
@@ -274,30 +243,8 @@ defineAppMethods({
    * @returns {string} 位置名稱
    */
   getLocationName(position) {
-    const system = this.anatomicalSystems.systems.find(
-      s => s.id === this.currentSystemId
-    );
-
-    if (!system) {
-      return `位置: (${Math.round(position.x)}, ${Math.round(position.y)})`;
-    }
-
-    // 根據系統類型返回更具體的位置信息
-    switch (this.currentSystemId) {
-      case 'teeth':
-        return '位置: 牙齒區域';
-
-      case 'eye':
-        const eyeLocation = this.estimateEyeLocation(position);
-        return eyeLocation ? `眼睛位置: ${eyeLocation}` : `位置: 眼睛區域`;
-
-      case 'body':
-        const bodyLocation = this.estimateBodyLocation(position);
-        return bodyLocation ? `身體位置: ${bodyLocation}` : `位置: 身體區域`;
-
-      default:
-        return `位置: (${Math.round(position.x)}, ${Math.round(position.y)})`;
-    }
+    if (!position) return '';
+    return `位置: (${Math.round(position.x)}, ${Math.round(position.y)})`;
   },
 
   /**
@@ -331,17 +278,24 @@ defineAppMethods({
         return;
       }
 
+      const side = this.currentEyeStructure.side;
+      const sidePrefix = side === 'right' ? '右眼' : side === 'left' ? '左眼' : '';
+      const rawName = this.currentEyeStructure.name || '';
+      const cleanName = rawName.replace(/^(左眼|右眼)\s*/, '');
+      const locationName = sidePrefix ? `${sidePrefix} ${cleanName}` : cleanName;
+
       annotation = {
         annotationId: generateUUID(),
         system: 'eye',
         position: this.currentClickPosition || { x: 0, y: 0 },
 
         // 眼睛結構資訊
-        locationName: this.currentEyeStructure.name,
+        locationName: locationName,
         locationNameEn: this.currentEyeStructure.nameEn,
         structureId: this.currentEyeStructure.structureId,
         structureType: this.currentEyeStructure.type,
         side: this.currentEyeStructure.side,
+        source: this.currentEyeStructure.source || 'eye-diagram',
 
         // 檢測元數據
         detectionConfidence: this.currentEyeStructure.confidence || 1.0,
@@ -411,17 +365,16 @@ defineAppMethods({
       if (this.refreshOdontogramRecords) {
         this.refreshOdontogramRecords();
       }
+      if (this.refreshEyeDiagramRecords) {
+        this.refreshEyeDiagramRecords();
+      }
       await this.loadAndDisplayRecords();
 
       // 顯示成功提示
       if (this.currentSystemId === 'eye') {
-        showNotification('✓ 眼睛病例已成功保存', 'success');
-      } else if (annotation.manualSelection) {
-        showNotification('✓ 疾病記錄已保存（手動選擇）', 'success');
-      } else if (annotation.detectionConfidence && annotation.detectionConfidence > 0.8) {
-        showNotification('✓ 疾病記錄已保存（高信心度）', 'success');
+        showNotification('眼睛病例已成功保存', 'success');
       } else {
-        showNotification('✓ 疾病記錄已保存', 'success');
+        showNotification('疾病記錄已保存', 'success');
       }
     } catch (error) {
       console.error('[saveDiseaseAnnotation] 保存失敗:', error);

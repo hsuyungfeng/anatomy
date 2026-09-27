@@ -83,9 +83,10 @@ def test_save_eye_record(browser, base_url: str):
             timeout=5000,
         )
 
-        # 點擊眼睛標籤按鈕開啟模態
-        page.wait_for_selector(".eye-label-btn", timeout=5000)
-        page.locator(".eye-label-btn").first.click()
+        # 透過眼睛結構圖開啟模態
+        page.wait_for_selector('#eye-diagram-view .structure[data-structure="cornea"][tabindex]', timeout=5000)
+        page.focus('#eye-diagram-view .structure[data-structure="cornea"][tabindex]')
+        page.keyboard.press("Enter")
         page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
         page.wait_for_selector(".disease-checkbox", timeout=5000)
 
@@ -133,15 +134,9 @@ def test_save_body_operation(browser, base_url: str):
             timeout=5000,
         )
 
-        # 等待 bodyImageMapper 載入完成
-        page.wait_for_function("() => window.app.bodyImageMapper && window.app.bodyImageMapper.isLoaded", timeout=5000)
-
-        # 開啟身體部位（胸部區域）操作模態視窗
-        page.evaluate("""() => {
-            const canvas = document.getElementById('image-canvas');
-            const rect = canvas.getBoundingClientRect();
-            window.app.openDiseaseModal({x: rect.width / 2, y: rect.height * 0.35});
-        }""")
+        # 透過身體部位圖開啟模態視窗
+        page.wait_for_selector('#body-map-view .region[data-region="chest"][data-view="front"]', timeout=5000)
+        page.click('#body-map-view .region[data-region="chest"][data-view="front"]')
         page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
         page.wait_for_selector(".operation-type-input", timeout=5000)
 

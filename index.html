@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="assets/styles/modal.css">
   <link rel="stylesheet" href="assets/styles/body-operation-form.css">
   <link rel="stylesheet" href="assets/styles/odontogram.css">
+  <link rel="stylesheet" href="assets/styles/anatomy-diagrams.css">
 
   <!-- Font Awesome 圖標 (可選) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -137,60 +138,6 @@
           </button>
         </nav>
 
-<!-- 眼睛結構標籤選擇面板 (僅在眼睛系統中顯示) -->
-        <div class="eye-label-panel-container" id="eye-label-panel-container" style="display: none;">
-          <div class="eye-label-panel">
-            <p class="eye-label-panel__title">選擇眼睛結構：</p>
-
-            <!-- 左眼標籤 -->
-            <div class="eye-label-group">
-              <h4 class="eye-label-group__title">👁️ 左眼</h4>
-              <div class="eye-label-buttons">
-                <button class="eye-label-btn" data-structure-id="left-eye" data-structure-name-en="left eye">Left Eye</button>
-                <button class="eye-label-btn" data-structure-id="left-eye-cornea" data-structure-name-en="cornea">Cornea</button>
-                <button class="eye-label-btn" data-structure-id="left-eye-iris" data-structure-name-en="iris">Iris</button>
-                <button class="eye-label-btn" data-structure-id="left-eye-lens" data-structure-name-en="lens">Lens</button>
-                <button class="eye-label-btn" data-structure-id="left-eye-retina" data-structure-name-en="retina">Retina</button>
-                <button class="eye-label-btn" data-structure-id="left-eye-lacrimal" data-structure-name-en="lacrimal gland">Lacrimal gland</button>
-                <button class="eye-label-btn" data-structure-id="eye-choroid" data-structure-name-en="choroid">Choroid</button>
-                <button class="eye-label-btn" data-structure-id="eye-sclera" data-structure-name-en="sclera">Sclera</button>
-              </div>
-            </div>
-
-            <!-- 右眼標籤 -->
-            <div class="eye-label-group">
-              <h4 class="eye-label-group__title">👁️ 右眼</h4>
-              <div class="eye-label-buttons">
-                <button class="eye-label-btn" data-structure-id="right-eye" data-structure-name-en="right eye">Right Eye</button>
-                <button class="eye-label-btn" data-structure-id="right-eye-cornea" data-structure-name-en="cornea">Cornea</button>
-                <button class="eye-label-btn" data-structure-id="right-eye-iris" data-structure-name-en="iris">Iris</button>
-                <button class="eye-label-btn" data-structure-id="right-eye-lens" data-structure-name-en="lens">Lens</button>
-                <button class="eye-label-btn" data-structure-id="right-eye-retina" data-structure-name-en="retina">Retina</button>
-                <button class="eye-label-btn" data-structure-id="right-eye-lacrimal" data-structure-name-en="lacrimal gland">Lacrimal gland</button>
-                <button class="eye-label-btn" data-structure-id="eye-choroid" data-structure-name-en="choroid">Choroid</button>
-                <button class="eye-label-btn" data-structure-id="eye-sclera" data-structure-name-en="sclera">Sclera</button>
-              </div>
-            </div>
-
-            <!-- 共用標籤 -->
-            <div class="eye-label-group">
-              <h4 class="eye-label-group__title">🔗 共用結構</h4>
-              <div class="eye-label-buttons">
-                <button class="eye-label-btn" data-structure-id="eye-optic-nerve" data-structure-name-en="cranial nerve">Cranial nerve</button>
-                <button class="eye-label-btn" data-structure-id="eye-vitreous" data-structure-name-en="vitreous body">Vitreous body</button>
-                <button class="eye-label-btn" data-structure-id="eye-ciliary-body" data-structure-name-en="ciliary processes">Ciliary processes</button>
-                <button class="eye-label-btn" data-structure-id="eye-extraocular-muscles" data-structure-name-en="muscle">Muscle</button>
-                <button class="eye-label-btn" data-structure-id="eye-blood-vessels" data-structure-name-en="blood vessels">Blood vessels</button>
-                <button class="eye-label-btn" data-structure-id="eye-pupil" data-structure-name-en="pupil">Pupil</button>
-                <button class="eye-label-btn" data-structure-id="eye-dilator-pupillae" data-structure-name-en="papillary dilator">Papillary dilator</button>
-                <button class="eye-label-btn" data-structure-id="eye-nasolacrimal-duct" data-structure-name-en="nasolacrimal duct">Nasolacrimal duct</button>
-                <button class="eye-label-btn" data-structure-id="eye-vitreous-hyaloid" data-structure-name-en="hyaloid canal">Hyaloid canal</button>
-                <button class="eye-label-btn" data-structure-id="eye-ciliary-muscle" data-structure-name-en="ciliary muscle">Ciliary muscle</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- 圖像查看器（為所有系統顯示） -->
         <div class="image-viewer-wrapper" id="image-viewer-wrapper">
           <div class="image-viewer-panel">
@@ -202,10 +149,24 @@
                   aria-label="解剖圖像，點擊進行標註">
                 </canvas>
                 <div id="odontogram-view" class="odontogram-view" hidden></div>
+                <div id="eye-diagram-view" class="anatomy-view" hidden></div>
+                <div id="body-map-view" class="anatomy-view body-map-view" hidden></div>
               </div>
 
               <!-- 圖像控制工具欄 -->
               <div class="image-toolbar">
+                <div id="eye-side-toggle" class="seg" role="group" aria-label="眼別" hidden>
+                  <button type="button" data-side="right" aria-pressed="true">右眼 OD</button>
+                  <button type="button" data-side="left" aria-pressed="false">左眼 OS</button>
+                </div>
+
+                <div id="body-sex-toggle" class="seg" role="group" aria-label="體型" hidden>
+                  <button type="button" data-sex="female" aria-pressed="true">女性</button>
+                  <button type="button" data-sex="male" aria-pressed="false">男性</button>
+                </div>
+
+                <button type="button" id="focus-face-btn" class="btn" title="放大臉部" hidden>放大臉部</button>
+
                 <div class="image-toolbar__group">
                   <button
                     id="zoom-in-btn"
@@ -487,9 +448,6 @@
 
   <!-- JavaScript 模組 -->
   <script src="assets/scripts/utils.js"></script>
-  <script src="assets/scripts/eye-image-mapper.js"></script>
-  <script src="assets/scripts/eye-label-mapper.js"></script>
-  <script src="assets/scripts/body-image-mapper.js"></script>
   <script src="assets/scripts/eye-descriptions.js"></script>
   <script src="assets/scripts/image-annotator.js"></script>
   <script src="assets/scripts/disease-form.js"></script>
@@ -500,6 +458,10 @@
   <script src="assets/scripts/record-statistics.js"></script>
   <script src="assets/scripts/eye-structure-info.js"></script>
   <script src="assets/scripts/odontogram.js"></script>
+  <script src="assets/scripts/eye-diagram.js"></script>
+  <script src="assets/scripts/body-map.js"></script>
+  <script src="assets/scripts/svg-viewport.js"></script>
+  <script src="assets/scripts/anatomy-mapping.js"></script>
   <script src="assets/scripts/app/app-core.js"></script>
   <script src="assets/scripts/app/app-eye.js"></script>
   <script src="assets/scripts/app/app-tooth.js"></script>

@@ -62,6 +62,42 @@ const eyeStructureDescriptions = {
         nameEn: 'Right Retina',
         description: '眼球後部的感光組織，將光轉換為神經信號。',
         descriptionEn: 'Light-sensitive tissue at the back of the eye that converts light to neural signals.'
+    },
+    'eye-conjunctiva': {
+        name: '結膜',
+        nameEn: 'Conjunctiva',
+        description: '覆蓋於鞏膜前表面與眼瞼內側的薄透明黏膜，分泌黏液潤滑眼球並防禦外來病原體。',
+        descriptionEn: 'Thin transparent mucous membrane covering the anterior sclera and lining the eyelids, lubricating and protecting the eye.'
+    },
+    'eye-anterior-chamber': {
+        name: '前房',
+        nameEn: 'Anterior Chamber',
+        description: '位於角膜後表面與虹膜之間的充滿房水之腔室，負責維持眼內壓及供給無血管組織營養。',
+        descriptionEn: 'Aqueous humor-filled space between the posterior cornea and iris, maintaining intraocular pressure and nourishing avascular tissues.'
+    },
+    'macula': {
+        name: '黃斑部',
+        nameEn: 'Macula',
+        description: '位於視網膜中心的感光敏感區，含有高度密集的錐狀細胞，負責精細中心視力與色彩辨別。',
+        descriptionEn: 'High-acuity area near the center of the retina packed with cone photoreceptors, essential for sharp central vision and color perception.'
+    },
+    'eye-macula': {
+        name: '黃斑部',
+        nameEn: 'Macula',
+        description: '位於視網膜中心的感光敏感區，含有高度密集的錐狀細胞，負責精細中心視力與色彩辨別。',
+        descriptionEn: 'High-acuity area near the center of the retina packed with cone photoreceptors, essential for sharp central vision and color perception.'
+    },
+    'eye-optic-disc': {
+        name: '視神經盤',
+        nameEn: 'Optic Disc',
+        description: '視神經纖維匯聚並穿出眼球的起點，亦為視網膜中央動靜脈進出之孔道，因無感光細胞而構成生理盲點。',
+        descriptionEn: 'Circular area where ganglion cell axons converge to form the optic nerve and retinal vessels enter/exit, forming the physiological blind spot.'
+    },
+    'eye-eyelid': {
+        name: '眼瞼',
+        nameEn: 'Eyelid',
+        description: '覆蓋於眼球前方的可活動皮瓣組織，藉由眨眼均勻塗布淚膜並物理阻擋外界異物與強光。',
+        descriptionEn: 'Movable folds of skin protecting the globe from physical injury and spreading tears across the cornea during blinking.'
     }
 };
 
@@ -71,5 +107,18 @@ const eyeStructureDescriptions = {
  * @returns {object} 結構說明物件或 null
  */
 function getEyeStructureDescription(structureId) {
-    return eyeStructureDescriptions[structureId] || null;
+    if (!structureId) return null;
+    if (eyeStructureDescriptions[structureId]) {
+        return eyeStructureDescriptions[structureId];
+    }
+    // 去掉 left- 或 right- 前綴再查一次 (例如 left-eye-cornea -> eye-cornea 或 cornea)
+    const stripped = structureId.replace(/^(left|right)-/, '');
+    if (eyeStructureDescriptions[stripped]) {
+        return eyeStructureDescriptions[stripped];
+    }
+    const withEye = stripped.startsWith('eye-') ? stripped : `eye-${stripped}`;
+    if (eyeStructureDescriptions[withEye]) {
+        return eyeStructureDescriptions[withEye];
+    }
+    return null;
 }

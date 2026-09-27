@@ -173,6 +173,22 @@ defineAppMethods({
   },
 
   /**
+   * 根據 structureId 確定眼睛側別 (供舊記錄修復使用)
+   * @param {string} structureId - 結構唯一標識符
+   * @returns {string} 'left', 'right', 或 'bilateral'
+   */
+  getStructureSide(structureId) {
+    if (!structureId) return 'bilateral';
+    if (typeof AnatomyMapping !== 'undefined' && AnatomyMapping.resolveEye) {
+      const resolved = AnatomyMapping.resolveEye({ structureId });
+      if (resolved && resolved.side) return resolved.side;
+    }
+    if (structureId.startsWith('left-eye')) return 'left';
+    if (structureId.startsWith('right-eye')) return 'right';
+    return 'bilateral';
+  },
+
+  /**
    * 修復舊格式的醫療記錄
    * @param {Array} records - 原始記錄陣列
    * @returns {Array} 修復後的記錄陣列
@@ -256,10 +272,12 @@ defineAppMethods({
       headerDiv.className = 'record-group__header';
 
       const sideText = this.getSideLabel(group.system, group.structureSide);
-      const sideBadge = sideText ? `<span class="structure-location">${escapeHtml(sideText)}</span>` : '';
+      const structName = group.structureName || '';
+      const alreadyHasSide = Boolean(sideText && structName.includes(sideText));
+      const sideBadge = (sideText && !alreadyHasSide) ? `<span class="structure-location">${escapeHtml(sideText)}</span>` : '';
 
       headerDiv.innerHTML = `
-        <span class="structure-name">${escapeHtml(group.structureName || '')}</span>
+        <span class="structure-name">${escapeHtml(structName)}</span>
         ${sideBadge}
       `;
       groupDiv.appendChild(headerDiv);

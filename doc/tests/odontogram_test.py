@@ -350,10 +350,10 @@ def test_reference_image_toggle(browser, base_url: str):
         context.close()
 
 
-def test_other_systems_use_canvas(browser, base_url: str):
+def test_other_systems_hide_odontogram(browser, base_url: str):
     """
-    9. test_other_systems_use_canvas：
-    切到眼睛系統 → #odontogram-view 隱藏、#image-canvas 可見、#reference-image-toggle 隱藏。
+    9. test_other_systems_hide_odontogram：
+    切到眼睛系統 → #odontogram-view 隱藏、#eye-diagram-view 可見、#reference-image-toggle 可見。
     """
     context = browser.new_context()
     page = context.new_page()
@@ -368,11 +368,11 @@ def test_other_systems_use_canvas(browser, base_url: str):
         odontogram = page.locator("#odontogram-view")
         assert not odontogram.is_visible(), "眼睛系統下 #odontogram-view 應隱藏"
 
-        assert page.locator("#image-canvas").is_visible(), "眼睛系統下 #image-canvas 應可見"
+        assert page.locator("#eye-diagram-view").is_visible(), "眼睛系統下 #eye-diagram-view 應可見"
 
-        # 確認 #reference-image-toggle 隱藏（找不到或不可見）
+        # 確認 #reference-image-toggle 可見
         toggle_btn = page.locator("#reference-image-toggle")
-        assert not toggle_btn.is_visible(), "眼睛系統下 #reference-image-toggle 應隱藏"
+        assert toggle_btn.is_visible(), "眼睛系統下 #reference-image-toggle 應可見"
     finally:
         context.close()
 
@@ -386,5 +386,5 @@ TESTS = [
     test_legacy_record_marker,
     test_keyboard_opens_modal,
     test_reference_image_toggle,
-    test_other_systems_use_canvas,
+    test_other_systems_hide_odontogram,
 ]
