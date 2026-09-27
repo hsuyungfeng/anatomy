@@ -98,52 +98,67 @@ class OCRHandler {
 
     // 簡單的關鍵字匹配 (實際應使用更複雜的 NLP)
     const searchCategories = (categories) => {
-      Object.forEach((categoryId, category) => {
-        if (category.diseases) {
-          category.diseases.forEach(disease => {
-            // 檢查中文名稱
-            if (lowerText.includes(disease.name.toLowerCase())) {
+      if (!categories) return;
+
+      const processCategory = (categoryId, category) => {
+        if (!category || !category.diseases) return;
+        category.diseases.forEach(disease => {
+          // 檢查中文名稱
+          if (disease.name && lowerText.includes(disease.name.toLowerCase())) {
+            matches.push({
+              id: disease.id,
+              name: disease.name,
+              nameEn: disease.nameEn,
+              category: categoryId,
+              confidence: 0.9
+            });
+          }
+
+          // 檢查英文名稱
+          if (disease.nameEn && lowerText.includes(disease.nameEn.toLowerCase())) {
+            const existingMatch = matches.find(m => m.id === disease.id);
+            if (!existingMatch) {
               matches.push({
                 id: disease.id,
                 name: disease.name,
                 nameEn: disease.nameEn,
                 category: categoryId,
-                confidence: 0.9
+                confidence: 0.85
               });
             }
+          }
 
-            // 檢查英文名稱
-            if (lowerText.includes(disease.nameEn.toLowerCase())) {
-              const existingMatch = matches.find(m => m.id === disease.id);
-              if (!existingMatch) {
+          // 檢查子分類
+          if (disease.subcategories) {
+            disease.subcategories.forEach(sub => {
+              if (sub.name && lowerText.includes(sub.name.toLowerCase())) {
                 matches.push({
-                  id: disease.id,
-                  name: disease.name,
-                  nameEn: disease.nameEn,
+                  id: sub.id,
+                  name: sub.name,
+                  nameEn: sub.nameEn,
                   category: categoryId,
+                  parentId: disease.id,
                   confidence: 0.85
                 });
               }
-            }
+            });
+          }
+        });
+      };
 
-            // 檢查子分類
-            if (disease.subcategories) {
-              disease.subcategories.forEach(sub => {
-                if (lowerText.includes(sub.name.toLowerCase())) {
-                  matches.push({
-                    id: sub.id,
-                    name: sub.name,
-                    nameEn: sub.nameEn,
-                    category: categoryId,
-                    parentId: disease.id,
-                    confidence: 0.85
-                  });
-                }
-              });
-            }
-          });
-        }
-      }, diseaseDatabase.teeth);
+      if (categories.anatomicalSystems && Array.isArray(categories.anatomicalSystems)) {
+        categories.anatomicalSystems.forEach(category => {
+          processCategory(category.systemId || category.id, category);
+        });
+      } else if (Array.isArray(categories)) {
+        categories.forEach((category, idx) => {
+          processCategory(category.systemId || category.id || idx, category);
+        });
+      } else if (typeof categories === 'object') {
+        Object.entries(categories).forEach(([categoryId, category]) => {
+          processCategory(categoryId, category);
+        });
+      }
     };
 
     searchCategories(diseaseDatabase);
