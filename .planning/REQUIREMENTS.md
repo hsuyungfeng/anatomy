@@ -61,6 +61,15 @@
 - [x] **SVG-04**: 點陣圖保留為參考圖，只能看、不能點
 - [x] **SVG-05**: 移除牙齒座標辨識死碼
 
+## Phase 9 Requirements（眼睛、身體 SVG）
+
+- [ ] **SVG-06**: 眼睛系統以結構化 SVG 剖面圖呈現（OD／OS），22 個結構可點選，含 5 個新增結構
+- [ ] **SVG-07**: 身體系統以寫實輪廓 SVG 呈現（正背面、男女體型），58 個子部位可點選
+- [ ] **SVG-08**: 舊記錄依 ID 對應規則標示在圖上（眼睛三種格式、身體三套命名與大區域），不改寫資料
+- [ ] **SVG-09**: 三系統共用 SVG 縮放／平移；小部位放大後可點（≥ 24px）
+- [ ] **SVG-10**: 參考圖切換三系統通用；移除眼睛、身體座標辨識死碼
+- [ ] **UI-03**: 修正 Phase 8 留下的 5 個介面小問題
+
 ## Out of Scope
 
 | Feature | Reason |
@@ -105,6 +114,12 @@
 | SVG-03 | Phase 8 | Complete |
 | SVG-04 | Phase 8 | Complete |
 | SVG-05 | Phase 8 | Complete |
+| SVG-06 | Phase 9 | Planned |
+| SVG-07 | Phase 9 | Planned |
+| SVG-08 | Phase 9 | Planned |
+| SVG-09 | Phase 9 | Planned |
+| SVG-10 | Phase 9 | Planned |
+| UI-03 | Phase 9 | Planned |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -113,4 +128,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4～8 完成*
+*Last updated: 2026-09-27 — Phase 4～8 完成，新增 Phase 9 需求*

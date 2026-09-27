@@ -158,6 +158,28 @@
 
 ---
 
+## Phase 9: 眼睛與身體改用結構化 SVG
+
+**Goal:** 眼睛、身體比照牙齒改用可點擊 SVG 結構圖，並相容所有舊記錄；修正 Phase 8 留下的介面小問題
+
+**Executor:** Antigravity (agy)，完成後由 Claude Code 審查
+
+**Design:** 原型 doc/prototypes/（使用者已確認：眼睛剖面圖保留 5 個新結構；身體寫實輪廓版）；舊記錄 ID 讀取時對應、不改寫
+
+**Plans:** 5 plans（依序執行）
+- [ ] 9-01-PLAN.md — 端到端測試（TDD 紅燈）
+- [ ] 9-02-PLAN.md — 縮放平移、通用參考圖、舊記錄 ID 對應
+- [ ] 9-03-PLAN.md — 眼睛整合
+- [ ] 9-04-PLAN.md — 身體整合
+- [ ] 9-05-PLAN.md — 介面小問題與死碼清理
+
+**Success Criteria:**
+1. 眼睛 22 個結構（OD／OS）、身體所有子部位（正背面、男女）點擊辨識 100% 正確
+2. 三套身體舊命名、三種眼睛舊格式的記錄都正確標示，資料不被改寫
+3. 臉部小部位放大後可點；5 個介面小問題修正；`run_all.py --with-snapshot` 0 失敗、0 跳過
+
+---
+
 ## Milestone v1.0 Coverage
 
 | Phase | Requirements | Status |
@@ -171,5 +193,6 @@
 | 6 | 病歷儲存整併 | ✓ Complete |
 | 7 | PWA 更新／清單顯示／CI | ✓ Complete |
 | 8 | 牙齒 SVG 牙位圖 | ✓ Complete |
+| 9 | 眼睛、身體 SVG | ◐ Planned |
 
 **Milestone:** Complete ✓
