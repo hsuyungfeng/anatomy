@@ -44,6 +44,15 @@
 - [x] **STORE-03**: 備份／還原／清除／統計／匯出與清單使用同一份資料（備份 v2，還原相容 v1）
 - [x] **STORE-04**: 載入頁面不再產生空病歷；重新整理後圖上標記仍在
 
+## Phase 7 Requirements（PWA 更新、清單顯示、CI）
+
+- [ ] **PWA-01**: 程式碼更新能送達已安裝 Service Worker 的瀏覽器（network-first）
+- [ ] **PWA-02**: 首次載入後可離線使用，包含 CDN 資源
+- [ ] **PWA-03**: assets 變動但快取未升版時，測試會失敗
+- [ ] **UI-01**: 病歷清單側別標籤依系統正確顯示
+- [ ] **UI-02**: 病歷清單位置名稱不重複
+- [ ] **CI-01**: push／PR 自動執行完整測試
+
 ## Out of Scope
 
 | Feature | Reason |
@@ -77,6 +86,12 @@
 | STORE-02 | Phase 6 | Complete |
 | STORE-03 | Phase 6 | Complete |
 | STORE-04 | Phase 6 | Complete |
+| PWA-01 | Phase 7 | Planned |
+| PWA-02 | Phase 7 | Planned |
+| PWA-03 | Phase 7 | Planned |
+| UI-01 | Phase 7 | Planned |
+| UI-02 | Phase 7 | Planned |
+| CI-01 | Phase 7 | Planned |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -85,4 +100,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4、5、6 完成*
+*Last updated: 2026-09-27 — Phase 4～6 完成，新增 Phase 7 需求*

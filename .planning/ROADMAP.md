@@ -119,6 +119,21 @@
 
 ---
 
+## Phase 7: PWA 更新修正、清單顯示修正、CI
+
+**Goal:** 讓程式碼更新真的送到使用者手上、離線可用；修正清單顯示；建立 CI
+
+**Executor:** Antigravity (agy)，完成後由 Claude Code 審查
+
+**Why urgent:** sw.js 為 cache-first，CACHE_NAME 自 Phase 4 後未升版，Phase 5／6 的修正可能從未送達已開過網站的瀏覽器
+
+**Plans:** 3 plans（依序執行）
+- [ ] 7-01-PLAN.md — Service Worker 策略與快取版本守門（PWA-01～03）
+- [ ] 7-02-PLAN.md — 清單側別標籤與重複名稱（UI-01～02）
+- [ ] 7-03-PLAN.md — GitHub Actions CI（CI-01）
+
+---
+
 ## Milestone v1.0 Coverage
 
 | Phase | Requirements | Status |
@@ -130,5 +145,6 @@
 | 4 | 程式碼品質改善 | ✓ Complete |
 | 5 | 病歷流程 Bug 修復 | ✓ Complete |
 | 6 | 病歷儲存整併 | ✓ Complete |
+| 7 | PWA 更新／清單顯示／CI | ◐ Planned |
 
 **Milestone:** Complete ✓
