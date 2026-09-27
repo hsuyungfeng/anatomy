@@ -72,10 +72,10 @@
 
 ## Phase 10 Requirements（版面、時間戳、英文介面）
 
-- [ ] **POL-01**: 工具列與結構圖在 1366×768、1280×720、1200×800、390×844 都完整可見可點
-- [ ] **POL-02**: 說明文字可見且內容更新為結構圖操作說明
-- [ ] **POL-03**: 缺少或無效的時間顯示「時間不明／Unknown time」
-- [ ] **POL-04**: 英文模式下除已存病歷內容外無中文介面文字；切換語言時結構圖即時更新
+- [x] **POL-01**: 工具列與結構圖在 1366×768、1280×720、1200×800、390×844 都完整可見可點
+- [x] **POL-02**: 說明文字可見且內容更新為結構圖操作說明
+- [x] **POL-03**: 缺少或無效的時間顯示「時間不明／Unknown time」
+- [x] **POL-04**: 英文模式下除已存病歷內容外無中文介面文字；切換語言時結構圖即時更新
 
 ## Out of Scope
 
@@ -127,10 +127,10 @@
 | SVG-09 | Phase 9 | Complete |
 | SVG-10 | Phase 9 | Complete |
 | UI-03 | Phase 9 | Complete |
-| POL-01 | Phase 10 | Planned |
-| POL-02 | Phase 10 | Planned |
-| POL-03 | Phase 10 | Planned |
-| POL-04 | Phase 10 | Planned |
+| POL-01 | Phase 10 | Complete |
+| POL-02 | Phase 10 | Complete |
+| POL-03 | Phase 10 | Complete |
+| POL-04 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -139,4 +139,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4～9 完成，新增 Phase 10 需求*
+*Last updated: 2026-09-27 — Phase 4～10 完成*

@@ -188,10 +188,12 @@
 
 **Executor:** Antigravity (agy)，完成後由 Claude Code 審查
 
+**Status:** ✓ Complete（2026-09-28，經 Claude Code 審查：73/73 測試；另測 5 種螢幕大小工具列皆可點；英文模式剩餘中文 68 → 0。合併後另修正切換語言重設縮放／選取、大區域英文名稱、關閉按鈕符號）
+
 **Plans:** 3 plans（依序執行）
-- [ ] 10-01-PLAN.md — 測試（TDD 紅燈）
-- [ ] 10-02-PLAN.md — 版面、說明文字、時間戳（POL-01～03）
-- [ ] 10-03-PLAN.md — 英文介面（POL-04）
+- [x] 10-01-PLAN.md — 測試（TDD 紅燈）
+- [x] 10-02-PLAN.md — 版面、說明文字、時間戳（POL-01～03）
+- [x] 10-03-PLAN.md — 英文介面（POL-04）
 
 **Success Criteria:**
 1. 四種常見視窗大小下，三個系統的工具列控制項都能點到
@@ -214,6 +216,6 @@
 | 7 | PWA 更新／清單顯示／CI | ✓ Complete |
 | 8 | 牙齒 SVG 牙位圖 | ✓ Complete |
 | 9 | 眼睛、身體 SVG | ✓ Complete |
-| 10 | 版面／時間戳／英文介面 | ◐ Planned |
+| 10 | 版面／時間戳／英文介面 | ✓ Complete |
 
 **Milestone:** Complete ✓

@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** 10 — 版面／時間戳／英文介面（已規劃，交由 agy 執行）
-**Known Minor Issues:** 已全部排入 Phase 10
+**Current Phase:** None — Phase 4～10 已完成
+**Known Minor Issues:** 無
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made
