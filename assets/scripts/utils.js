@@ -389,30 +389,44 @@ function setLanguage(lang) {
 }
 
 /**
+ * 找出元素中實際承載文字的節點
+ * 只有文字的元素回傳自己；含子元素（圖示＋文字）時回傳文字標籤 span
+ * （優先 class 含 label 者，否則取最後一個有文字的 span，因為圖示 span 在前）；
+ * 純圖示按鈕回傳 null，避免以 textContent 改寫而把圖示清掉
+ * @param {Element} el
+ * @returns {Element|null}
+ */
+function getLanguageTextTarget(el) {
+  if (el.children.length === 0) {
+    return el.textContent.trim() ? el : null;
+  }
+  const spans = [...el.querySelectorAll('span')]
+    .filter(span => span.children.length === 0 && span.textContent.trim());
+  return spans.find(span => /label/.test(span.className)) || spans[spans.length - 1] || null;
+}
+
+/**
  * 更新 UI 語言顯示
  * @param {string} lang - 語言代碼 ('zh' 或 'en')
  */
 function updateLanguageUI(lang) {
   const elements = $$('[data-en]');
   elements.forEach(el => {
+    const target = getLanguageTextTarget(el);
+    if (!target) return;
+
     // 保存原始中文文本（如果還未保存）
-    if (!el.dataset.zh && el.textContent) {
-      el.dataset.zh = el.textContent;
+    if (!el.dataset.zh) {
+      el.dataset.zh = target.textContent.trim();
     }
 
     // 切換語言
     if (lang === 'en') {
-      // 切換到英文
-      if (el.dataset.en) {
-        el.textContent = el.dataset.en;
-        el.lang = 'en';
-      }
+      target.textContent = el.dataset.en;
+      el.lang = 'en';
     } else {
-      // 切換回中文
-      if (el.dataset.zh) {
-        el.textContent = el.dataset.zh;
-        el.lang = 'zh-Hant';
-      }
+      target.textContent = el.dataset.zh;
+      el.lang = 'zh-Hant';
     }
   });
 
