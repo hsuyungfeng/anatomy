@@ -11,8 +11,6 @@ class MedicalRecordApp {
     this.recordManager = null;
     this.diseaseForm = null;
     this.ocrHandler = null;
-    this.eyeMapper = null; // 眼睛圖像映射器 [新增]
-    this.bodyImageMapper = null; // 身體圖像映射器 [新增]
 
     this.currentSystemId = 'teeth';
     this.currentTeethType = 'permanent'; // 牙齒類型：permanent (永久齒) 或 primary (乳齒)
@@ -52,6 +50,7 @@ class MedicalRecordApp {
 
       // 載入初始圖像
       await this.loadSystemImage(this.currentSystemId);
+      this.updateTeethSubTabs(this.currentSystemId);
 
       // 初始加載病例列表（分組顯示）
       await this.loadAndDisplayRecords();
@@ -211,41 +210,6 @@ class MedicalRecordApp {
       containerElement: $('#image-viewer'),
       systemId: this.currentSystemId
     });
-
-    // 眼睛圖像映射器 [新增區塊]
-    this.eyeMapper = new EyeImageMapper({
-      coordinatesUrl: '/data/eye-coordinates.json',
-      debug: true  // 開發階段啟用，生產環境改為 false
-    });
-
-    // 預加載眼睛座標數據
-    this.eyeMapper.loadCoordinates().then(success => {
-      if (!success) {
-        console.error('✗ 眼睛座標數據加載失敗');
-      }
-    });
-
-    // 眼睛標籤映射器 [新增] - 用於識別眼睛圖像中的文字標籤
-    if (typeof EyeLabelMapper !== 'undefined') {
-      this.eyeLabelMapper = new EyeLabelMapper({
-        debug: true
-      });
-    }
-
-    // 身體圖像映射器 [新增] - 用於識別身體圖像中的部位點擊區域
-    if (typeof BodyImageMapper !== 'undefined') {
-      this.bodyImageMapper = new BodyImageMapper({
-        coordinatesUrl: '/data/body-coordinates.json',
-        debug: true
-      });
-
-      // 預加載座標數據
-      this.bodyImageMapper.loadCoordinates().then(success => {
-        if (!success) {
-          console.error('✗ 身體座標數據加載失敗');
-        }
-      });
-    }
 
     // 病歷管理器
     this.recordManager = new RecordManager();
@@ -471,9 +435,6 @@ class MedicalRecordApp {
     // 模態視窗
     this.setupDiseaseModal();
 
-    // 設置眼睛標籤按鈕事件監聽
-    this.setupEyeLabelButtonListeners();
-
     // 設置參考圖切換按鈕事件監聽
     const refToggleBtn = $('#reference-image-toggle');
     if (refToggleBtn) {
@@ -495,19 +456,7 @@ class MedicalRecordApp {
     tab.classList.add('system-tab--active');
 
     // 顯示或隱藏牙齒子標籤頁
-    const teethSubTabs = $('#teeth-sub-tabs');
-    if (systemId === 'teeth' && teethSubTabs) {
-      teethSubTabs.classList.add('teeth-sub-tabs--visible');
-      // 重置為永久齒
-      this.currentTeethType = 'permanent';
-      const tabs = $$('.teeth-tab');
-      tabs.forEach(t => t.classList.remove('teeth-tab--active'));
-      if (tabs.length > 0) {
-        tabs[0].classList.add('teeth-tab--active');
-      }
-    } else if (teethSubTabs) {
-      teethSubTabs.classList.remove('teeth-sub-tabs--visible');
-    }
+    this.updateTeethSubTabs(systemId, true);
 
     // 顯示或隱藏眼睛資訊面板
     if (systemId === 'eye') {
@@ -521,6 +470,29 @@ class MedicalRecordApp {
 
     // 切換系統
     await this.loadSystemImage(systemId);
+  }
+  /**
+   * 更新牙齒子標籤頁可見性
+   * @param {string} systemId - 系統 ID
+   * @param {boolean} resetToPermanent - 是否重置為永久齒
+   */
+  updateTeethSubTabs(systemId, resetToPermanent = false) {
+    const teethSubTabs = $('#teeth-sub-tabs');
+    if (!teethSubTabs) return;
+    const isTeeth = (systemId === 'teeth' || systemId === 'primary_teeth');
+    if (isTeeth) {
+      teethSubTabs.classList.add('teeth-sub-tabs--visible');
+      if (resetToPermanent) {
+        this.currentTeethType = 'permanent';
+        const tabs = $$('.teeth-tab');
+        tabs.forEach(t => t.classList.remove('teeth-tab--active'));
+        if (tabs.length > 0) {
+          tabs[0].classList.add('teeth-tab--active');
+        }
+      }
+    } else {
+      teethSubTabs.classList.remove('teeth-sub-tabs--visible');
+    }
   }
   /**
    * 處理牙齒類型變更 (永久齒/乳齒)
@@ -563,9 +535,6 @@ class MedicalRecordApp {
   async loadSystemImage(systemId) {
     try {
       this.currentSystemId = systemId;
-
-      // 控制眼睛標籤面板的可見性（Phase 9 眼睛改用 SVG，舊標籤面板隱藏）
-      this.toggleEyeLabelPanel(false);
 
       const eyeSideToggle = document.getElementById('eye-side-toggle');
       if (eyeSideToggle) {
@@ -747,31 +716,7 @@ class MedicalRecordApp {
    */
   handleAnnotationClick(e) {
     // 參考圖僅供檢視，不開啟模態
-    if (this.isReferenceImageMode || this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-      showNotification('參考圖僅供檢視，請切回結構圖點選', 'info');
-      return;
-    }
-
-    const { position } = e.detail;
-
-    // 如果是眼睛系統，顯示結構資訊
-    if (this.currentSystemId === 'eye') {
-      const structure = this.detectEyeStructure(position);
-      if (structure) {
-        this.displayEyeStructureInfo(structure);
-      }
-    }
-
-    // 如果是身體系統，偵測身體部位並顯示結構資訊 [新增]
-    if (this.currentSystemId === 'body') {
-      const bodyRegion = this.detectBodyRegion(position);
-      if (bodyRegion) {
-        this.displayBodyStructureInfo(bodyRegion);
-      }
-    }
-
-    // 顯示模態視窗（openDiseaseModal 會根據系統類型進行適當的檢測）
-    this.openDiseaseModal(position);
+    showNotification('參考圖僅供檢視，請切回結構圖點選', 'info');
   }
 
   /**

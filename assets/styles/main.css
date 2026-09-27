@@ -1452,34 +1452,34 @@ body {
 
 /* 病例分組 */
 .record-group {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   overflow: hidden;
-  background: white;
+  background: var(--color-bg-primary);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .record-group__header {
   margin: 0;
   padding: 12px 15px;
-  background: #e8f4f8;
-  border-bottom: 2px solid #0066cc;
+  background: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.95em;
   font-weight: 600;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .structure-name {
   font-weight: 700;
-  color: #0066cc;
+  color: var(--color-primary);
   font-size: 1em;
 }
 
 .structure-location {
-  background: #0066cc;
+  background: var(--color-primary);
   color: white;
   padding: 3px 10px;
   border-radius: 3px;
@@ -1490,7 +1490,7 @@ body {
 }
 
 .record-group__items {
-  background: white;
+  background: var(--color-bg-primary);
   max-height: 400px;
   overflow-y: auto;
 }
@@ -1498,7 +1498,7 @@ body {
 /* 單條記錄 */
 .record-item {
   padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
   font-size: 0.9em;
 }
 
@@ -1507,46 +1507,46 @@ body {
 }
 
 .record-item:hover {
-  background: #f9f9f9;
+  background: var(--color-bg-secondary);
 }
 
 .record-item__title {
   font-weight: 700;
-  color: #0066cc;
+  color: var(--color-primary);
   margin-bottom: 6px;
   font-size: 0.95em;
 }
 
 .record-item__side {
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 0.9em;
 }
 
 .record-item__timestamp {
   font-size: 0.8em;
-  color: #999;
+  color: var(--color-text-secondary);
   font-family: 'Courier New', monospace;
   margin-bottom: 8px;
 }
 
 .record-item__disease {
-  color: #333;
+  color: var(--color-text-primary);
   margin: 6px 0;
   font-weight: 500;
 }
 
 .record-item__notes {
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 0.85em;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--color-border);
 }
 
 .empty-message {
   text-align: center;
-  color: #999;
+  color: var(--color-text-secondary);
   padding: 30px 20px;
   font-size: 0.9em;
 }
