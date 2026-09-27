@@ -4,76 +4,11 @@
 
 defineAppMethods({
   /**
-   * 更新病歷列表顯示（時間軸格式）
+   * 更新病歷列表顯示
    * @param {string} systemId - 系統 ID
    */
   updateRecordList(systemId) {
-    const annotations = this.recordManager.getAnnotationsBySystem(systemId);
-    const container = $('#record-list-container');
-
-    if (!container) return;
-
-    if (annotations.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <p class="empty-state__text">尚無病歷記錄</p>
-        </div>
-      `;
-      return;
-    }
-
-    // 按日期降序排列（最新的在上）
-    const sortedAnnotations = [...annotations].sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0);
-      const dateB = new Date(b.createdAt || 0);
-      return dateB - dateA;
-    });
-
-    let html = '<div class="disease-timeline">';
-
-    sortedAnnotations.forEach((anno, index) => {
-      const diseaseList = (anno.diseases || [])
-        .map(d => `<span class="disease-tag">${escapeHtml(d.name)} (${escapeHtml(d.id)})</span>`)
-        .join('');
-
-      const date = anno.createdAt ? new Date(anno.createdAt) : new Date();
-      const dateStr = date.toLocaleDateString('zh-TW', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-
-      // 顯示牙齒名稱和 FDI 編號
-      const locationDisplay = anno.fdiNumber ?
-        `${escapeHtml(anno.locationName)} <span class="fdi-badge">FDI: ${escapeHtml(anno.fdiNumber)}</span>` :
-        escapeHtml(anno.locationName || '未知位置');
-
-      html += `
-        <div class="timeline-item ${index === 0 ? 'timeline-item--latest' : ''}">
-          <div class="timeline-marker"></div>
-          <div class="timeline-content">
-            <div class="timeline-header">
-              <h4 class="timeline-location">${locationDisplay}</h4>
-              <span class="timeline-date">${dateStr}</span>
-            </div>
-            <div class="timeline-diseases">
-              ${diseaseList}
-            </div>
-            ${anno.treatmentNotes ? `
-              <div class="timeline-notes">
-                <strong>療程摘要：</strong>
-                <p>${escapeHtml(anno.treatmentNotes)}</p>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    });
-
-    html += '</div>';
-    container.innerHTML = html;
+    return this.loadAndDisplayRecords();
   },
 
   /**
@@ -93,11 +28,13 @@ defineAppMethods({
   /**
    * 清空病歷
    */
-  clearRecords() {
-    if (confirm('確認清空所有病歷？')) {
-      this.recordManager.clearAll();
-      this.annotator.clearAnnotations();
-      this.updateRecordList(this.currentSystemId);
+  async clearRecords() {
+    if (this.recordManager && this.recordManager.clearAll()) {
+      this.loadAnnotations(this.currentSystemId);
+      await this.loadAndDisplayRecords();
+      if (this.recordStatistics) {
+        this.recordStatistics.updateDisplay();
+      }
       showNotification('已清空所有病歷', 'info');
     }
   },
@@ -401,31 +338,20 @@ defineAppMethods({
   },
 
   /**
-   * 保存醫療記錄到 localStorage
+   * 保存醫療記錄（委派給 RecordManager）
+   * @param {object} record - 醫療記錄
+   * @returns {boolean} 是否成功
    */
   saveMedicalRecord(record) {
-    try {
-      const records = this.loadMedicalRecords();
-      records.push(record);
-      localStorage.setItem('medicalRecords', JSON.stringify(records));
-      return true;
-    } catch (error) {
-      console.error('[saveMedicalRecord] 保存失敗:', error);
-      return false;
-    }
+    return this.recordManager ? this.recordManager.addAnnotation(record.system, record) : false;
   },
 
   /**
-   * 從 localStorage 加載醫療記錄
+   * 加載醫療記錄（委派給 RecordManager）
+   * @returns {Array} 記錄陣列
    */
   loadMedicalRecords() {
-    try {
-      const data = localStorage.getItem('medicalRecords');
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('[loadMedicalRecords] 加載失敗:', error);
-      return [];
-    }
+    return this.recordManager ? this.recordManager.getAllAnnotations() : [];
   },
 
   /**
@@ -448,7 +374,9 @@ defineAppMethods({
       allRecords = this.fixLegacyRecords(allRecords);
 
       // 重新保存修復後的記錄
-      localStorage.setItem('medicalRecords', JSON.stringify(allRecords));
+      if (this.recordManager) {
+        this.recordManager.replaceAllAnnotations(allRecords);
+      }
 
       // 按當前系統過濾記錄（只顯示該系統的記錄）
       let records = this.filterRecordsBySystem(allRecords, this.currentSystemId);
@@ -486,21 +414,14 @@ defineAppMethods({
   },
 
   /**
-   * 根據系統類型過濾記錄
+   * 根據系統類型過濾記錄（委派給 RecordManager）
    * @param {Array} records - 所有記錄陣列
    * @param {string} systemId - 系統 ID ('teeth', 'primary_teeth', 'eye', 'body')
    * @returns {Array} 過濾後的記錄陣列
    */
   filterRecordsBySystem(records, systemId) {
     if (!records || !Array.isArray(records)) return [];
-    const sys = (systemId === 'primary_teeth') ? 'teeth' : systemId;
-    return records.filter(r => {
-      if (r.system) return (r.system === 'primary_teeth' ? 'teeth' : r.system) === sys;
-      if (sys === 'teeth') return !!(r.fdiNumber || r.universalNumber);
-      if (sys === 'eye')   return !!(r.structureId || (r.side && !r.fdiNumber)) && !r.bodyRegionId && !r.bodyPart && !r.operationType;
-      if (sys === 'body')  return !!(r.bodyRegionId || r.operationType || r.bodyPart);
-      return false;
-    });
+    return records.filter(r => RecordManager.matchesSystem(r, systemId));
   },
 
 });

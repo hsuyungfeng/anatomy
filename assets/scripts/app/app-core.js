@@ -268,7 +268,7 @@ class MedicalRecordApp {
 
     // 病歷統計管理器
     if (typeof RecordStatistics !== 'undefined') {
-      this.recordStatistics = new RecordStatistics();
+      this.recordStatistics = new RecordStatistics(this.recordManager);
     }
 
     // 身體系統操作表單
@@ -346,7 +346,8 @@ class MedicalRecordApp {
         if (file && this.recordManager) {
           if (confirm('還原將覆蓋現有數據，確定要繼續嗎？')) {
             await this.recordManager.restoreFromBackup(file);
-            this.updateRecordList(this.currentSystemId);
+            await this.loadAndDisplayRecords();
+            this.loadAnnotations(this.currentSystemId);
             if (this.recordStatistics) {
               this.recordStatistics.updateDisplay();
             }
@@ -570,8 +571,8 @@ class MedicalRecordApp {
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
-      // 加載並顯示 localStorage 病歷
-      await this.loadAndDisplayRecords();
+      // 更新病歷列表
+      await this.updateRecordList(systemId);
 
     } catch (error) {
       console.error(`加載系統圖像失敗: ${systemId}`, error);

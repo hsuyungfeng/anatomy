@@ -278,13 +278,10 @@ defineAppMethods({
         updatedAt: operationData.timestamp
       };
 
-      // 保存到記錄管理器（內存）
+      // 保存到記錄管理器
       if (this.recordManager) {
         this.recordManager.addAnnotation('body', annotation);
       }
-
-      // 保存到本地存儲（持久化）
-      this.saveMedicalRecord(annotation);
 
       // 添加視覺標註到圖像
       if (this.annotator) {
