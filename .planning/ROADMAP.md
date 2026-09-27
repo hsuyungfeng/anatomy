@@ -59,17 +59,38 @@
 
 **Executor:** Antigravity (agy)，完成後由 Claude Code 審查
 
+**Status:** ✓ Complete（2026-09-27，合併於 c7446ac，經 Claude Code 審查通過）
+
 **Plans:** 4 plans（依序執行）
-- [ ] 4-01-PLAN.md — 冒煙測試與原型方法快照基準（IMP-04）
-- [ ] 4-02-PLAN.md — 根目錄雜檔移至 doc/（IMP-02）
-- [ ] 4-03-PLAN.md — main.js 拆分為 app/ 模組（IMP-01）
-- [ ] 4-04-PLAN.md — 儲存型 XSS 修復（IMP-03）
+- [x] 4-01-PLAN.md — 冒煙測試與原型方法快照基準（IMP-04）
+- [x] 4-02-PLAN.md — 根目錄雜檔移至 doc/（IMP-02）
+- [x] 4-03-PLAN.md — main.js 拆分為 app/ 模組（IMP-01）
+- [x] 4-04-PLAN.md — 儲存型 XSS 修復（IMP-03）
 
 **Success Criteria:**
 1. `python3 doc/tests/run_all.py --with-snapshot` 全部通過
 2. 根目錄只剩產品檔案
 3. main.js < 30 行，app/*.js 每檔 < 800 行
 4. XSS payload 存進病歷後只會顯示成文字
+
+---
+
+## Phase 5: 病歷流程 Bug 修復
+
+**Goal:** 修復 Phase 4 審查時發現的病歷儲存／顯示問題與 OCR 例外
+
+**Executor:** Antigravity (agy)，完成後由 Claude Code 審查
+
+**Root cause:** 新增身體系統時，以身體專用版本覆蓋了三系統共用的 saveDiseaseAnnotation / filterRecordsBySystem / loadAndDisplayRecords
+
+**Plans:** 2 plans（依序執行）
+- [ ] 5-01-PLAN.md — 恢復通用病歷流程（FIX-01～03）
+- [ ] 5-02-PLAN.md — OCR Object.forEach 修正（FIX-04）
+
+**Success Criteria:**
+1. 三個系統都能新增病歷，切換分頁、重新整理後記錄仍在且不混雜
+2. `run_all.py --with-snapshot` 0 失敗、0 跳過
+3. `grep -rn "Object.forEach" assets/` 沒有結果
 
 ---
 
@@ -81,6 +102,7 @@
 | 1 | 數據導出 | ✓ Complete |
 | 2 | 數據分析 | ✓ Complete |
 | 3 | 用戶權限 | ✗ Not Needed |
-| 4 | 程式碼品質改善 | ◐ Planned |
+| 4 | 程式碼品質改善 | ✓ Complete |
+| 5 | 病歷流程 Bug 修復 | ◐ Planned |
 
 **Milestone:** Complete ✓

@@ -25,10 +25,17 @@
 
 ## Phase 4 Requirements（程式碼品質改善）
 
-- [ ] **IMP-01**: main.js 拆分為領域模組（每檔 < 800 行），行為不變
-- [ ] **IMP-02**: 根目錄測試腳本與工具頁移至 doc/
-- [ ] **IMP-03**: 修復病歷渲染的儲存型 XSS
-- [ ] **IMP-04**: 建立可自動執行的冒煙測試與行為快照
+- [x] **IMP-01**: main.js 拆分為領域模組（每檔 < 800 行），行為不變
+- [x] **IMP-02**: 根目錄測試腳本與工具頁移至 doc/
+- [x] **IMP-03**: 修復病歷渲染的儲存型 XSS
+- [x] **IMP-04**: 建立可自動執行的冒煙測試與行為快照
+
+## Phase 5 Requirements（病歷流程 Bug 修復）
+
+- [ ] **FIX-01**: 牙齒／眼睛疾病記錄可以正常儲存（修復 saveDiseaseAnnotation 被身體專用版本覆蓋）
+- [ ] **FIX-02**: 系統篩選正確（'teeth'/'primary_teeth'/'eye'/'body'），身體操作記錄可以顯示
+- [ ] **FIX-03**: 切換系統分頁時顯示 localStorage 中該系統的病歷
+- [ ] **FIX-04**: OCR 疾病比對不再因 Object.forEach 丟出例外
 
 ## Out of Scope
 
@@ -51,10 +58,14 @@
 | AUTH-01 | Phase 3 | Pending |
 | AUTH-02 | Phase 3 | Pending |
 | AUTH-03 | Phase 3 | Pending |
-| IMP-01 | Phase 4 | Planned |
-| IMP-02 | Phase 4 | Planned |
-| IMP-03 | Phase 4 | Planned |
-| IMP-04 | Phase 4 | Planned |
+| IMP-01 | Phase 4 | Complete |
+| IMP-02 | Phase 4 | Complete |
+| IMP-03 | Phase 4 | Complete |
+| IMP-04 | Phase 4 | Complete |
+| FIX-01 | Phase 5 | Planned |
+| FIX-02 | Phase 5 | Planned |
+| FIX-03 | Phase 5 | Planned |
+| FIX-04 | Phase 5 | Planned |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -63,4 +74,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — 新增 Phase 4 IMP 需求*
+*Last updated: 2026-09-27 — Phase 4 完成、新增 Phase 5 FIX 需求*
