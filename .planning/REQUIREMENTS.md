@@ -53,6 +53,14 @@
 - [x] **UI-02**: 病歷清單位置名稱不重複
 - [x] **CI-01**: push／PR 自動執行完整測試
 
+## Phase 8 Requirements（牙齒 SVG 牙位圖）
+
+- [ ] **SVG-01**: 牙齒系統（永久牙 32、乳牙 20）以結構化 SVG 牙位圖呈現
+- [ ] **SVG-02**: 點擊任一顆牙都能開啟正確的疾病模態，與螢幕縮放比例無關；支援鍵盤操作
+- [ ] **SVG-03**: 病歷存 FDI，有病歷的牙齒在圖上標示（含舊記錄）
+- [ ] **SVG-04**: 點陣圖保留為參考圖，只能看、不能點
+- [ ] **SVG-05**: 移除牙齒座標辨識死碼
+
 ## Out of Scope
 
 | Feature | Reason |
@@ -92,6 +100,11 @@
 | UI-01 | Phase 7 | Complete |
 | UI-02 | Phase 7 | Complete |
 | CI-01 | Phase 7 | Complete |
+| SVG-01 | Phase 8 | Planned |
+| SVG-02 | Phase 8 | Planned |
+| SVG-03 | Phase 8 | Planned |
+| SVG-04 | Phase 8 | Planned |
+| SVG-05 | Phase 8 | Planned |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -100,4 +113,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4～7 完成*
+*Last updated: 2026-09-27 — Phase 4～7 完成，新增 Phase 8 需求*

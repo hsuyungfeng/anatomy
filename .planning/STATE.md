@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** None — Phase 4～7 已完成
-**Next Candidate:** 結構化 SVG 解剖圖（使用者已同意方向：SVG 為主、原圖可切換參考；牙位圖原型 doc/prototypes/odontogram/ 待使用者確認）
+**Current Phase:** 8 — 牙齒 SVG 牙位圖（已規劃，交由 agy 執行）
+**Next Candidate:** 眼睛、身體系統比照改用 SVG（Phase 8 完成後，先畫原型給使用者確認）
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made
