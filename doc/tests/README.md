@@ -68,3 +68,22 @@ python3 doc/tests/bump_cache.py --check-only
 ## 自訂環境變數
 
 - `ANATOMY_TEST_PORT`：測試伺服器連接埠，預設為 `8765`。
+
+## 持續整合 (CI)
+
+本專案配置 GitHub Actions 自動化測試工作流程（`.github/workflows/test.yml`）：
+
+- **觸發時機**：
+  - 推送至 `master` 分支（`push`）
+  - 任何開啟或更新的 Pull Request（`pull_request`）
+- **CI 執行環境**：Ubuntu Latest，Python 3.12，安裝 Playwright 與 Chromium。
+- **執行流程**：
+  1. 簽出程式碼（`actions/checkout@v4`）
+  2. 設定 Python 環境（`actions/setup-python@v5`，Python 3.12）
+  3. 安裝 Playwright 及瀏覽器依賴（`pip install playwright && python -m playwright install --with-deps chromium`）
+  4. 執行完整測試套件包含快照比對（`python doc/tests/run_all.py --with-snapshot`）
+- **本機重現失敗**：
+  若 CI 回報失敗，可在本地以完全相同的指令重現與排查：
+  ```bash
+  python3 doc/tests/run_all.py --with-snapshot
+  ```
