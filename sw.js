@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anatomy-v1';
+const CACHE_NAME = 'anatomy-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -8,6 +8,12 @@ const ASSETS_TO_CACHE = [
   '/assets/styles/body-operation-form.css',
   '/assets/scripts/utils.js',
   '/assets/scripts/main.js',
+  '/assets/scripts/app/app-core.js',
+  '/assets/scripts/app/app-eye.js',
+  '/assets/scripts/app/app-tooth.js',
+  '/assets/scripts/app/app-body.js',
+  '/assets/scripts/app/app-modal.js',
+  '/assets/scripts/app/app-records.js',
   '/assets/scripts/record-manager.js',
   '/assets/scripts/record-statistics.js',
   '/assets/scripts/disease-form.js',
