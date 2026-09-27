@@ -39,6 +39,8 @@ import legacy_mapping_test
 import legacy_map_unit_test
 import svg_viewport_test
 import ui_polish_test
+import layout_test
+import i18n_test
 import snapshot_prototype
 from playwright.sync_api import sync_playwright
 
@@ -379,6 +381,44 @@ def main():
 
                 print("\n--- 執行 Phase 9-01 介面細節與體驗優化測試 ---")
                 for test_func in ui_polish_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 10-01 版面與顯示測試 ---")
+                for test_func in layout_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 10-01 國際化與英文介面測試 ---")
+                for test_func in i18n_test.TESTS:
                     test_name = test_func.__name__
                     skip_reason = getattr(test_func, "SKIP_REASON", None)
 
