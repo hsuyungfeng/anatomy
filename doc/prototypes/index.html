@@ -23,7 +23,7 @@
       --iris: #5b7fa6; --pupil: #1d2330; --cornea: #cfe6f3; --chamber: #f1f8fc; --muscle: #c8645a;
       --nerve: #f0d9a8; --artery: #d23c3c; --vein: #3c5fd2; --gland: #e6b7c4; --eyelid: #e8c2a8; --conj: #f6d4d4;
       /* 身體 */
-      --skin: #f1ddcc; --skin-stroke: #b89a83; --skin-detail: #e5c7b1;
+      --skin: #f1ddcc; --skin-stroke: #9c7c66; --skin-detail: #e6c6ae; --brow: #6b4f3f; --eye-white: #fbf7f2; --lips: #d49488; --cheek: rgba(226, 150, 140, .35);
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
@@ -32,7 +32,7 @@
         --accent: #6ea0ff; --hover: #2a4270; --record: #f5c542; --guide: #3a4150;
         --crown: #e9e6dc; --crown-stroke: #6f7580; --root: #b9ab8c; --root-stroke: #8c7e62;
         --sclera: #d9d4c8; --vitreous: #2a3642; --chamber: #26323d; --lens: #6f8ca3; --cornea: #7ea6bd;
-        --skin: #c9ab94; --skin-stroke: #8f735e; --skin-detail: #b8977f;
+        --skin: #c9ab94; --skin-stroke: #6f5645; --skin-detail: #b8977f; --brow: #4a362b; --eye-white: #e9e3dc; --lips: #b0766c; --cheek: rgba(190, 120, 110, .35);
       }
     }
     :root[data-theme="dark"] {
@@ -41,7 +41,7 @@
       --accent: #6ea0ff; --hover: #2a4270; --record: #f5c542; --guide: #3a4150;
       --crown: #e9e6dc; --crown-stroke: #6f7580; --root: #b9ab8c; --root-stroke: #8c7e62;
       --sclera: #d9d4c8; --vitreous: #2a3642; --chamber: #26323d; --lens: #6f8ca3; --cornea: #7ea6bd;
-      --skin: #c9ab94; --skin-stroke: #8f735e; --skin-detail: #b8977f;
+      --skin: #c9ab94; --skin-stroke: #6f5645; --skin-detail: #b8977f; --brow: #4a362b; --eye-white: #e9e3dc; --lips: #b0766c; --cheek: rgba(190, 120, 110, .35);
     }
 
     * { box-sizing: border-box; }
@@ -134,13 +134,19 @@
 
     /* 身體 */
     .region { cursor: pointer; outline: none; }
-    .region .shape { fill: var(--skin); stroke: var(--skin-stroke); stroke-width: 1.2; transition: fill .12s; }
-    .region[data-region^="head-"] .shape, .region[data-region="abdomen-umbilical"] .shape,
-    .region[data-region^="chest-breast"] .shape, .region[data-region^="groin-"] .shape,
-    .region[data-region^="heel"] .shape, .region[data-region^="axilla"] .shape { fill: var(--skin-detail); }
-    .region:hover .shape { fill: var(--hover); }
-    .region:focus-visible .shape { stroke: var(--accent); stroke-width: 2.5; }
-    .region.is-selected .shape { fill: var(--hover); stroke: var(--accent); stroke-width: 2.5; }
+    .region .shape { fill: var(--skin); stroke: var(--skin-stroke); stroke-width: .7; stroke-opacity: .55; transition: fill .12s; }
+    .region[data-region="abdomen-umbilical"] .shape, .region[data-region^="chest-breast"] .shape,
+    .region[data-region^="groin-"] .shape, .region[data-region="head-nose"] .shape,
+    .region[data-region^="head-ear"] .shape { fill: var(--skin-detail); stroke-opacity: .8; }
+    .region[data-region^="head-eyebrow"] .shape { fill: var(--brow); stroke-opacity: 0; }
+    .feature-eye .shape { fill: var(--eye-white); stroke: var(--brow); stroke-opacity: 1; }
+    .feature-lips .shape { fill: var(--lips); stroke-opacity: .8; }
+    .feature-cheek .shape { fill: var(--cheek); stroke-opacity: 0; }
+    .anatomy-lines path { fill: none; stroke: var(--skin-stroke); stroke-width: 1; opacity: .55; pointer-events: none; stroke-linecap: round; }
+    .anatomy-lines .outline { stroke-width: 1.6; opacity: 1; }
+    .region.is-hover .shape { fill: var(--hover); }
+    .region:focus-visible .shape { stroke: var(--accent); stroke-width: 2.5; stroke-opacity: 1; }
+    .region.is-selected .shape { fill: var(--hover); stroke: var(--accent); stroke-width: 2; stroke-opacity: 1; }
     .region.has-record .shape { fill: var(--record); }
 
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -154,7 +160,7 @@
     <div class="tabs" role="tablist" aria-label="系統">
       <button type="button" role="tab" id="tab-teeth" data-panel="teeth" aria-selected="false">牙齒（已整合）</button>
       <button type="button" role="tab" id="tab-eye" data-panel="eye" aria-selected="true">眼睛（新原型）</button>
-      <button type="button" role="tab" id="tab-body" data-panel="body" aria-selected="false">身體（新原型）</button>
+      <button type="button" role="tab" id="tab-body" data-panel="body" aria-selected="false">身體（寫實版）</button>
     </div>
 
     <div class="toolbar" id="toolbar"></div>
