@@ -570,6 +570,9 @@ class MedicalRecordApp {
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
+      // 加載並顯示 localStorage 病歷
+      await this.loadAndDisplayRecords();
+
     } catch (error) {
       console.error(`加載系統圖像失敗: ${systemId}`, error);
       showNotification(`無法加載圖像: ${error.message}`, 'error');

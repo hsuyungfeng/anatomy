@@ -144,11 +144,12 @@ defineAppMethods({
       let structureName = '';
       let structureSide = '';
 
-      if (record.bodyRegionId) {
-        // 身體系統：按 bodyRegionId 和 side 分組
-        groupKey = `${record.bodyRegionId}-${record.side}`;
-        structureId = record.bodyRegionId;
-        structureName = record.locationName;
+      if (record.bodyRegionId || record.bodyPart) {
+        // 身體系統：按 bodyRegionId/bodyPart 和 side 分組
+        const regionId = record.bodyRegionId || record.bodyPart;
+        groupKey = `${regionId}-${record.side || ''}`;
+        structureId = regionId;
+        structureName = record.locationName || record.nameZh || (this.getChineseBodyRegionName ? this.getChineseBodyRegionName(record.bodyPart, record.side) : record.bodyPart);
         structureSide = record.side;
       } else if (record.fdiNumber) {
         // 牙齒系統：按 FDI 編號分組
@@ -428,41 +429,78 @@ defineAppMethods({
   },
 
   /**
-   * 加載並顯示身體系統的病例
+   * 加載並顯示當前系統的病例記錄
    */
-  loadAndDisplayRecords() {
-    if (this.currentSystemId !== 'body') return;
-
+  async loadAndDisplayRecords() {
     try {
-      const allRecords = this.loadMedicalRecords();
-      const bodyRecords = this.filterRecordsBySystem(allRecords, 'body');
+      // 加載所有記錄
+      let allRecords = this.loadMedicalRecords();
 
-      // 按身體部位分組
-      const groupedRecords = this.groupRecordsByBodyPart(bodyRecords);
+      if (!allRecords || allRecords.length === 0) {
+        const container = document.getElementById('record-list-container');
+        if (container) {
+          container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
+        }
+        return;
+      }
 
-      this.displayBodyRecords(groupedRecords);
+      // 修復舊格式的記錄
+      allRecords = this.fixLegacyRecords(allRecords);
+
+      // 重新保存修復後的記錄
+      localStorage.setItem('medicalRecords', JSON.stringify(allRecords));
+
+      // 按當前系統過濾記錄（只顯示該系統的記錄）
+      let records = this.filterRecordsBySystem(allRecords, this.currentSystemId);
+
+      if (!records || records.length === 0) {
+        const container = document.getElementById('record-list-container');
+        if (container) {
+          let systemName = '';
+          if (this.currentSystemId === 'eye') {
+            systemName = '眼睛';
+          } else if (this.currentSystemId === 'body') {
+            systemName = '身體';
+          } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+            systemName = '牙齒';
+          } else {
+            systemName = '目前';
+          }
+          container.innerHTML = `<p class="empty-message">暫無${systemName}系統的病例記錄</p>`;
+        }
+        return;
+      }
+
+      // 分組
+      const groupedRecords = this.groupRecordsByStructure(records);
+
+      // 渲染
+      this.renderGroupedRecords(groupedRecords);
     } catch (error) {
       console.error('[loadAndDisplayRecords] 加載失敗:', error);
+      const container = document.getElementById('record-list-container');
+      if (container) {
+        container.innerHTML = '<p class="empty-message">病例加載失敗</p>';
+      }
     }
   },
 
   /**
-   * 根據系統類型過濾記錄（修正污染問題）
+   * 根據系統類型過濾記錄
+   * @param {Array} records - 所有記錄陣列
+   * @param {string} systemId - 系統 ID ('teeth', 'primary_teeth', 'eye', 'body')
+   * @returns {Array} 過濾後的記錄陣列
    */
-  filterRecordsBySystem(records, systemType) {
-    switch(systemType) {
-      case 'body':
-        // ✅ 只過濾明確標記為身體系統的記錄
-        return records.filter(r => r.system === 'body' && r.bodyPart && r.side);
-      case 'eye':
-        // ✅ 只過濾明確標記為眼睛系統的記錄（或有 structureId）
-        return records.filter(r => r.system === 'eye' || (r.structureId && !r.fdiNumber && !r.bodyPart));
-      case 'tooth':
-        // ✅ 只過濾明確標記為牙齒系統的記錄（或有 fdiNumber）
-        return records.filter(r => r.system === 'tooth' || (r.fdiNumber && !r.bodyPart && !r.structureId));
-      default:
-        return [];
-    }
+  filterRecordsBySystem(records, systemId) {
+    if (!records || !Array.isArray(records)) return [];
+    const sys = (systemId === 'primary_teeth') ? 'teeth' : systemId;
+    return records.filter(r => {
+      if (r.system) return (r.system === 'primary_teeth' ? 'teeth' : r.system) === sys;
+      if (sys === 'teeth') return !!(r.fdiNumber || r.universalNumber);
+      if (sys === 'eye')   return !!(r.structureId || (r.side && !r.fdiNumber)) && !r.bodyRegionId && !r.bodyPart && !r.operationType;
+      if (sys === 'body')  return !!(r.bodyRegionId || r.operationType || r.bodyPart);
+      return false;
+    });
   },
 
 });

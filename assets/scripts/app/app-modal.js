@@ -313,60 +313,132 @@ defineAppMethods({
   },
 
   /**
-   * 保存身體系統疾病記錄
+   * 保存疾病標註
    */
-  saveDiseaseAnnotation(annotation) {
-    if (this.currentSystemId !== 'body') {
-      console.warn('[saveDiseaseAnnotation] 非身體系統，操作被略過');
+  async saveDiseaseAnnotation() {
+    // 收集表單資料
+    if (!this.diseaseForm) {
+      console.error('[saveDiseaseAnnotation] 表單未初始化');
+      showNotification('表單未初始化', 'error');
       return;
     }
 
-    try {
-      // 蒐集選中的疾病並轉換為 ICD-10
-      const selectedDiseases = [
-        ...document.querySelectorAll('#diseaseArea input:checked')
-      ].map(input => ({
-        name: input.value,
-        icd10: this.bodyDiseaseICD[input.value] || 'UNKNOWN'
-      }));
+    const formData = this.diseaseForm.getFormData();
 
-      // 構建完整的身體標註對象
-      const fullAnnotation = {
-        annotationId: this.generateUUID(),
+    // 驗證是否選擇了疾病
+    if (!formData.diseases || formData.diseases.length === 0) {
+      console.warn('[saveDiseaseAnnotation] 未選擇疾病');
+      showNotification('請選擇至少一種疾病', 'warning');
+      return;
+    }
 
-        // 身體系統專用欄位
-        bodyPart: this.currentBodyRegion.bodyPart,
-        side: this.currentBodyRegion.side,
-        nameZh: this.getChineseBodyRegionName(this.currentBodyRegion.bodyPart, this.currentBodyRegion.side),
-        nameEn: this.getEnglishBodyRegionName(this.currentBodyRegion.bodyPart, this.currentBodyRegion.side),
+    // 根據系統類型構建標註對象
+    let annotation;
 
-        // 疾病信息
-        diseases: selectedDiseases,
-        treatmentNotes: document.getElementById('treatment-notes-input')?.value || '',
+    if (this.currentSystemId === 'eye') {
+      // 眼睛系統的標註對象
+      if (!this.currentEyeStructure) {
+        console.error('[saveDiseaseAnnotation] 眼睛系統缺少結構信息');
+        showNotification('請先選擇眼睛結構', 'warning');
+        return;
+      }
 
-        // 系統標識
-        system: 'body',
+      annotation = {
+        annotationId: generateUUID(),
+        system: 'eye',
+        position: this.currentClickPosition || { x: 0, y: 0 },
 
-        // 時間戳
+        // 眼睛結構資訊
+        locationName: this.currentEyeStructure.name,
+        locationNameEn: this.currentEyeStructure.nameEn,
+        structureId: this.currentEyeStructure.structureId,
+        structureType: this.currentEyeStructure.type,
+        side: this.currentEyeStructure.side,
+
+        // 檢測元數據
+        detectionConfidence: this.currentEyeStructure.confidence || 1.0,
+        fromLabel: this.currentEyeStructure.fromLabel || false,
+
+        // 疾病和療程
+        diseases: formData.diseases,
+        treatmentNotes: formData.treatmentNotes,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
+    } else {
+      // 牙齒系統的標註對象（原有邏輯）
+      annotation = {
+        annotationId: generateUUID(),
+        system: 'teeth',
+        position: this.currentClickPosition,
 
-      // 保存到記錄管理器
-      this.recordManager.addAnnotation(fullAnnotation);
+        // 使用檢測到的牙齒資訊
+        locationName: this.currentToothInfo ? this.currentToothInfo.name :
+                      this.getLocationName(this.currentClickPosition),
+        locationNameEn: this.currentToothInfo ? this.currentToothInfo.nameEn : '',
 
-      // 保存到 localStorage
-      this.saveMedicalRecord(fullAnnotation);
+        // 編號系統
+        fdiNumber: this.currentToothInfo ? this.currentToothInfo.fdi : null,
+        universalNumber: this.currentToothInfo ? this.currentToothInfo.number : null,
 
-      // 更新 UI
-      this.loadAndDisplayRecords();
+        // 牙齒資訊
+        toothType: this.currentToothInfo ? this.currentToothInfo.type : null,
+        quadrant: this.currentToothInfo ? this.currentToothInfo.quadrant : null,
+
+        // 檢測元數據
+        detectionConfidence: this.currentToothInfo ? this.currentToothInfo.confidence : null,
+        manualSelection: this.currentToothInfo ? (this.currentToothInfo.manualSelection || false) : false,
+
+        // 疾病和療程
+        diseases: formData.diseases,
+        treatmentNotes: formData.treatmentNotes,
+
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    try {
+      // 保存到記錄管理器（內存）
+      this.recordManager.addAnnotation(this.currentSystemId, annotation);
+
+      // 保存到本地存儲（持久化）
+      this.saveMedicalRecord(annotation);
+
+      // 添加視覺標註到圖像
+      const system = this.anatomicalSystems.systems.find(
+        s => s.id === this.currentSystemId
+      );
+
+      this.annotator.addAnnotation({
+        ...annotation,
+        color: system?.color || '#ff0000'
+      });
+
+      // 更新疾病可視化（僅限牙齒系統）
+      if (this.diseaseVisualizer && this.currentSystemId === 'teeth') {
+        const annotations = this.recordManager.getAnnotationsBySystem(this.currentSystemId);
+        this.diseaseVisualizer.render(annotations);
+      }
+
+      // 關閉模態並重新加載病例列表（使用分組功能）
+      this.closeDiseaseModal();
+      await this.loadAndDisplayRecords();
 
       // 顯示成功提示
-      alert('✅ 身體系統病例已保存');
-
+      if (this.currentSystemId === 'eye') {
+        showNotification('✓ 眼睛病例已成功保存', 'success');
+      } else if (annotation.manualSelection) {
+        showNotification('✓ 疾病記錄已保存（手動選擇）', 'success');
+      } else if (annotation.detectionConfidence && annotation.detectionConfidence > 0.8) {
+        showNotification('✓ 疾病記錄已保存（高信心度）', 'success');
+      } else {
+        showNotification('✓ 疾病記錄已保存', 'success');
+      }
     } catch (error) {
       console.error('[saveDiseaseAnnotation] 保存失敗:', error);
-      alert('❌ 保存失敗，請重試');
+      showNotification('保存失敗，請重試', 'error');
     }
   },
 

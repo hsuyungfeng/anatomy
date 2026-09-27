@@ -146,15 +146,7 @@ def test_records_render_from_storage(browser, base_url: str):
         context.close()
 
 
-# 既有 bug 標記：
-# 專案中切換至身體系統（handleSystemTabClick）時僅呼叫 updateRecordList，
-# 未呼叫 loadAndDisplayRecords()，且 updateRecordList 讀取的是 RecordManager 舊格式（anatomy-record-*），
-# 導致 localStorage['medicalRecords'] 的身體病歷未被渲染至清單。
-# 依據 4-01-PLAN.md 與 4-PLAN.md 共同規則，不順手修復產品程式碼，以 SKIP_REASON 標記跳過並記錄於 SUMMARY。
-test_records_render_from_storage.SKIP_REASON = (
-    "既有 bug：切換至身體系統（handleSystemTabClick）時僅呼叫 updateRecordList，"
-    "未呼叫 loadAndDisplayRecords()，導致 localStorage['medicalRecords'] 未被讀取並渲染至清單"
-)
+
 
 
 def test_theme_toggle(browser, base_url: str):
