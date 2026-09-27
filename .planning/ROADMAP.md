@@ -83,9 +83,11 @@
 
 **Root cause:** 新增身體系統時，以身體專用版本覆蓋了三系統共用的 saveDiseaseAnnotation / filterRecordsBySystem / loadAndDisplayRecords
 
+**Status:** ✓ Complete（2026-09-27，經 Claude Code 審查通過：TDD 驗證修復前 7 項失敗、修復後 14/14 通過）
+
 **Plans:** 2 plans（依序執行）
-- [ ] 5-01-PLAN.md — 恢復通用病歷流程（FIX-01～03）
-- [ ] 5-02-PLAN.md — OCR Object.forEach 修正（FIX-04）
+- [x] 5-01-PLAN.md — 恢復通用病歷流程（FIX-01～03）
+- [x] 5-02-PLAN.md — OCR Object.forEach 修正（FIX-04）
 
 **Success Criteria:**
 1. 三個系統都能新增病歷，切換分頁、重新整理後記錄仍在且不混雜
@@ -103,6 +105,6 @@
 | 2 | 數據分析 | ✓ Complete |
 | 3 | 用戶權限 | ✗ Not Needed |
 | 4 | 程式碼品質改善 | ✓ Complete |
-| 5 | 病歷流程 Bug 修復 | ◐ Planned |
+| 5 | 病歷流程 Bug 修復 | ✓ Complete |
 
 **Milestone:** Complete ✓

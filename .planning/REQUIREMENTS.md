@@ -32,10 +32,10 @@
 
 ## Phase 5 Requirements（病歷流程 Bug 修復）
 
-- [ ] **FIX-01**: 牙齒／眼睛疾病記錄可以正常儲存（修復 saveDiseaseAnnotation 被身體專用版本覆蓋）
-- [ ] **FIX-02**: 系統篩選正確（'teeth'/'primary_teeth'/'eye'/'body'），身體操作記錄可以顯示
-- [ ] **FIX-03**: 切換系統分頁時顯示 localStorage 中該系統的病歷
-- [ ] **FIX-04**: OCR 疾病比對不再因 Object.forEach 丟出例外
+- [x] **FIX-01**: 牙齒／眼睛疾病記錄可以正常儲存（修復 saveDiseaseAnnotation 被身體專用版本覆蓋）
+- [x] **FIX-02**: 系統篩選正確（'teeth'/'primary_teeth'/'eye'/'body'），身體操作記錄可以顯示
+- [x] **FIX-03**: 切換系統分頁時顯示 localStorage 中該系統的病歷
+- [x] **FIX-04**: OCR 疾病比對不再因 Object.forEach 丟出例外
 
 ## Out of Scope
 
@@ -62,10 +62,10 @@
 | IMP-02 | Phase 4 | Complete |
 | IMP-03 | Phase 4 | Complete |
 | IMP-04 | Phase 4 | Complete |
-| FIX-01 | Phase 5 | Planned |
-| FIX-02 | Phase 5 | Planned |
-| FIX-03 | Phase 5 | Planned |
-| FIX-04 | Phase 5 | Planned |
+| FIX-01 | Phase 5 | Complete |
+| FIX-02 | Phase 5 | Complete |
+| FIX-03 | Phase 5 | Complete |
+| FIX-04 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -74,4 +74,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4 完成、新增 Phase 5 FIX 需求*
+*Last updated: 2026-09-27 — Phase 4、Phase 5 完成*

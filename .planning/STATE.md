@@ -11,7 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** 5 — 病歷流程 Bug 修復（已規劃，交由 agy 執行）；Phase 4 已完成
+**Current Phase:** None — Phase 4、5 已完成
+**Known Limitation:** recordManager 與 localStorage['medicalRecords'] 兩套儲存並存（備份/統計/匯出可能與清單不一致），可作為 Phase 6 候選
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made
@@ -22,7 +23,7 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 | 單機存儲架構 | 無需服務器，快速部署 | ✓ Good |
 | main.js 以原型混入拆分，不改 ES module | 無打包工具，維持傳統 script 載入 | ✓ Good |
 | Phase 4 由 agy 執行、Claude 審查 | 使用者指定 | ✓ Good（快照證明純搬移） |
-| Phase 5 恢復通用病歷流程而非個別打補丁 | 三個 bug 同源：身體專用版本覆蓋通用方法 | — Pending |
+| Phase 5 恢復通用病歷流程而非個別打補丁 | 三個 bug 同源：身體專用版本覆蓋通用方法 | ✓ Good |
 
 ## Blockers
 
