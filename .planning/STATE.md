@@ -11,7 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** 6 — 病歷儲存整併（已規劃，交由 agy 執行）
+**Current Phase:** None — Phase 4、5、6 已完成
+**Known Minor Issue:** 病歷清單標題文字（牙齒位置重複、身體側別顯示為「右眼」）
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made
@@ -23,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 | main.js 以原型混入拆分，不改 ES module | 無打包工具，維持傳統 script 載入 | ✓ Good |
 | Phase 4 由 agy 執行、Claude 審查 | 使用者指定 | ✓ Good（快照證明純搬移） |
 | Phase 5 恢復通用病歷流程而非個別打補丁 | 三個 bug 同源：身體專用版本覆蓋通用方法 | ✓ Good |
-| Phase 6 以 medicalRecords 為唯一來源 + 巢狀唯讀檢視 | 清單流程已驗證；巢狀的「病歷」層無業務意義；檢視層避免改寫 39 處依賴 | — Pending |
+| Phase 6 以 medicalRecords 為唯一來源 + 巢狀唯讀檢視 | 清單流程已驗證；巢狀的「病歷」層無業務意義；檢視層避免改寫 39 處依賴 | ✓ Good |
 
 ## Blockers
 

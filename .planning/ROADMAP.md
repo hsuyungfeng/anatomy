@@ -104,9 +104,12 @@
 
 **Design:** medicalRecords（扁平標註陣列）為唯一來源；RecordManager 為唯一存取層，並提供唯讀巢狀檢視給匯出／統計／PDF 使用；首次載入自動遷移舊資料並保留備份
 
-**Plans:** 2 plans（依序執行）
-- [ ] 6-01-PLAN.md — 整併行為的端到端測試（TDD 紅燈）
-- [ ] 6-02-PLAN.md — RecordManager 改寫、遷移、呼叫端改用單一儲存（STORE-01～04）
+**Status:** ✓ Complete（2026-09-27，經 Claude Code 審查：追加 6-03 修補 3 個資料安全問題後通過，28/28 測試、真實遷移演練一致）
+
+**Plans:** 3 plans（依序執行）
+- [x] 6-01-PLAN.md — 整併行為的端到端測試（TDD 紅燈）
+- [x] 6-02-PLAN.md — RecordManager 改寫、遷移、呼叫端改用單一儲存（STORE-01～04）
+- [x] 6-03-PLAN.md — 審查追加：還原無效檔不清空、遷移失敗不刪舊資料、無 system 記錄歸類一致
 
 **Success Criteria:**
 1. 病歷資料只在 record-manager.js 讀寫
@@ -126,6 +129,6 @@
 | 3 | 用戶權限 | ✗ Not Needed |
 | 4 | 程式碼品質改善 | ✓ Complete |
 | 5 | 病歷流程 Bug 修復 | ✓ Complete |
-| 6 | 病歷儲存整併 | ◐ Planned |
+| 6 | 病歷儲存整併 | ✓ Complete |
 
 **Milestone:** Complete ✓

@@ -39,10 +39,10 @@
 
 ## Phase 6 Requirements（病歷儲存整併）
 
-- [ ] **STORE-01**: 病歷只有一個資料來源（localStorage['medicalRecords']），RecordManager 為唯一存取層
-- [ ] **STORE-02**: 舊 anatomy-record-* 資料自動遷移、去重，並保留原始備份
-- [ ] **STORE-03**: 備份／還原／清除／統計／匯出與清單使用同一份資料（備份 v2，還原相容 v1）
-- [ ] **STORE-04**: 載入頁面不再產生空病歷；重新整理後圖上標記仍在
+- [x] **STORE-01**: 病歷只有一個資料來源（localStorage['medicalRecords']），RecordManager 為唯一存取層
+- [x] **STORE-02**: 舊 anatomy-record-* 資料自動遷移、去重，並保留原始備份
+- [x] **STORE-03**: 備份／還原／清除／統計／匯出與清單使用同一份資料（備份 v2，還原相容 v1）
+- [x] **STORE-04**: 載入頁面不再產生空病歷；重新整理後圖上標記仍在
 
 ## Out of Scope
 
@@ -73,10 +73,10 @@
 | FIX-02 | Phase 5 | Complete |
 | FIX-03 | Phase 5 | Complete |
 | FIX-04 | Phase 5 | Complete |
-| STORE-01 | Phase 6 | Planned |
-| STORE-02 | Phase 6 | Planned |
-| STORE-03 | Phase 6 | Planned |
-| STORE-04 | Phase 6 | Planned |
+| STORE-01 | Phase 6 | Complete |
+| STORE-02 | Phase 6 | Complete |
+| STORE-03 | Phase 6 | Complete |
+| STORE-04 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -85,4 +85,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4、5 完成，新增 Phase 6 STORE 需求*
+*Last updated: 2026-09-27 — Phase 4、5、6 完成*
