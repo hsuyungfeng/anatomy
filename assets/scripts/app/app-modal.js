@@ -400,11 +400,8 @@ defineAppMethods({
     }
 
     try {
-      // 保存到記錄管理器（內存）
+      // 保存到記錄管理器
       this.recordManager.addAnnotation(this.currentSystemId, annotation);
-
-      // 保存到本地存儲（持久化）
-      this.saveMedicalRecord(annotation);
 
       // 添加視覺標註到圖像
       const system = this.anatomicalSystems.systems.find(

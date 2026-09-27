@@ -3,7 +3,8 @@
    ================================================ */
 
 class RecordStatistics {
-  constructor() {
+  constructor(recordManager = null) {
+    this.recordManager = recordManager;
     this.dateFrom = null;
     this.dateTo = null;
     this.systemFilter = '';
@@ -12,19 +13,11 @@ class RecordStatistics {
   }
 
   /**
-   * 獲取所有病歷數據
+   * 獲取所有病歷數據（委派給 RecordManager）
    * @returns {Array} 病歷陣列
    */
   getAllRecords() {
-    try {
-      const recordIds = getFromLocalStorage('anatomy-record-ids', []);
-      return recordIds.map(id => 
-        getFromLocalStorage(`anatomy-record-${id}`)
-      ).filter(r => r !== null);
-    } catch (error) {
-      console.error('[RecordStatistics] 獲取病歷失敗:', error);
-      return [];
-    }
+    return this.recordManager ? this.recordManager.getAllRecords() : [];
   }
 
   /**
