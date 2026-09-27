@@ -255,16 +255,22 @@ defineAppMethods({
       // 收集表單數據
       const operationData = this.bodyOperationForm.getFormData();
 
+      const regionId = (this.currentBodyRegion && this.currentBodyRegion.id) || operationData.regionId;
+      const regionNameZh = (this.currentBodyRegion && this.currentBodyRegion.name) || this.getBodySubregionNameZh(regionId) || operationData.regionName;
+      const regionNameEn = (this.currentBodyRegion && this.currentBodyRegion.name_en) || this.getBodySubregionNameEn(regionId) || operationData.regionNameEn;
+      const regionSide = operationData.side || (this.currentBodyRegion && this.currentBodyRegion.side) || (typeof AnatomyMapping !== 'undefined' ? AnatomyMapping.bodySide(regionId) : 'mid');
+
       // 構建完整的操作記錄對象，與其他系統的記錄格式相容
       const annotation = {
         annotationId: generateUUID(),
         position: this.currentClickPosition || { x: 0, y: 0 },
 
         // 身體部位資訊
-        locationName: operationData.regionName,
-        locationNameEn: operationData.regionNameEn,
-        bodyRegionId: operationData.regionId,
-        side: operationData.side,
+        locationName: regionNameZh,
+        locationNameEn: regionNameEn,
+        bodyRegionId: regionId,
+        side: regionSide,
+        source: 'body-map',
 
         // 檢測元數據
         detectionConfidence: this.currentBodyRegion ? (this.currentBodyRegion.confidence || 1.0) : 1.0,
@@ -294,6 +300,9 @@ defineAppMethods({
 
       // 關閉模態並重新加載病例列表
       this.closeDiseaseModal();
+      if (typeof this.refreshBodyMapRecords === 'function') {
+        this.refreshBodyMapRecords();
+      }
       await this.loadAndDisplayRecords();
 
       // 顯示成功提示
@@ -302,6 +311,214 @@ defineAppMethods({
     } catch (error) {
       console.error('[saveBodyOperation] 保存失敗:', error);
       showNotification('保存失敗，請重試', 'error');
+    }
+  },
+
+  /**
+   * 取得所有身體子部位中英文名稱映射表
+   */
+  getBodySubregionNames() {
+    const names = {};
+    if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
+      this.bodySystemsData.bodyRegions.forEach(reg => {
+        if (Array.isArray(reg.subRegions)) {
+          reg.subRegions.forEach(sub => {
+            names[sub.id] = sub.nameZh;
+          });
+        }
+      });
+    }
+    return names;
+  },
+
+  /**
+   * 取得子部位中文名稱
+   */
+  getBodySubregionNameZh(subId) {
+    if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
+      for (const reg of this.bodySystemsData.bodyRegions) {
+        if (Array.isArray(reg.subRegions)) {
+          const found = reg.subRegions.find(s => s.id === subId);
+          if (found) return found.nameZh;
+        }
+      }
+    }
+    return null;
+  },
+
+  /**
+   * 取得子部位英文名稱
+   */
+  getBodySubregionNameEn(subId) {
+    if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
+      for (const reg of this.bodySystemsData.bodyRegions) {
+        if (Array.isArray(reg.subRegions)) {
+          const found = reg.subRegions.find(s => s.id === subId);
+          if (found) return found.nameEn;
+        }
+      }
+    }
+    return null;
+  },
+
+  /**
+   * 取得大區域底下的所有子部位 ID 清單
+   */
+  getSubregionsForRegion(regionId) {
+    if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
+      const reg = this.bodySystemsData.bodyRegions.find(r => r.id === regionId);
+      if (reg && Array.isArray(reg.subRegions)) {
+        return reg.subRegions.map(s => s.id);
+      }
+    }
+    return [];
+  },
+
+  /**
+   * 渲染寫實輪廓身體部位圖 SVG
+   */
+  async renderBodyMap() {
+    const container = document.getElementById('body-map-view');
+    if (!container || typeof BodyMap === 'undefined') return;
+
+    if (!this.bodySystemsData) {
+      await this.loadBodySystemsData();
+    }
+
+    if (!this.bodySex) {
+      try {
+        this.bodySex = localStorage.getItem('bodyMapSex') || 'female';
+      } catch (_) {
+        this.bodySex = 'female';
+      }
+    }
+
+    // 更新體型切換按鈕狀態
+    const sexButtons = document.querySelectorAll('#body-sex-toggle button');
+    sexButtons.forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.sex === this.bodySex));
+    });
+
+    const names = this.getBodySubregionNames();
+
+    this.bodyMap = BodyMap.render(container, {
+      sex: this.bodySex,
+      names: names,
+      onSelect: r => this.openBodyModal(r)
+    });
+
+    // 掛載 SvgViewport
+    if (typeof SvgViewport !== 'undefined' && this.bodyMap.svg) {
+      if (this.svgViewport) {
+        this.svgViewport.detach();
+      }
+      this.svgViewport = SvgViewport.attach(this.bodyMap.svg, {
+        minZoom: 1,
+        maxZoom: 4,
+        zoomStep: 1.25,
+        onZoomChange: (zoom) => {
+          const zoomLevelEl = document.getElementById('zoom-level');
+          if (zoomLevelEl) {
+            zoomLevelEl.textContent = `${Math.round(zoom * 100)}%`;
+          }
+        }
+      });
+      this.updateSvgZoomDisplay();
+    }
+
+    await this.refreshBodyMapRecords();
+  },
+
+  /**
+   * 切換身體體型 (female / male)
+   */
+  async switchBodySex(sex) {
+    if (sex !== 'female' && sex !== 'male') return;
+    this.bodySex = sex;
+    try {
+      localStorage.setItem('bodyMapSex', sex);
+    } catch (_) {}
+
+    const sexButtons = document.querySelectorAll('#body-sex-toggle button');
+    sexButtons.forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.sex === sex));
+    });
+
+    await this.renderBodyMap();
+  },
+
+  /**
+   * 放大臉部區域
+   */
+  focusFace() {
+    const head = document.querySelector('#body-map-view .region[data-region="head"][data-view="front"]');
+    if (head && this.svgViewport) {
+      this.svgViewport.focusOn(head, 3.5);
+    }
+  },
+
+  /**
+   * 開啟身體部位操作表單模態視窗
+   */
+  openBodyModal(r) {
+    const subId = r.id || r.key;
+    const nameZh = r.nameZh || this.getBodySubregionNameZh(subId) || subId;
+    const nameEn = this.getBodySubregionNameEn(subId) || subId;
+    const side = (typeof AnatomyMapping !== 'undefined') ? AnatomyMapping.bodySide(subId) : 'mid';
+
+    const region = {
+      id: subId,
+      name: nameZh,
+      name_en: nameEn,
+      side: side,
+      confidence: 1.0,
+      source: 'body-map'
+    };
+
+    this.currentBodyRegion = region;
+    this.openDiseaseModal(null, region);
+  },
+
+  /**
+   * 依據現有病歷更新身體部位圖的 has-record / has-region-record 標示
+   */
+  async refreshBodyMapRecords() {
+    if (!this.bodyMap || typeof this.bodyMap.setRecords !== 'function') return;
+
+    if (!this.bodyLegacyMap) {
+      try {
+        this.bodyLegacyMap = await loadJSON('data/body-legacy-map.json');
+      } catch (_) {
+        this.bodyLegacyMap = null;
+      }
+    }
+
+    if (!this.bodySystemsData) {
+      await this.loadBodySystemsData();
+    }
+
+    const records = this.recordManager ? this.recordManager.getAnnotationsBySystem('body') : [];
+    const countById = {};
+    const regionRecordSubIds = new Set();
+
+    records.forEach(rec => {
+      if (typeof AnatomyMapping !== 'undefined') {
+        const res = AnatomyMapping.resolveBody(rec, this.bodyLegacyMap);
+        if (res.subId) {
+          countById[res.subId] = (countById[res.subId] || 0) + 1;
+        } else if (res.regionId) {
+          const subIds = this.getSubregionsForRegion(res.regionId);
+          subIds.forEach(id => regionRecordSubIds.add(id));
+        }
+      } else {
+        const id = rec.bodyRegionId || rec.bodyPart;
+        if (id) countById[id] = (countById[id] || 0) + 1;
+      }
+    });
+
+    this.bodyMap.setRecords(countById);
+    if (typeof this.bodyMap.setRegionRecords === 'function') {
+      this.bodyMap.setRegionRecords(regionRecordSubIds);
     }
   },
 

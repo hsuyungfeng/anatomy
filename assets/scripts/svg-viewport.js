@@ -161,8 +161,9 @@
     /**
      * 將 viewBox 置中到指定元素，並放大使其至少佔可視寬度的 1/6
      * @param {Element|string} elementOrSelector
+     * @param {number} [customZoom]
      */
-    focusOn(elementOrSelector) {
+    focusOn(elementOrSelector, customZoom) {
       let el = elementOrSelector;
       if (typeof elementOrSelector === 'string') {
         el = this.svg.querySelector(`[data-region="${elementOrSelector}"], [data-structure="${elementOrSelector}"], #${elementOrSelector}, ${elementOrSelector}`)
@@ -181,10 +182,26 @@
       // 至少佔可視寬度的 1/6: visibleWidth <= bbox.width * 6
       // origW / zoom <= bbox.width * 6 ==> zoom >= origW / (bbox.width * 6)
       const requiredZoom = this.origViewBox.w / (bbox.width * 6);
-      const targetZoom = Math.min(this.maxZoom, Math.max(1, requiredZoom));
+      const targetZoom = customZoom ? Math.min(this.maxZoom, Math.max(1, customZoom)) : Math.min(this.maxZoom, Math.max(1, requiredZoom));
 
-      const cx = bbox.x + bbox.width / 2;
-      const cy = bbox.y + bbox.height / 2;
+      let cx = bbox.x + bbox.width / 2;
+      let cy = bbox.y + bbox.height / 2;
+
+      try {
+        const ctm = el.getCTM();
+        const svgCtm = this.svg.getCTM();
+        if (ctm && svgCtm && typeof this.svg.createSVGPoint === 'function') {
+          const pt = this.svg.createSVGPoint();
+          pt.x = cx;
+          pt.y = cy;
+          const screenPt = pt.matrixTransform(ctm);
+          const svgPt = screenPt.matrixTransform(svgCtm.inverse());
+          if (Number.isFinite(svgPt.x) && Number.isFinite(svgPt.y)) {
+            cx = svgPt.x;
+            cy = svgPt.y;
+          }
+        }
+      } catch (_) {}
 
       this.setZoom(targetZoom, cx, cy);
     }

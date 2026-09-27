@@ -204,6 +204,7 @@
                 </canvas>
                 <div id="odontogram-view" class="odontogram-view" hidden></div>
                 <div id="eye-diagram-view" class="anatomy-view" hidden></div>
+                <div id="body-map-view" class="anatomy-view body-map-view" hidden></div>
               </div>
 
               <!-- 圖像控制工具欄 -->
@@ -212,6 +213,13 @@
                   <button type="button" data-side="right" aria-pressed="true">右眼 OD</button>
                   <button type="button" data-side="left" aria-pressed="false">左眼 OS</button>
                 </div>
+
+                <div id="body-sex-toggle" class="seg" role="group" aria-label="體型" hidden>
+                  <button type="button" data-sex="female" aria-pressed="true">女性</button>
+                  <button type="button" data-sex="male" aria-pressed="false">男性</button>
+                </div>
+
+                <button type="button" id="focus-face-btn" class="btn" title="放大臉部" hidden>放大臉部</button>
 
                 <div class="image-toolbar__group">
                   <button
@@ -508,6 +516,7 @@
   <script src="assets/scripts/eye-structure-info.js"></script>
   <script src="assets/scripts/odontogram.js"></script>
   <script src="assets/scripts/eye-diagram.js"></script>
+  <script src="assets/scripts/body-map.js"></script>
   <script src="assets/scripts/svg-viewport.js"></script>
   <script src="assets/scripts/anatomy-mapping.js"></script>
   <script src="assets/scripts/app/app-core.js"></script>

@@ -28,6 +28,19 @@
   --eye-has-record: #bbf7d0; /* 淡綠色，對應眼睛代表色 #10b981 */
   --eye-hover: #e0e7ff;
   --eye-accent: var(--color-primary, #0066cc);
+
+  /* 身體系統變數 (淺色模式) */
+  --body-skin: #f1ddcc;
+  --body-skin-stroke: #9c7c66;
+  --body-skin-detail: #e6c6ae;
+  --body-brow: #6b4f3f;
+  --body-eye-white: #fbf7f2;
+  --body-lips: #d49488;
+  --body-cheek: rgba(226, 150, 140, .35);
+  --body-has-record: #fed7aa; /* 淡橙色，對應身體代表色 #f59e0b */
+  --body-has-region-record: #ffedd5; /* 更淡橙色 */
+  --body-hover: #fef3c7;
+  --body-accent: var(--color-primary, #0066cc);
 }
 
 [data-theme="dark"] {
@@ -56,6 +69,19 @@
   --eye-has-record: #065f46;
   --eye-hover: #29406b;
   --eye-accent: var(--color-primary, #4dabf7);
+
+  /* 身體系統變數 (深色模式) */
+  --body-skin: #c9ab94;
+  --body-skin-stroke: #6f5645;
+  --body-skin-detail: #b8977f;
+  --body-brow: #4a362b;
+  --body-eye-white: #e9e3dc;
+  --body-lips: #b0766c;
+  --body-cheek: rgba(190, 120, 110, .35);
+  --body-has-record: #9a3412;
+  --body-has-region-record: #7c2d12;
+  --body-hover: #451a03;
+  --body-accent: var(--color-primary, #4dabf7);
 }
 
 .anatomy-view,
@@ -195,3 +221,112 @@
   font-size: 0.85em;
   font-weight: bold;
 }
+
+/* 身體部位圖 SVG */
+.body-map {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  display: block;
+}
+
+.body-map .view-label,
+.body-map .side-label {
+  fill: var(--color-text-secondary, #5b6676);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.body-map .view-label {
+  font-weight: 600;
+  fill: var(--color-text-primary, #212529);
+}
+
+.body-map .region {
+  cursor: pointer;
+  outline: none;
+}
+
+.body-map .region .shape {
+  fill: var(--body-skin);
+  stroke: var(--body-skin-stroke);
+  stroke-width: .7;
+  stroke-opacity: .55;
+  transition: fill .12s, stroke .12s;
+}
+
+.body-map .region[data-region="abdomen-umbilical"] .shape,
+.body-map .region[data-region^="chest-breast"] .shape,
+.body-map .region[data-region^="groin-"] .shape,
+.body-map .region[data-region="head-nose"] .shape,
+.body-map .region[data-region^="head-ear"] .shape {
+  fill: var(--body-skin-detail);
+  stroke-opacity: .8;
+}
+
+.body-map .region[data-region^="head-eyebrow"] .shape {
+  fill: var(--body-brow);
+  stroke-opacity: 0;
+}
+
+.body-map .feature-eye .shape {
+  fill: var(--body-eye-white);
+  stroke: var(--body-brow);
+  stroke-opacity: 1;
+}
+
+.body-map .feature-lips .shape {
+  fill: var(--body-lips);
+  stroke-opacity: .8;
+}
+
+.body-map .feature-cheek .shape {
+  fill: var(--body-cheek);
+  stroke-opacity: 0;
+}
+
+.body-map .anatomy-lines path {
+  fill: none;
+  stroke: var(--body-skin-stroke);
+  stroke-width: 1;
+  opacity: .55;
+  pointer-events: none;
+  stroke-linecap: round;
+}
+
+.body-map .anatomy-lines .outline {
+  stroke-width: 1.6;
+  opacity: 1;
+}
+
+.body-map .region.is-hover .shape {
+  fill: var(--body-hover);
+}
+
+.body-map .region:focus-visible .shape {
+  stroke: var(--body-accent);
+  stroke-width: 2.5;
+  stroke-opacity: 1;
+}
+
+.body-map .region.is-selected .shape {
+  fill: var(--body-hover);
+  stroke: var(--body-accent);
+  stroke-width: 2;
+  stroke-opacity: 1;
+}
+
+/* 大區域舊記錄：使用外框虛線與淡色背景 */
+.body-map .region.has-region-record .shape {
+  fill: var(--body-has-region-record);
+  stroke: #d97706 !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 4 2 !important;
+  stroke-opacity: 1 !important;
+}
+
+/* 精確子部位記錄：填滿身體記錄色彩 */
+.body-map .region.has-record .shape {
+  fill: var(--body-has-record) !important;
+}
+

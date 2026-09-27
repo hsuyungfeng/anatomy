@@ -140,10 +140,11 @@ defineAppMethods({
                 <strong>${escapeHtml(structureInfo.name)}</strong>
                 <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
               </p>
-              ${structureInfo.confidence < 0.5 ?
+              ${structureInfo.id ? `<p class="structure-info__type">${escapeHtml(structureInfo.id)}</p>` : ''}
+              ${(!presetStructure && structureInfo.confidence < 0.5) ?
                 '<p class="structure-info__warning">⚠️ 檢測信心度較低，請重新點擊</p>' : ''}
             </div>
-            ${this.renderManualBodySelector()}
+            ${!presetStructure ? this.renderManualBodySelector() : ''}
           `;
 
         }
@@ -162,7 +163,7 @@ defineAppMethods({
       }
 
       locationDiv.innerHTML = locationText;
-      if (this.currentSystemId === 'body') {
+      if (this.currentSystemId === 'body' && !presetStructure) {
         this.setupManualBodySelector();
       }
     }

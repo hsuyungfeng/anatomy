@@ -298,6 +298,25 @@ class MedicalRecordApp {
       });
     });
 
+    // 身體體型切換 (女性/男性)
+    $$('#body-sex-toggle button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (typeof this.switchBodySex === 'function') {
+          this.switchBodySex(e.currentTarget.dataset.sex);
+        }
+      });
+    });
+
+    // 放大臉部按鈕
+    const focusFaceBtn = $('#focus-face-btn');
+    if (focusFaceBtn) {
+      focusFaceBtn.addEventListener('click', () => {
+        if (typeof this.focusFace === 'function') {
+          this.focusFace();
+        }
+      });
+    }
+
     // 縮放按鈕：在 SVG 啟用時交由 SvgViewport 處理，阻止冒泡到 ImageAnnotator
     const zoomInBtn = $('#zoom-in-btn');
     const zoomOutBtn = $('#zoom-out-btn');
@@ -553,6 +572,16 @@ class MedicalRecordApp {
         eyeSideToggle.hidden = (systemId !== 'eye');
       }
 
+      const bodySexToggle = document.getElementById('body-sex-toggle');
+      if (bodySexToggle) {
+        bodySexToggle.hidden = (systemId !== 'body');
+      }
+
+      const focusFaceBtn = document.getElementById('focus-face-btn');
+      if (focusFaceBtn) {
+        focusFaceBtn.hidden = (systemId !== 'body');
+      }
+
       const isTeeth = systemId === 'teeth' || systemId === 'primary_teeth';
       const odontogramView = document.getElementById('odontogram-view');
       const canvas = document.getElementById('image-canvas');
@@ -677,6 +706,17 @@ class MedicalRecordApp {
       annotations.forEach(anno => this.annotator.annotations.push(anno));
       if (typeof this.refreshEyeDiagramRecords === 'function') {
         this.refreshEyeDiagramRecords();
+      }
+      this.updateRecordList(systemId);
+      return;
+    }
+
+    if (systemId === 'body') {
+      this.annotator.clearAnnotations();
+      const annotations = this.recordManager.getAnnotationsBySystem(systemId);
+      annotations.forEach(anno => this.annotator.annotations.push(anno));
+      if (typeof this.refreshBodyMapRecords === 'function') {
+        this.refreshBodyMapRecords();
       }
       this.updateRecordList(systemId);
       return;
