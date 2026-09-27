@@ -174,7 +174,42 @@ class MedicalRecordApp {
    * 切換語言
    * @param {string} lang - 語言代碼
    */
-  switchLanguage(lang) {
+  /**
+   * 重繪目前系統的結構圖，並還原縮放、平移與選取狀態
+   * （語言切換時使用；選取以 silent 還原，不會開啟模態）
+   */
+  async rerenderDiagramKeepingState() {
+    const systems = {
+      teeth: { view: '#odontogram-view', selector: '.tooth.is-selected', render: 'renderOdontogram', diagram: 'odontogram' },
+      primary_teeth: { view: '#odontogram-view', selector: '.tooth.is-selected', render: 'renderOdontogram', diagram: 'odontogram' },
+      eye: { view: '#eye-diagram-view', selector: '.structure.is-selected', render: 'renderEyeDiagram', diagram: 'eyeDiagram' },
+      body: { view: '#body-map-view', selector: '.region.is-selected', render: 'renderBodyMap', diagram: 'bodyMap' }
+    };
+    const cfg = systems[this.currentSystemId];
+    if (!cfg || typeof this[cfg.render] !== 'function') return;
+
+    const viewportState = this.svgViewport ? this.svgViewport.getState() : null;
+    const selectedEl = document.querySelector(`${cfg.view} ${cfg.selector}`);
+    const selected = selectedEl ? { ...selectedEl.dataset } : null;
+
+    await this[cfg.render]();
+
+    if (viewportState && this.svgViewport) {
+      this.svgViewport.setState(viewportState);
+    }
+    const diagram = this[cfg.diagram];
+    if (selected && diagram && typeof diagram.select === 'function') {
+      if (cfg.diagram === 'odontogram') {
+        diagram.select(Number(selected.fdi), { silent: true });
+      } else if (cfg.diagram === 'eyeDiagram') {
+        diagram.select(selected.structure, { silent: true });
+      } else {
+        diagram.select(selected.region, selected.view, { silent: true });
+      }
+    }
+  }
+
+  async switchLanguage(lang) {
     this.currentLanguage = lang;
     setLanguage(lang);
 
@@ -183,21 +218,9 @@ class MedicalRecordApp {
       btn.classList.toggle('language-btn--active', btn.dataset.lang === lang);
     });
 
-    // 重新渲染當前 SVG 結構圖，立即套用新語言的標籤與 aria
+    // 重新渲染當前 SVG 結構圖，立即套用新語言的標籤與 aria（保留縮放、平移與選取）
     if (!this.isReferenceImageMode) {
-      if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-        if (typeof this.renderOdontogram === 'function') {
-          this.renderOdontogram();
-        }
-      } else if (this.currentSystemId === 'eye') {
-        if (typeof this.renderEyeDiagram === 'function') {
-          this.renderEyeDiagram();
-        }
-      } else if (this.currentSystemId === 'body') {
-        if (typeof this.renderBodyMap === 'function') {
-          this.renderBodyMap();
-        }
-      }
+      await this.rerenderDiagramKeepingState();
     }
 
     // 更新工具列按鈕文字

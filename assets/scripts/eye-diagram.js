@@ -298,7 +298,12 @@
 
     // ---------- 互動 ----------
     let selected = null;
-    function select(key) {
+    /**
+     * 選取結構
+     * @param {string} key
+     * @param {{silent?: boolean}} [opts] - silent 時只更新樣式、不觸發 onSelect（還原狀態用）
+     */
+    function select(key, opts = {}) {
       if (selected && groups.has(selected)) {
         groups.get(selected).forEach(g => {
           g.classList.remove('is-selected');
@@ -315,7 +320,7 @@
       const s = STRUCTURES[key] || { nameZh: key, nameEn: key };
       const nameZh = names[key]?.nameZh || s.nameZh;
       const nameEn = names[key]?.nameEn || s.nameEn;
-      if (typeof options.onSelect === 'function') {
+      if (!opts.silent && typeof options.onSelect === 'function') {
         options.onSelect({
           key,
           recordId: recordId(key, side),

@@ -72,8 +72,84 @@ def test_text_only_elements_still_translate(browser, base_url: str):
         context.close()
 
 
+VIEWS = {
+    "teeth": ("#odontogram-view", '.tooth[data-fdi="16"]', "fdi"),
+    "eye": ("#eye-diagram-view", '.structure[data-structure="lens"][tabindex]', "structure"),
+    "body": ("#body-map-view", '.region[data-region="knee-r"][data-view="front"]', "region"),
+}
+
+
+def test_language_switch_keeps_zoom_and_selection(browser, base_url: str):
+    """切換語言重繪結構圖時，縮放、平移與選取狀態都要保留（Phase 10-03 計畫要求）"""
+    context, page = _open(browser, base_url)
+    try:
+        for system, (view, target, attr) in VIEWS.items():
+            page.click(f'.system-tab[data-system="{system}"]')
+            page.wait_for_selector(f"{view} {target}")
+            page.focus(f"{view} {target}")
+            page.keyboard.press("Enter")
+            page.wait_for_selector('#disease-modal[aria-hidden="false"]')
+            page.click("#modal-cancel-btn")
+            page.click("#zoom-in-btn")
+            page.click("#zoom-in-btn")
+            before = page.evaluate(f"""() => ({{
+                viewBox: document.querySelector('{view} svg').getAttribute('viewBox'),
+                zoom: document.getElementById('zoom-level').textContent.trim(),
+                selected: [...document.querySelectorAll('{view} .is-selected')].map(e => e.dataset.{attr}).sort()
+            }})""")
+            assert before["selected"], f"{system}：選取後應有 .is-selected"
+
+            for lang in ["en", "zh"]:
+                _switch(page, lang)
+                after = page.evaluate(f"""() => ({{
+                    viewBox: document.querySelector('{view} svg').getAttribute('viewBox'),
+                    zoom: document.getElementById('zoom-level').textContent.trim(),
+                    selected: [...document.querySelectorAll('{view} .is-selected')].map(e => e.dataset.{attr}).sort()
+                }})""")
+                assert after == before, f"{system} 切換到 {lang} 後狀態改變：{before} → {after}"
+                assert page.locator('#disease-modal[aria-hidden="false"]').count() == 0, f"{system}：還原選取不應開啟模態"
+            page.click("#zoom-reset-btn")
+    finally:
+        context.close()
+
+
+def test_region_level_body_name_in_english(browser, base_url: str):
+    """點選身體大區域（頭部）時，英文模式應顯示 body-systems.json 的英文名稱，而不是 ID"""
+    context, page = _open(browser, base_url)
+    try:
+        _switch(page, "en")
+        page.click('.system-tab[data-system="body"]')
+        target = '#body-map-view .region[data-region="head"][data-view="front"]'
+        page.wait_for_selector(target)
+        page.focus(target)
+        page.keyboard.press("Enter")
+        page.wait_for_selector('#disease-modal[aria-hidden="false"]')
+        # 名稱欄位（<strong>）應是英文名稱；下方另有一行刻意顯示的病歷 ID（head），不在檢查範圍
+        name = page.inner_text("#modal-location strong").strip()
+        assert name == "Head", f"英文模式名稱應為 Head，目前：{name!r}"
+    finally:
+        context.close()
+
+
+def test_close_button_keeps_symbol(browser, base_url: str):
+    """模態關閉按鈕是符號按鈕：切換語言只改 aria-label，不把 ✕ 換成文字"""
+    context, page = _open(browser, base_url)
+    try:
+        for lang, label in [("en", "Close"), ("zh", "關閉")]:
+            _switch(page, lang)
+            symbol = page.text_content(".modal__close").strip()
+            aria = page.get_attribute(".modal__close", "aria-label")
+            assert symbol == "✕", f"{lang}：關閉按鈕應維持 ✕，目前：{symbol!r}"
+            assert aria == label, f"{lang}：aria-label 應為 {label}，目前：{aria!r}"
+    finally:
+        context.close()
+
+
 TESTS = [
     test_icon_buttons_keep_icons,
     test_language_switch_preserves_structure,
     test_text_only_elements_still_translate,
+    test_language_switch_keeps_zoom_and_selection,
+    test_region_level_body_name_in_english,
+    test_close_button_keeps_symbol,
 ]

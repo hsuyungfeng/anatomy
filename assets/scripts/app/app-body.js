@@ -89,6 +89,8 @@ defineAppMethods({
     const names = {};
     if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
       this.bodySystemsData.bodyRegions.forEach(reg => {
+        // 大區域（例如 head）也會出現在圖上，一併提供名稱
+        names[reg.id] = reg.nameZh;
         if (Array.isArray(reg.subRegions)) {
           reg.subRegions.forEach(sub => {
             names[sub.id] = sub.nameZh;
@@ -106,6 +108,8 @@ defineAppMethods({
     const names = {};
     if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
       this.bodySystemsData.bodyRegions.forEach(reg => {
+        // 大區域（例如 head）也會出現在圖上，一併提供名稱
+        names[reg.id] = reg.nameEn;
         if (Array.isArray(reg.subRegions)) {
           reg.subRegions.forEach(sub => {
             names[sub.id] = sub.nameEn;
@@ -122,6 +126,7 @@ defineAppMethods({
   getBodySubregionNameZh(subId) {
     if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
       for (const reg of this.bodySystemsData.bodyRegions) {
+        if (reg.id === subId) return reg.nameZh;
         if (Array.isArray(reg.subRegions)) {
           const found = reg.subRegions.find(s => s.id === subId);
           if (found) return found.nameZh;
@@ -137,6 +142,7 @@ defineAppMethods({
   getBodySubregionNameEn(subId) {
     if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
       for (const reg of this.bodySystemsData.bodyRegions) {
+        if (reg.id === subId) return reg.nameEn;
         if (Array.isArray(reg.subRegions)) {
           const found = reg.subRegions.find(s => s.id === subId);
           if (found) return found.nameEn;

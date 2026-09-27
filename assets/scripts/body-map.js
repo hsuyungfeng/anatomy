@@ -299,7 +299,13 @@
     figure('back', 390);
 
     let selected = null;
-    function select(id, view) {
+    /**
+     * 選取部位
+     * @param {string} id
+     * @param {string} [view]
+     * @param {{silent?: boolean}} [opts] - silent 時只更新樣式、不觸發 onSelect（還原狀態用）
+     */
+    function select(id, view, opts = {}) {
       if (selected && groups.has(selected)) {
         groups.get(selected).forEach(g => {
           g.classList.remove('is-selected');
@@ -314,7 +320,7 @@
         g.setAttribute('aria-pressed', 'true');
       });
       const nameZh = (names && names[id]) || NAMES[id] || id;
-      if (typeof options.onSelect === 'function') options.onSelect({ id, nameZh, view });
+      if (!opts.silent && typeof options.onSelect === 'function') options.onSelect({ id, nameZh, view });
     }
 
     svg.addEventListener('click', e => {

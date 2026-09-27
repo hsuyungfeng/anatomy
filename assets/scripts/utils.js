@@ -430,6 +430,14 @@ function updateLanguageUI(lang) {
     }
   });
 
+  // 符號按鈕（例如 ✕）只翻譯 aria-label，不改寫顯示的符號
+  $$('[data-aria-en]').forEach(el => {
+    if (!el.dataset.ariaZh) {
+      el.dataset.ariaZh = el.getAttribute('aria-label') || '';
+    }
+    el.setAttribute('aria-label', lang === 'en' ? el.dataset.ariaEn : el.dataset.ariaZh);
+  });
+
   // 更新 HTML lang 屬性
   document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
 

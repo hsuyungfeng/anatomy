@@ -110,6 +110,24 @@
     }
 
     /**
+     * 取得目前的縮放與可視範圍（重繪 SVG 前保存，重繪後以 setState 還原）
+     * @returns {{zoom: number, viewBox: {x: number, y: number, w: number, h: number}}}
+     */
+    getState() {
+      return { zoom: this.zoom, viewBox: { ...this.currentViewBox } };
+    }
+
+    /**
+     * 還原 getState 取得的狀態
+     * @param {{zoom: number, viewBox: {x: number, y: number, w: number, h: number}}} state
+     */
+    setState(state) {
+      if (!state || !state.viewBox) return;
+      const { w, h } = state.viewBox;
+      this.setZoom(state.zoom, state.viewBox.x + w / 2, state.viewBox.y + h / 2);
+    }
+
+    /**
      * 設定縮放倍率，錨定至 (cx, cy)
      * @param {number} newZoom
      * @param {number} [anchorX] - SVG 座標系的中心 X

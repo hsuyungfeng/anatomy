@@ -290,7 +290,12 @@
     });
 
     let selected = null;
-    function select(fdi) {
+    /**
+     * 選取牙齒
+     * @param {number} fdi
+     * @param {{silent?: boolean}} [opts] - silent 時只更新樣式、不觸發 onSelect（還原狀態用）
+     */
+    function select(fdi, opts = {}) {
       if (selected !== null && nodes.has(selected)) {
         nodes.get(selected).classList.remove('is-selected');
         nodes.get(selected).setAttribute('aria-pressed', 'false');
@@ -300,7 +305,7 @@
       if (!node) return;
       node.classList.add('is-selected');
       node.setAttribute('aria-pressed', 'true');
-      if (typeof options.onSelect === 'function') {
+      if (!opts.silent && typeof options.onSelect === 'function') {
         options.onSelect(teeth.find(t => t.fdi === fdi));
       }
     }
