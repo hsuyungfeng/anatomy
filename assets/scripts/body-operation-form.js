@@ -13,7 +13,7 @@ class BodyOperationForm {
       { id: 'medication', name: '用藥', name_en: 'Medication' },
       { id: 'other', name: '其他', name_en: 'Other' }
     ];
-    this.currentLanguage = 'zh';
+    this.currentLanguage = (typeof window !== 'undefined' && window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
   }
 
   /**
@@ -21,7 +21,7 @@ class BodyOperationForm {
    */
   init() {
     console.log('[BodyOperationForm] 初始化操作表單');
-    this.currentLanguage = document.documentElement.lang === 'en' ? 'en' : 'zh';
+    this.currentLanguage = (typeof window !== 'undefined' && window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
   }
 
   /**
@@ -30,9 +30,10 @@ class BodyOperationForm {
    * @returns {string} - 表單 HTML
    */
   generateFormHTML(region) {
+    this.currentLanguage = (typeof window !== 'undefined' && window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
     this.currentRegion = region;
     const sideDisplay = this.getSideDisplay(region.side);
-    const regionName = this.currentLanguage === 'zh' ? region.name : region.name_en;
+    const regionName = (this.currentLanguage === 'en' && region.name_en) ? region.name_en : region.name;
 
     return `
       <div class="body-operation-form">
@@ -134,6 +135,7 @@ class BodyOperationForm {
    * @returns {Object} - {valid: boolean, errors: []}
    */
   validateForm() {
+    this.currentLanguage = (typeof window !== 'undefined' && window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
     const errors = [];
     const operationType = document.querySelector('input[name="operation-type"]:checked');
     const description = document.querySelector('.operation-description').value.trim();

@@ -58,7 +58,7 @@ class MedicalRecordApp {
       dispatchEvent('app:ready');
     } catch (error) {
       console.error('應用初始化失敗:', error);
-      showNotification('應用初始化失敗', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.appInitFailed') : '應用初始化失敗', 'error');
     }
   }
   /**
@@ -124,7 +124,7 @@ class MedicalRecordApp {
       // Ctrl/Cmd + S: 儲存
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        showNotification('快捷鍵: 儲存', 'info');
+        showNotification(window.I18N ? window.I18N.t('notify.shortcutSave') : '快捷鍵: 儲存', 'info');
       }
 
       // Ctrl/Cmd + E: 導出
@@ -175,6 +175,7 @@ class MedicalRecordApp {
    * @param {string} lang - 語言代碼
    */
   switchLanguage(lang) {
+    this.currentLanguage = lang;
     setLanguage(lang);
 
     // 更新按鈕狀態
@@ -182,12 +183,40 @@ class MedicalRecordApp {
       btn.classList.toggle('language-btn--active', btn.dataset.lang === lang);
     });
 
+    // 重新渲染當前 SVG 結構圖，立即套用新語言的標籤與 aria
+    if (!this.isReferenceImageMode) {
+      if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+        if (typeof this.renderOdontogram === 'function') {
+          this.renderOdontogram();
+        }
+      } else if (this.currentSystemId === 'eye') {
+        if (typeof this.renderEyeDiagram === 'function') {
+          this.renderEyeDiagram();
+        }
+      } else if (this.currentSystemId === 'body') {
+        if (typeof this.renderBodyMap === 'function') {
+          this.renderBodyMap();
+        }
+      }
+    }
+
+    // 更新工具列按鈕文字
+    this.updateToolbarLanguage();
+
+    // 更新病歷清單標題與空訊息
+    if (typeof this.loadAndDisplayRecords === 'function') {
+      this.loadAndDisplayRecords();
+    }
+
+    // 更新統計面板顯示
+    if (this.recordStatistics && typeof this.recordStatistics.updateDisplay === 'function') {
+      this.recordStatistics.updateDisplay();
+    }
+
     // 更新表單顯示
     if (this.diseaseForm) {
       this.diseaseForm.updateLanguageDisplay();
     }
-
-    // 記錄語言變更
   }
   /**
    * 加載資料檔案
@@ -525,7 +554,7 @@ class MedicalRecordApp {
 
     } catch (error) {
       console.error(`切換牙齒系統失敗: ${teethType}`, error);
-      showNotification(`無法切換牙齒系統: ${error.message}`, 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.switchTeethFailed', { error: error.message }) : `無法切換牙齒系統: ${error.message}`, 'error');
     }
   }
   /**
@@ -572,15 +601,17 @@ class MedicalRecordApp {
         if (toggleBtn) {
           toggleBtn.hidden = false;
           toggleBtn.setAttribute('aria-pressed', 'false');
-          toggleBtn.textContent = '參考圖';
+          toggleBtn.textContent = window.I18N ? window.I18N.t('toolbar.reference') : '參考圖';
           if (systemId === 'primary_teeth') {
             toggleBtn.disabled = true;
-            toggleBtn.setAttribute('title', '乳牙沒有參考圖');
+            toggleBtn.setAttribute('title', window.I18N ? window.I18N.t('notify.primaryNoRef') : '乳牙沒有參考圖');
           } else {
             toggleBtn.disabled = false;
-            toggleBtn.setAttribute('title', '切換參考圖');
+            toggleBtn.setAttribute('title', (window.I18N && window.I18N.lang() === 'en') ? 'Toggle reference image' : '切換參考圖');
           }
         }
+
+        this.updateToolbarLanguage();
 
         if (isTeeth) {
           await this.renderOdontogram();
@@ -651,7 +682,7 @@ class MedicalRecordApp {
 
     } catch (error) {
       console.error(`加載系統圖像失敗: ${systemId}`, error);
-      showNotification(`無法加載圖像: ${error.message}`, 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.loadImageFailed', { error: error.message }) : `無法加載圖像: ${error.message}`, 'error');
     }
   }
   /**
@@ -716,7 +747,7 @@ class MedicalRecordApp {
    */
   handleAnnotationClick(e) {
     // 參考圖僅供檢視，不開啟模態
-    showNotification('參考圖僅供檢視，請切回結構圖點選', 'info');
+    showNotification(window.I18N ? window.I18N.t('notify.refImageTip') : '參考圖僅供檢視，請切回結構圖點選', 'info');
   }
 
   /**
@@ -757,11 +788,75 @@ class MedicalRecordApp {
   }
 
   /**
+   * 更新工具列各按鈕的語言顯示
+   */
+  updateToolbarLanguage() {
+    if (typeof I18N === 'undefined') return;
+
+    // 參考圖按鈕
+    const refToggle = document.getElementById('reference-image-toggle');
+    if (refToggle) {
+      if (this.isReferenceImageMode) {
+        refToggle.textContent = (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth')
+          ? I18N.t('toolbar.odontogram')
+          : I18N.t('toolbar.diagram');
+      } else {
+        refToggle.textContent = I18N.t('toolbar.reference');
+      }
+    }
+
+    // 放大臉部按鈕
+    const focusFaceBtn = document.getElementById('focus-face-btn');
+    if (focusFaceBtn) {
+      focusFaceBtn.textContent = I18N.t('toolbar.focusFace');
+      focusFaceBtn.title = I18N.t('toolbar.focusFace');
+    }
+
+    // 眼別切換
+    const eyeOD = document.querySelector('#eye-side-toggle button[data-side="right"]');
+    const eyeOS = document.querySelector('#eye-side-toggle button[data-side="left"]');
+    if (eyeOD) eyeOD.textContent = I18N.t('toolbar.eyeOD');
+    if (eyeOS) eyeOS.textContent = I18N.t('toolbar.eyeOS');
+    const eyeToggleGroup = document.getElementById('eye-side-toggle');
+    if (eyeToggleGroup) {
+      eyeToggleGroup.setAttribute('aria-label', I18N.lang() === 'en' ? 'Eye' : '眼別');
+    }
+
+    // 體型切換
+    const femaleBtn = document.querySelector('#body-sex-toggle button[data-sex="female"]');
+    const maleBtn = document.querySelector('#body-sex-toggle button[data-sex="male"]');
+    if (femaleBtn) femaleBtn.textContent = I18N.t('toolbar.female');
+    if (maleBtn) maleBtn.textContent = I18N.t('toolbar.male');
+    const bodyToggleGroup = document.getElementById('body-sex-toggle');
+    if (bodyToggleGroup) {
+      bodyToggleGroup.setAttribute('aria-label', I18N.lang() === 'en' ? 'Body Type' : '體型');
+    }
+
+    // 縮放按鈕的 aria-label 與 title
+    const zoomInBtn = document.getElementById('zoom-in-btn');
+    const zoomOutBtn = document.getElementById('zoom-out-btn');
+    const zoomResetBtn = document.getElementById('zoom-reset-btn');
+    const isEn = I18N.lang() === 'en';
+    if (zoomInBtn) {
+      zoomInBtn.setAttribute('aria-label', I18N.t('toolbar.zoomIn'));
+      zoomInBtn.title = isEn ? 'Zoom In (Scroll up)' : '放大 (Scroll up)';
+    }
+    if (zoomOutBtn) {
+      zoomOutBtn.setAttribute('aria-label', I18N.t('toolbar.zoomOut'));
+      zoomOutBtn.title = isEn ? 'Zoom Out (Scroll down)' : '縮小 (Scroll down)';
+    }
+    if (zoomResetBtn) {
+      zoomResetBtn.setAttribute('aria-label', I18N.t('toolbar.zoomReset'));
+      zoomResetBtn.title = isEn ? 'Reset to 100%' : '重置為 100%';
+    }
+  }
+
+  /**
    * 切換參考圖（點陣圖）與結構圖（SVG）
    */
   toggleReferenceImage() {
     if (this.currentSystemId === 'primary_teeth') {
-      showNotification('乳牙沒有參考圖', 'info');
+      showNotification(window.I18N ? window.I18N.t('notify.primaryNoRef') : '乳牙沒有參考圖', 'info');
       return;
     }
 
@@ -787,14 +882,16 @@ class MedicalRecordApp {
       }
       if (toggleBtn) {
         toggleBtn.setAttribute('aria-pressed', 'true');
-        toggleBtn.textContent = (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') ? '牙位圖' : '結構圖';
+        toggleBtn.textContent = (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth')
+          ? (window.I18N ? window.I18N.t('toolbar.odontogram') : '牙位圖')
+          : (window.I18N ? window.I18N.t('toolbar.diagram') : '結構圖');
       }
     } else {
       if (canvas) canvas.style.display = 'none';
       svgContainer.hidden = false;
       if (toggleBtn) {
         toggleBtn.setAttribute('aria-pressed', 'false');
-        toggleBtn.textContent = '參考圖';
+        toggleBtn.textContent = window.I18N ? window.I18N.t('toolbar.reference') : '參考圖';
       }
     }
   }

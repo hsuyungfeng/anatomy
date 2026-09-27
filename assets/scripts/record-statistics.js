@@ -339,11 +339,14 @@ class RecordStatistics {
     
     if (!container || !listContainer) return;
 
+    const isEn = window.I18N && window.I18N.lang() === 'en';
+
     if (results.length === 0) {
       container.hidden = false;
+      const emptyMsg = isEn ? 'No matching records found' : '沒有找到符合的病歷記錄';
       listContainer.innerHTML = `
         <div class="search-result-item__empty">
-          沒有找到符合的病歷記錄
+          ${escapeHtml(emptyMsg)}
         </div>
       `;
       return;
@@ -353,20 +356,23 @@ class RecordStatistics {
     results.forEach(result => {
       const record = result.record;
       const annotations = result.matchedAnnotations;
-      const patientIdDisplay = escapeHtml(record.patientId || '未命名病歷');
+      const patientIdDisplay = escapeHtml(record.patientId || (isEn ? 'Unnamed record' : '未命名病歷'));
       const diseaseText = annotations.map(a => {
         const loc = escapeHtml(a.locationName || '');
-        const dis = a.diseases?.map(d => escapeHtml(d.name)).join(', ') || '無疾病';
+        const dis = a.diseases?.map(d => escapeHtml(d.name)).join(', ') || (isEn ? 'No disease' : '無疾病');
         return `${loc}: ${dis}`;
       }).join(' | ');
+
+      const matchLabel = isEn ? `${annotations.length} matches` : `${annotations.length} 筆匹配`;
+      const createdAtLabel = isEn ? 'Created at' : '建立時間';
 
       html += `
         <div class="search-result-item">
           <div class="search-result-item__title">
-            ${patientIdDisplay} (${annotations.length} 筆匹配)
+            ${patientIdDisplay} (${matchLabel})
           </div>
           <div class="search-result-item__info">
-            建立時間: ${formatDateTime(new Date(record.createdAt))}
+            ${createdAtLabel}: ${formatDateTime(new Date(record.createdAt))}
           </div>
           <div class="search-result-item__diseases">
             ${diseaseText}

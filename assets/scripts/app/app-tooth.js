@@ -46,9 +46,25 @@ defineAppMethods({
       names = await this.getToothNames();
     }
 
+    const lang = (window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
+    const labels = window.I18N ? {
+      1: window.I18N.t('teeth.quadrant1'),
+      2: window.I18N.t('teeth.quadrant2'),
+      3: window.I18N.t('teeth.quadrant3'),
+      4: window.I18N.t('teeth.quadrant4'),
+      5: window.I18N.t('teeth.quadrant1'),
+      6: window.I18N.t('teeth.quadrant2'),
+      7: window.I18N.t('teeth.quadrant3'),
+      8: window.I18N.t('teeth.quadrant4'),
+      permanent: window.I18N.t('teeth.permanent'),
+      primary: window.I18N.t('teeth.primary')
+    } : {};
+
     this.odontogram = Odontogram.render(container, {
       dentition,
       names,
+      lang,
+      labels,
       onSelect: tooth => this.openToothModal(tooth)
     });
 

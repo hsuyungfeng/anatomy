@@ -91,11 +91,16 @@
     const names = options.names || {};
     container.textContent = '';
 
+    const lang = options.lang || (window.I18N ? window.I18N.lang() : 'zh');
+    const svgAria = options.ariaLabel || (lang === 'en'
+      ? `${side === 'right' ? 'Right Eye (OD)' : 'Left Eye (OS)'} Anatomy Diagram`
+      : `${side === 'right' ? '右眼' : '左眼'}結構圖`);
+
     const svg = el('svg', {
       viewBox: '0 0 1000 560',
       class: 'eye-diagram',
       role: 'group',
-      'aria-label': `${side === 'right' ? '右眼' : '左眼'}結構圖`
+      'aria-label': svgAria
     });
     container.appendChild(svg);
 
@@ -110,13 +115,14 @@
       const s = STRUCTURES[key] || { nameZh: key, nameEn: key };
       const nameZh = names[key]?.nameZh || s.nameZh;
       const nameEn = names[key]?.nameEn || s.nameEn;
+      const structureAria = lang === 'en' ? nameEn : `${nameZh}（${nameEn}）`;
       const g = el('g', {
         class: 'structure',
         'data-structure': key,
         'data-record-id': recordId(key, side),
         tabindex: 0,
         role: 'button',
-        'aria-label': `${nameZh}（${nameEn}）`,
+        'aria-label': structureAria,
         'aria-pressed': 'false'
       }, parent);
       groups.set(key, [g]);
@@ -255,18 +261,27 @@
     });
 
     // 剖面方向標示
+    const labels = options.labels || {};
     const label = (text, x, y, anchor = 'middle') => {
       const t = el('text', { x, y, class: 'axis-label', 'text-anchor': anchor }, svg);
       t.textContent = text;
     };
-    label('前（角膜側）', 110, 40, 'start');
-    label('後（視神經側）', 700, 40, 'end');
+    const defaultAnterior = lang === 'en' ? 'Front (Cornea)' : '前（角膜側）';
+    const defaultPosterior = lang === 'en' ? 'Back (Optic Nerve)' : '後（視神經側）';
+    label(labels.anterior || defaultAnterior, 110, 40, 'start');
+    label(labels.posterior || defaultPosterior, 700, 40, 'end');
 
     // ---------- 正面小圖：淚器 ----------
     const inset = el('g', { class: 'inset', transform: 'translate(740 330)' }, svg);
     el('rect', { x: 0, y: 0, width: 240, height: 210, rx: 10, class: 'inset-frame' }, inset);
     const insetTitle = el('text', { x: 12, y: 22, class: 'axis-label' }, inset);
-    insetTitle.textContent = `正面（${side === 'right' ? '右眼 OD' : '左眼 OS'}）`;
+    const defaultFrontTitle = lang === 'en'
+      ? `Front (${side === 'right' ? 'Right Eye OD' : 'Left Eye OS'})`
+      : `正面（${side === 'right' ? '右眼 OD' : '左眼 OS'}）`;
+    const frontLabel = side === 'right'
+      ? (labels.frontOD || labels.front || defaultFrontTitle)
+      : (labels.frontOS || labels.front || defaultFrontTitle);
+    insetTitle.textContent = frontLabel;
 
     // 觀看者視角：右眼的外側（顳側）在畫面左邊，左眼則相反
     const mirror = side === 'right' ? '' : 'translate(240 0) scale(-1 1)';

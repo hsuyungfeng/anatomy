@@ -74,11 +74,11 @@ defineAppMethods({
       await this.loadAndDisplayRecords();
 
       // 顯示成功提示
-      showNotification('身體系統操作記錄已成功保存', 'success');
+      showNotification(window.I18N ? window.I18N.t('notify.bodySaveSuccess') : '身體系統操作記錄已成功保存', 'success');
 
     } catch (error) {
       console.error('[saveBodyOperation] 保存失敗:', error);
-      showNotification('保存失敗，請重試', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.saveFailed') : '保存失敗，請重試', 'error');
     }
   },
 
@@ -92,6 +92,23 @@ defineAppMethods({
         if (Array.isArray(reg.subRegions)) {
           reg.subRegions.forEach(sub => {
             names[sub.id] = sub.nameZh;
+          });
+        }
+      });
+    }
+    return names;
+  },
+
+  /**
+   * 取得所有身體子部位英文名稱映射表
+   */
+  getBodySubregionNamesEn() {
+    const names = {};
+    if (this.bodySystemsData && Array.isArray(this.bodySystemsData.bodyRegions)) {
+      this.bodySystemsData.bodyRegions.forEach(reg => {
+        if (Array.isArray(reg.subRegions)) {
+          reg.subRegions.forEach(sub => {
+            names[sub.id] = sub.nameEn;
           });
         }
       });
@@ -168,10 +185,21 @@ defineAppMethods({
     });
 
     const names = this.getBodySubregionNames();
+    const namesEn = this.getBodySubregionNamesEn();
+    const lang = (window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
+    const labels = window.I18N ? {
+      front: window.I18N.t('body.front'),
+      back: window.I18N.t('body.back'),
+      patientRight: window.I18N.t('body.patientRight'),
+      patientLeft: window.I18N.t('body.patientLeft')
+    } : {};
 
     this.bodyMap = BodyMap.render(container, {
       sex: this.bodySex,
       names: names,
+      namesEn: namesEn,
+      lang: lang,
+      labels: labels,
       onSelect: r => this.openBodyModal(r)
     });
 

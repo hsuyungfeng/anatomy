@@ -18,10 +18,10 @@ defineAppMethods({
   exportRecord(format) {
     try {
       this.recordManager.downloadRecord(format);
-      showNotification(`已導出 ${format.toUpperCase()} 格式`, 'success');
+      showNotification(window.I18N ? window.I18N.t('notify.exportSuccess', { format: format.toUpperCase() }) : `已導出 ${format.toUpperCase()} 格式`, 'success');
     } catch (error) {
       console.error('導出失敗:', error);
-      showNotification('導出失敗', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.exportFailed') : '導出失敗', 'error');
     }
   },
 
@@ -35,7 +35,7 @@ defineAppMethods({
       if (this.recordStatistics) {
         this.recordStatistics.updateDisplay();
       }
-      showNotification('已清空所有病歷', 'info');
+      showNotification(window.I18N ? window.I18N.t('notify.clearAllSuccess') : '已清空所有病歷', 'info');
     }
   },
 
@@ -151,11 +151,14 @@ defineAppMethods({
    * @returns {string} 格式化後的時間字符串 (如 "2026-01-15 10:30:45")
    */
   formatTimestamp(isoString) {
+    if (!isoString) {
+      return window.I18N ? window.I18N.t('time.unknown') : '時間不明';
+    }
     try {
       const date = new Date(isoString);
 
       if (isNaN(date.getTime())) {
-        return '無效的時間戳';
+        return window.I18N ? window.I18N.t('time.unknown') : '時間不明';
       }
 
       const year = date.getFullYear();
@@ -168,7 +171,7 @@ defineAppMethods({
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     } catch (error) {
       console.error('[formatTimestamp] 格式化失敗:', error);
-      return '時間戳格式化錯誤';
+      return window.I18N ? window.I18N.t('time.unknown') : '時間不明';
     }
   },
 
@@ -258,7 +261,8 @@ defineAppMethods({
     container.innerHTML = '';
 
     if (!groupedRecords || groupedRecords.length === 0) {
-      container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
+      const emptyMsg = window.I18N ? window.I18N.t('list.empty') : '暫無病例記錄';
+      container.innerHTML = `<p class="empty-message">${escapeHtml(emptyMsg)}</p>`;
       return;
     }
 
@@ -379,7 +383,8 @@ defineAppMethods({
       if (!allRecords || allRecords.length === 0) {
         const container = document.getElementById('record-list-container');
         if (container) {
-          container.innerHTML = '<p class="empty-message">暫無病例記錄</p>';
+          const emptyMsg = window.I18N ? window.I18N.t('list.empty') : '暫無病例記錄';
+          container.innerHTML = `<p class="empty-message">${escapeHtml(emptyMsg)}</p>`;
         }
         return;
       }
@@ -398,17 +403,17 @@ defineAppMethods({
       if (!records || records.length === 0) {
         const container = document.getElementById('record-list-container');
         if (container) {
-          let systemName = '';
+          let systemKey = 'teeth';
           if (this.currentSystemId === 'eye') {
-            systemName = '眼睛';
+            systemKey = 'eye';
           } else if (this.currentSystemId === 'body') {
-            systemName = '身體';
+            systemKey = 'body';
           } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-            systemName = '牙齒';
-          } else {
-            systemName = '目前';
+            systemKey = 'teeth';
           }
-          container.innerHTML = `<p class="empty-message">暫無${systemName}系統的病例記錄</p>`;
+          const sysName = window.I18N ? window.I18N.t(`system.${systemKey}`) : (this.currentSystemId === 'eye' ? '眼睛' : this.currentSystemId === 'body' ? '身體' : '牙齒');
+          const emptySysMsg = window.I18N ? window.I18N.t('list.emptySystem', { system: sysName }) : `暫無${sysName}系統的病例記錄`;
+          container.innerHTML = `<p class="empty-message">${escapeHtml(emptySysMsg)}</p>`;
         }
         return;
       }
@@ -422,7 +427,8 @@ defineAppMethods({
       console.error('[loadAndDisplayRecords] 加載失敗:', error);
       const container = document.getElementById('record-list-container');
       if (container) {
-        container.innerHTML = '<p class="empty-message">病例加載失敗</p>';
+        const failMsg = window.I18N ? window.I18N.t('list.loadFailed') : '病例加載失敗';
+        container.innerHTML = `<p class="empty-message">${escapeHtml(failMsg)}</p>`;
       }
     }
   },

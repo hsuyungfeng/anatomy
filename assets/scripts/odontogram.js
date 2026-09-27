@@ -112,6 +112,29 @@
   /**
    * 建立一顆牙齒的描述資料
    */
+  const PRIMARY_NAMES_EN = {
+    51: 'Upper Right Primary Central Incisor',
+    52: 'Upper Right Primary Lateral Incisor',
+    53: 'Upper Right Primary Canine',
+    54: 'Upper Right Primary First Molar',
+    55: 'Upper Right Primary Second Molar',
+    61: 'Upper Left Primary Central Incisor',
+    62: 'Upper Left Primary Lateral Incisor',
+    63: 'Upper Left Primary Canine',
+    64: 'Upper Left Primary First Molar',
+    65: 'Upper Left Primary Second Molar',
+    71: 'Lower Left Primary Central Incisor',
+    72: 'Lower Left Primary Lateral Incisor',
+    73: 'Lower Left Primary Canine',
+    74: 'Lower Left Primary First Molar',
+    75: 'Lower Left Primary Second Molar',
+    81: 'Lower Right Primary Central Incisor',
+    82: 'Lower Right Primary Lateral Incisor',
+    83: 'Lower Right Primary Canine',
+    84: 'Lower Right Primary First Molar',
+    85: 'Lower Right Primary Second Molar'
+  };
+
   function describeTooth(fdi, positions, names = {}) {
     const q = Math.floor(fdi / 10);
     const p = fdi % 10;
@@ -119,7 +142,8 @@
     const quad = QUADRANTS[q];
     const custom = names[fdi] || {};
     const nameZh = custom.nameZh || `${quad.name}${pos.name}`;
-    const nameEn = custom.name || custom.nameEn || '';
+    const defaultEn = q >= 5 ? (PRIMARY_NAMES_EN[fdi] || `Primary Tooth ${fdi}`) : `Tooth ${fdi}`;
+    const nameEn = custom.name || custom.nameEn || defaultEn;
     return {
       fdi,
       universal: toUniversal(fdi),
@@ -140,6 +164,8 @@
    * @param {object} options
    * @param {'permanent'|'primary'} options.dentition - 永久牙或乳牙
    * @param {object} options.names - 客製化名稱對應表 { [fdi]: { nameZh, name, nameEn } }
+   * @param {object} [options.labels] - 象限標籤對照表
+   * @param {string} [options.lang] - 語言代碼 ('zh' 或 'en')
    * @param {function} options.onSelect - 選取牙齒時的回呼，參數為牙齒描述資料
    * @returns {{svg: SVGElement, teeth: object[], select: function, setCondition: function, setRecords: function}}
    */
@@ -150,6 +176,7 @@
     const count = primary ? 5 : 8;
     const quads = primary ? [5, 6, 7, 8] : [1, 2, 3, 4];
     const customNames = options.names || {};
+    const lang = options.lang || (window.I18N ? window.I18N.lang() : 'zh');
 
     const gap = primary ? 8 : 6;
     const midGap = primary ? 30 : 24;
@@ -161,11 +188,12 @@
     const lowerOcc = primary ? 215 : 272;
 
     container.textContent = '';
+    const svgAria = options.ariaLabel || (lang === 'en' ? (primary ? 'Primary Teeth Odontogram' : 'Permanent Teeth Odontogram') : (primary ? '乳牙牙位圖' : '永久牙牙位圖'));
     const svg = el('svg', {
       viewBox: `0 0 ${VB_W} ${VB_H}`,
       class: 'odontogram',
       role: 'group',
-      'aria-label': primary ? '乳牙牙位圖' : '永久牙牙位圖'
+      'aria-label': svgAria
     }, container);
 
     // 參考線：中線與咬合平面
@@ -174,14 +202,31 @@
     el('line', { x1: startX - 20, y1: (upperOcc + lowerOcc) / 2, x2: VB_W - startX + 20, y2: (upperOcc + lowerOcc) / 2, class: 'guide' }, svg);
 
     // 象限標籤
+    const labels = options.labels || {};
+    const quadrantNamesEn = {
+      1: 'Upper Right (1)',
+      2: 'Upper Left (2)',
+      3: 'Lower Left (3)',
+      4: 'Lower Right (4)',
+      5: 'Upper Right (5)',
+      6: 'Upper Left (6)',
+      7: 'Lower Left (7)',
+      8: 'Lower Right (8)'
+    };
+    const getQLabel = (q) => {
+      if (labels[q]) return labels[q];
+      if (labels[`quadrant${q}`]) return labels[`quadrant${q}`];
+      if (lang === 'en') return quadrantNamesEn[q] || String(q);
+      return `${QUADRANTS[q].name}（${q}）`;
+    };
     const qLabel = (text, x, y, anchor) => {
       const t = el('text', { x, y, class: 'quadrant-label', 'text-anchor': anchor }, svg);
       t.textContent = text;
     };
-    qLabel(`${QUADRANTS[quads[0]].name}（${quads[0]}）`, startX, 24, 'start');
-    qLabel(`${QUADRANTS[quads[1]].name}（${quads[1]}）`, VB_W - startX, 24, 'end');
-    qLabel(`${QUADRANTS[quads[3]].name}（${quads[3]}）`, startX, VB_H - 10, 'start');
-    qLabel(`${QUADRANTS[quads[2]].name}（${quads[2]}）`, VB_W - startX, VB_H - 10, 'end');
+    qLabel(getQLabel(quads[0]), startX, 24, 'start');
+    qLabel(getQLabel(quads[1]), VB_W - startX, 24, 'end');
+    qLabel(getQLabel(quads[3]), startX, VB_H - 10, 'start');
+    qLabel(getQLabel(quads[2]), VB_W - startX, VB_H - 10, 'end');
 
     const teeth = [];
     const nodes = new Map();
@@ -204,13 +249,17 @@
         const pos = positions[fdi % 10];
         const flip = row.arch === 'lower' ? ' scale(1,-1)' : '';
 
+        const toothAria = lang === 'en'
+          ? `${info.nameEn}, FDI ${fdi}, Universal ${info.universal}`
+          : `${info.nameZh}，FDI ${fdi}，Universal ${info.universal}`;
+
         const g = el('g', {
           class: 'tooth',
           'data-fdi': fdi,
           'data-universal': info.universal,
           tabindex: 0,
           role: 'button',
-          'aria-label': `${info.nameZh}，FDI ${fdi}，Universal ${info.universal}`,
+          'aria-label': toothAria,
           'aria-pressed': 'false'
         }, svg);
 
@@ -292,7 +341,9 @@
       nodes.forEach((node, fdi) => {
         const count = countByFdi[fdi] || 0;
         const info = teeth.find(t => t.fdi === fdi);
-        const baseAria = info ? `${info.nameZh}，FDI ${fdi}，Universal ${info.universal}` : `FDI ${fdi}`;
+        const baseAria = info
+          ? (lang === 'en' ? `${info.nameEn}, FDI ${fdi}, Universal ${info.universal}` : `${info.nameZh}，FDI ${fdi}，Universal ${info.universal}`)
+          : `FDI ${fdi}`;
 
         // 移除舊的筆數標籤
         const oldBadge = node.querySelector('.tooth-record-badge');
@@ -301,7 +352,7 @@
         if (count > 0) {
           node.classList.add('has-record');
           node.setAttribute('data-record-count', String(count));
-          node.setAttribute('aria-label', `${baseAria}，${count} 筆病歷`);
+          node.setAttribute('aria-label', lang === 'en' ? `${baseAria}, ${count} records` : `${baseAria}，${count} 筆病歷`);
 
           // 在 tooth-label 旁邊加上筆數文字
           const label = node.querySelector('.tooth-label');

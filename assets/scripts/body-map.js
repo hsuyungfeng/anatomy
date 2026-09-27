@@ -123,8 +123,13 @@
     const sex = options.sex || 'female';
     const male = sex === 'male';
     const names = options.names || NAMES;
+    const namesEn = options.namesEn || {};
+    const labels = options.labels || {};
+    const lang = options.lang || (window.I18N ? window.I18N.lang() : 'zh');
+
     container.textContent = '';
-    const svg = el('svg', { viewBox: '0 0 760 690', class: 'body-map', role: 'group', 'aria-label': '身體部位圖（正面與背面）' });
+    const svgAria = options.ariaLabel || (lang === 'en' ? 'Body Map (Front and Back)' : '身體部位圖（正面與背面）');
+    const svg = el('svg', { viewBox: '0 0 760 690', class: 'body-map', role: 'group', 'aria-label': svgAria });
     container.appendChild(svg);
     const defs = el('defs', {}, svg);
     const groups = new Map();
@@ -134,7 +139,7 @@
       const cx = 180;
       const root = el('g', { transform: `translate(${offsetX} 22)`, class: `figure figure--${view}` }, svg);
       const title = el('text', { x: cx, y: -4, 'text-anchor': 'middle', class: 'view-label' }, root);
-      title.textContent = view === 'front' ? '正面' : '背面';
+      title.textContent = view === 'front' ? (labels.front || '正面') : (labels.back || '背面');
 
       const outline = fullOutline(cx, sex);
       const clipId = `body-clip-${view}-${uid}`;
@@ -146,13 +151,16 @@
 
       function add(id, halfPath, { clip = true, mirror = false, cls = '', hitRect = null } = {}) {
         const nameZh = (names && names[id]) || NAMES[id] || id;
+        const nameEn = namesEn[id] || id;
+        const viewLabel = view === 'front' ? (labels.front || (lang === 'en' ? 'Front' : '正面')) : (labels.back || (lang === 'en' ? 'Back' : '背面'));
+        const regionAria = lang === 'en' ? `${nameEn} (${viewLabel})` : `${nameZh}（${view === 'front' ? '正面' : '背面'}）`;
         const g = el('g', {
           class: `region ${cls}`.trim(),
           'data-region': id,
           'data-view': view,
           tabindex: 0,
           role: 'button',
-          'aria-label': `${nameZh}（${view === 'front' ? '正面' : '背面'}）`,
+          'aria-label': regionAria,
           'aria-pressed': 'false'
         }, root);
         const transform = mirror ? `translate(${cx} 0) scale(-1 1)` : `translate(${cx} 0)`;
@@ -281,8 +289,10 @@
         const t = el('text', { x, y: 664, 'text-anchor': 'middle', class: 'side-label' }, root);
         t.textContent = text;
       };
-      tag(view === 'front' ? '病人右側' : '病人左側', 70);
-      tag(view === 'front' ? '病人左側' : '病人右側', 290);
+      const patientRight = labels.patientRight || (lang === 'en' ? 'Patient Right' : '病人右側');
+      const patientLeft = labels.patientLeft || (lang === 'en' ? 'Patient Left' : '病人左側');
+      tag(view === 'front' ? patientRight : patientLeft, 70);
+      tag(view === 'front' ? patientLeft : patientRight, 290);
     }
 
     figure('front', 10);
