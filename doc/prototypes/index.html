@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>解剖結構圖原型</title>
+  <style>
+    :root {
+      --bg: #f5f7f8;
+      --surface: #ffffff;
+      --text: #1b2430;
+      --muted: #5b6676;
+      --border: #d8dee6;
+      --accent: #1f6feb;
+      --hover: #d7e6ff;
+      --record: #f2b705;
+      --guide: #c9cfd8;
+      /* 牙齒 */
+      --crown: #fbfaf5; --crown-stroke: #8a8f99; --root: #efe6d2; --root-stroke: #a39578;
+      --caries: #d9483b; --root-canal: #8b5cf6;
+      /* 眼睛 */
+      --sclera: #f4f1ea; --choroid: #9c4a3f; --retina: #e9a07a; --vitreous: #eaf3f7; --lens: #dfeef9;
+      --iris: #5b7fa6; --pupil: #1d2330; --cornea: #cfe6f3; --chamber: #f1f8fc; --muscle: #c8645a;
+      --nerve: #f0d9a8; --artery: #d23c3c; --vein: #3c5fd2; --gland: #e6b7c4; --eyelid: #e8c2a8; --conj: #f6d4d4;
+      /* 身體 */
+      --skin: #f1ddcc; --skin-stroke: #b89a83; --skin-detail: #e5c7b1;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #11151b; --surface: #1a2029; --text: #e5e9ef; --muted: #9aa4b3; --border: #2c3340;
+        --accent: #6ea0ff; --hover: #2a4270; --record: #f5c542; --guide: #3a4150;
+        --crown: #e9e6dc; --crown-stroke: #6f7580; --root: #b9ab8c; --root-stroke: #8c7e62;
+        --sclera: #d9d4c8; --vitreous: #2a3642; --chamber: #26323d; --lens: #6f8ca3; --cornea: #7ea6bd;
+        --skin: #c9ab94; --skin-stroke: #8f735e; --skin-detail: #b8977f;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #11151b; --surface: #1a2029; --text: #e5e9ef; --muted: #9aa4b3; --border: #2c3340;
+      --accent: #6ea0ff; --hover: #2a4270; --record: #f5c542; --guide: #3a4150;
+      --crown: #e9e6dc; --crown-stroke: #6f7580; --root: #b9ab8c; --root-stroke: #8c7e62;
+      --sclera: #d9d4c8; --vitreous: #2a3642; --chamber: #26323d; --lens: #6f8ca3; --cornea: #7ea6bd;
+      --skin: #c9ab94; --skin-stroke: #8f735e; --skin-detail: #b8977f;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.5;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding-block: 24px 48px; padding-inline: 16px; }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; text-wrap: balance; }
+    .lead { color: var(--muted); margin: 0 0 16px; max-width: 70ch; }
+
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
+    .tabs button {
+      font: inherit; border: 0; background: none; color: var(--muted); cursor: pointer;
+      padding: 10px 16px; border-bottom: 3px solid transparent; margin-bottom: -1px;
+    }
+    .tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tabs button:focus-visible, .seg button:focus-visible, .actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .seg button { border: 0; background: var(--surface); color: var(--text); padding: 7px 14px; font: inherit; cursor: pointer; }
+    .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 16px; }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .chart { overflow-x: auto; }
+    .chart svg { width: 100%; height: auto; display: block; }
+    .odontogram { min-width: 560px; }
+    .eye-diagram { min-width: 560px; }
+    .body-map { min-width: 520px; max-height: 78vh; }
+
+    .info h2 { font-size: 1rem; margin: 0 0 8px; }
+    .info dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 12px; }
+    .info dt { color: var(--muted); }
+    .info dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-all; }
+    .empty { color: var(--muted); margin: 0 0 12px; }
+    .badge { display: inline-block; font-size: .75rem; padding: 1px 8px; border-radius: 99px; background: var(--hover); color: var(--text); }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .actions button {
+      font: inherit; padding: 7px 12px; border-radius: 8px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    }
+    .actions button:disabled { opacity: .45; cursor: not-allowed; }
+    .note { color: var(--muted); font-size: .85rem; margin: 12px 0 0; }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: .85rem; margin-top: 8px; }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+
+    /* 共用 SVG 文字與狀態 */
+    .quadrant-label, .axis-label, .view-label, .side-label { fill: var(--muted); font-size: 14px; }
+    .view-label { font-weight: 600; fill: var(--text); }
+    .guide { stroke: var(--guide); stroke-width: 1; stroke-dasharray: 4 4; }
+    .guide--mid { stroke-dasharray: none; }
+
+    /* 牙齒 */
+    .tooth-label { fill: var(--muted); font-size: 13px; pointer-events: none; }
+    .tooth { cursor: pointer; outline: none; }
+    .tooth .hit { fill: transparent; }
+    .tooth .crown { fill: var(--crown); stroke: var(--crown-stroke); stroke-width: 1.4; }
+    .tooth .root { fill: var(--root); stroke: var(--root-stroke); stroke-width: 1.2; }
+    .tooth .missing-mark { display: none; }
+    .tooth:hover .crown, .tooth:hover .root { fill: var(--hover); }
+    .tooth:focus-visible .crown { stroke: var(--accent); stroke-width: 2.5; }
+    .tooth.is-selected .crown, .tooth.is-selected .root { stroke: var(--accent); stroke-width: 3; }
+    .tooth.is-selected .tooth-label { fill: var(--accent); font-weight: 700; }
+    .tooth.has-record .crown { fill: var(--record); }
+
+    /* 眼睛 */
+    .structure { cursor: pointer; outline: none; }
+    .structure path, .structure rect, .structure ellipse, .structure circle { stroke: rgba(40, 40, 40, .45); stroke-width: 1; transition: filter .12s; }
+    .fill-sclera { fill: var(--sclera); } .fill-choroid { fill: var(--choroid); } .fill-retina { fill: var(--retina); }
+    .fill-vitreous { fill: var(--vitreous); } .fill-lens { fill: var(--lens); } .fill-iris { fill: var(--iris); }
+    .fill-dilator { fill: #3f5f86; } .fill-pupil { fill: var(--pupil); } .fill-cornea { fill: var(--cornea); }
+    .fill-chamber { fill: var(--chamber); } .fill-muscle { fill: var(--muscle); } .fill-nerve { fill: var(--nerve); }
+    .fill-ciliary { fill: #b86a5a; } .fill-ciliary-muscle { fill: #8f3f33; } .fill-conjunctiva { fill: var(--conj); }
+    .fill-disc { fill: #f6e7b0; } .fill-macula { fill: #c9812f; } .fill-eyelid { fill: var(--eyelid); }
+    .fill-hyaloid { fill: transparent; stroke-dasharray: 4 3 !important; }
+    .fill-gland { fill: var(--gland); } .fill-duct { fill: var(--gland); } .fill-sclera-front { fill: var(--sclera); stroke: var(--muted); }
+    .vessel { fill: none; stroke-width: 2.5 !important; } .fill-artery { stroke: var(--artery) !important; } .fill-vein { stroke: var(--vein) !important; }
+    .vessel-hit { fill: none; stroke: transparent !important; stroke-width: 12 !important; }
+    .brow { fill: none; stroke: var(--muted); stroke-width: 3; stroke-linecap: round; }
+    .inset-frame { fill: var(--bg); stroke: var(--border); }
+    .structure.is-hover > * { filter: brightness(1.12) saturate(1.15); stroke: var(--accent); stroke-width: 2; }
+    .structure.is-selected > * { stroke: var(--accent) !important; stroke-width: 3 !important; }
+    .structure.is-selected .vessel-hit { stroke: transparent !important; }
+    .structure:focus-visible > * { stroke: var(--accent); stroke-width: 2.5; }
+    .structure.has-record > :not(.vessel):not(.vessel-hit) { fill: var(--record); }
+
+    /* 身體 */
+    .region { cursor: pointer; outline: none; }
+    .region .shape { fill: var(--skin); stroke: var(--skin-stroke); stroke-width: 1.2; transition: fill .12s; }
+    .region[data-region^="head-"] .shape, .region[data-region="abdomen-umbilical"] .shape,
+    .region[data-region^="chest-breast"] .shape, .region[data-region^="groin-"] .shape,
+    .region[data-region^="heel"] .shape, .region[data-region^="axilla"] .shape { fill: var(--skin-detail); }
+    .region:hover .shape { fill: var(--hover); }
+    .region:focus-visible .shape { stroke: var(--accent); stroke-width: 2.5; }
+    .region.is-selected .shape { fill: var(--hover); stroke: var(--accent); stroke-width: 2.5; }
+    .region.has-record .shape { fill: var(--record); }
+
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>解剖結構圖原型</h1>
+    <p class="lead">牙齒、眼睛、身體三張結構化 SVG 圖。每個結構都是獨立元素，點擊直接取得它的 ID，不需要座標換算。可以用滑鼠，或用 Tab 移動、Enter 選取。</p>
+
+    <div class="tabs" role="tablist" aria-label="系統">
+      <button type="button" role="tab" id="tab-teeth" data-panel="teeth" aria-selected="false">牙齒（已整合）</button>
+      <button type="button" role="tab" id="tab-eye" data-panel="eye" aria-selected="true">眼睛（新原型）</button>
+      <button type="button" role="tab" id="tab-body" data-panel="body" aria-selected="false">身體（新原型）</button>
+    </div>
+
+    <div class="toolbar" id="toolbar"></div>
+
+    <div class="layout">
+      <section class="card chart" id="chart" aria-label="結構圖"></section>
+      <aside class="card info" aria-live="polite">
+        <h2>選取的結構</h2>
+        <div id="info"><p class="empty">點擊圖上任一個結構</p></div>
+        <h2>模擬病歷標示</h2>
+        <div class="actions">
+          <button type="button" id="mark-btn" disabled>標示為有病歷</button>
+          <button type="button" id="unmark-btn" disabled>取消標示</button>
+        </div>
+        <div class="legend"><span style="--c: var(--record)">有病歷</span><span style="--c: var(--hover)">選取中</span></div>
+        <p class="note" id="note"></p>
+      </aside>
+    </div>
+  </main>
+
+  <script src="odontogram/odontogram.js"></script>
+  <script src="eye/eye-diagram.js"></script>
+  <script src="body/body-map.js"></script>
+  <script>
+    (function () {
+      const chartEl = document.getElementById('chart');
+      const infoEl = document.getElementById('info');
+      const toolbar = document.getElementById('toolbar');
+      const noteEl = document.getElementById('note');
+      const markBtn = document.getElementById('mark-btn');
+      const unmarkBtn = document.getElementById('unmark-btn');
+
+      const state = { panel: 'eye', dentition: 'permanent', side: 'right', sex: 'female' };
+      const marks = { teeth: {}, eye: {}, body: {} };
+      let chart = null;
+      let current = null;
+
+      const NOTES = {
+        teeth: '牙齒系統已在 Phase 8 整合進 app，這裡僅供對照。',
+        eye: '病歷 ID 沿用既有格式：角膜、虹膜、水晶體、視網膜、淚腺依左右眼區分（例如 right-eye-cornea）；其他結構不分左右。標示「新增」的結構是既有資料沒有的。',
+        body: 'ID 與 data/body-systems.json 的 58 個子部位一致。正面圖病人右側在畫面左邊，背面圖則相反。外生殖器依性別切換。'
+      };
+
+      function showInfo(rows) {
+        infoEl.innerHTML = '';
+        const dl = document.createElement('dl');
+        rows.forEach(([k, v]) => {
+          const dt = document.createElement('dt'); dt.textContent = k;
+          const dd = document.createElement('dd');
+          if (v instanceof Node) dd.appendChild(v); else dd.textContent = v;
+          dl.append(dt, dd);
+        });
+        infoEl.appendChild(dl);
+        markBtn.disabled = false;
+        unmarkBtn.disabled = false;
+      }
+
+      function seg(label, key, options) {
+        const wrap = document.createElement('div');
+        wrap.className = 'seg'; wrap.setAttribute('role', 'group'); wrap.setAttribute('aria-label', label);
+        options.forEach(([value, text]) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.textContent = text;
+          b.setAttribute('aria-pressed', String(state[key] === value));
+          b.addEventListener('click', () => { state[key] = value; draw(); });
+          wrap.appendChild(b);
+        });
+        toolbar.appendChild(wrap);
+      }
+
+      function applyMarks() {
+        const m = marks[state.panel];
+        if (state.panel === 'teeth') {
+          chartEl.querySelectorAll('.tooth').forEach(t => t.classList.toggle('has-record', !!m[t.dataset.fdi]));
+        } else {
+          chart.setRecords(m);
+        }
+      }
+
+      function draw() {
+        current = null;
+        toolbar.textContent = '';
+        infoEl.innerHTML = '<p class="empty">點擊圖上任一個結構</p>';
+        markBtn.disabled = true; unmarkBtn.disabled = true;
+        noteEl.textContent = NOTES[state.panel];
+
+        if (state.panel === 'teeth') {
+          seg('齒列', 'dentition', [['permanent', '永久牙（32）'], ['primary', '乳牙（20）']]);
+          chart = Odontogram.render(chartEl, {
+            dentition: state.dentition,
+            onSelect: t => { current = String(t.fdi); showInfo([['名稱', t.nameZh], ['FDI', t.fdi], ['Universal', t.universal], ['牙型', t.typeName]]); }
+          });
+        } else if (state.panel === 'eye') {
+          seg('眼別', 'side', [['right', '右眼 OD'], ['left', '左眼 OS']]);
+          chart = EyeDiagram.render(chartEl, {
+            side: state.side,
+            onSelect: s => {
+              current = s.key;
+              const id = document.createElement('code'); id.textContent = s.recordId;
+              const rows = [['名稱', s.nameZh], ['英文', s.nameEn], ['眼別', s.side === 'right' ? '右眼 OD' : '左眼 OS'], ['病歷 ID', id]];
+              if (s.isNew) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = '新增結構'; rows.push(['狀態', b]); }
+              showInfo(rows);
+            }
+          });
+        } else {
+          seg('性別', 'sex', [['female', '女性'], ['male', '男性']]);
+          chart = BodyMap.render(chartEl, {
+            sex: state.sex,
+            onSelect: r => { current = r.id; const id = document.createElement('code'); id.textContent = r.id; showInfo([['名稱', r.nameZh], ['病歷 ID', id], ['點選自', r.view === 'front' ? '正面' : '背面']]); }
+          });
+        }
+        applyMarks();
+      }
+
+      document.querySelectorAll('[role="tab"]').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+          state.panel = tab.dataset.panel;
+          draw();
+        });
+      });
+
+      markBtn.addEventListener('click', () => { if (current) { marks[state.panel][current] = 1; applyMarks(); } });
+      unmarkBtn.addEventListener('click', () => { if (current) { delete marks[state.panel][current]; applyMarks(); } });
+
+      // 示範資料：預先標示幾個有病歷的結構
+      marks.eye = { cornea: 1, macula: 1 };
+      marks.body = { 'knee-r': 1, 'back': 1, 'hand-l': 1 };
+      marks.teeth = { '16': 1, '36': 1 };
+      draw();
+    })();
+  </script>
+</body>
+</html>
