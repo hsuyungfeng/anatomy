@@ -1,0 +1,197 @@
+/* ================================================
+   結構化 SVG 解剖圖樣式 (Anatomy Diagrams: Eye & Body)
+   ================================================ */
+
+:root {
+  /* 眼睛系統變數 (淺色模式) */
+  --eye-sclera: #f4f1ea;
+  --eye-choroid: #9c4a3f;
+  --eye-retina: #e9a07a;
+  --eye-vitreous: #eaf3f7;
+  --eye-lens: #dfeef9;
+  --eye-iris: #5b7fa6;
+  --eye-pupil: #1d2330;
+  --eye-cornea: #cfe6f3;
+  --eye-chamber: #f1f8fc;
+  --eye-muscle: #c8645a;
+  --eye-nerve: #f0d9a8;
+  --eye-artery: #d23c3c;
+  --eye-vein: #3c5fd2;
+  --eye-gland: #e6b7c4;
+  --eye-eyelid: #e8c2a8;
+  --eye-conjunctiva: #f6d4d4;
+  --eye-dilator: #3f5f86;
+  --eye-ciliary: #b86a5a;
+  --eye-ciliary-muscle: #8f3f33;
+  --eye-disc: #f6e7b0;
+  --eye-macula: #c9812f;
+  --eye-has-record: #bbf7d0; /* 淡綠色，對應眼睛代表色 #10b981 */
+  --eye-hover: #e0e7ff;
+  --eye-accent: var(--color-primary, #0066cc);
+}
+
+[data-theme="dark"] {
+  /* 眼睛系統變數 (深色模式) */
+  --eye-sclera: #d9d4c8;
+  --eye-choroid: #873d34;
+  --eye-retina: #c47f5d;
+  --eye-vitreous: #2a3642;
+  --eye-lens: #6f8ca3;
+  --eye-iris: #4a6785;
+  --eye-pupil: #11151b;
+  --eye-cornea: #7ea6bd;
+  --eye-chamber: #26323d;
+  --eye-muscle: #a34e45;
+  --eye-nerve: #c2ad80;
+  --eye-artery: #f05a5a;
+  --eye-vein: #5a7ef0;
+  --eye-gland: #b58391;
+  --eye-eyelid: #a6846f;
+  --eye-conjunctiva: #ba8d8d;
+  --eye-dilator: #2e4763;
+  --eye-ciliary: #8f4d40;
+  --eye-ciliary-muscle: #6e2e24;
+  --eye-disc: #c4b67f;
+  --eye-macula: #965e1e;
+  --eye-has-record: #065f46;
+  --eye-hover: #29406b;
+  --eye-accent: var(--color-primary, #4dabf7);
+}
+
+.anatomy-view,
+.eye-diagram-view,
+.body-map-view {
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 16px;
+  background-color: var(--color-bg-primary, #ffffff);
+}
+
+.anatomy-view[hidden],
+.eye-diagram-view[hidden],
+.body-map-view[hidden],
+#eye-side-toggle[hidden],
+#body-sex-toggle[hidden],
+#focus-face-btn[hidden] {
+  display: none !important;
+}
+
+/* 分段切換按鈕群組 (.seg) */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--color-border, #d8dee6);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-bg-secondary, #f8f9fa);
+}
+
+.seg button {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #495057);
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.seg button:hover {
+  background: var(--color-hover, #e9ecef);
+}
+
+.seg button[aria-pressed="true"] {
+  background: var(--color-primary, #0066cc);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 眼睛結構圖 SVG */
+.eye-diagram {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  display: block;
+  min-width: 560px;
+}
+
+.eye-diagram .structure {
+  cursor: pointer;
+  outline: none;
+}
+
+.eye-diagram .structure path,
+.eye-diagram .structure rect,
+.eye-diagram .structure ellipse,
+.eye-diagram .structure circle {
+  stroke: rgba(40, 40, 40, .45);
+  stroke-width: 1;
+  transition: filter .12s, stroke .12s;
+}
+
+.eye-diagram .fill-sclera { fill: var(--eye-sclera); }
+.eye-diagram .fill-choroid { fill: var(--eye-choroid); }
+.eye-diagram .fill-retina { fill: var(--eye-retina); }
+.eye-diagram .fill-vitreous { fill: var(--eye-vitreous); }
+.eye-diagram .fill-lens { fill: var(--eye-lens); }
+.eye-diagram .fill-iris { fill: var(--eye-iris); }
+.eye-diagram .fill-dilator { fill: var(--eye-dilator); }
+.eye-diagram .fill-pupil { fill: var(--eye-pupil); }
+.eye-diagram .fill-cornea { fill: var(--eye-cornea); }
+.eye-diagram .fill-chamber { fill: var(--eye-chamber); }
+.eye-diagram .fill-muscle { fill: var(--eye-muscle); }
+.eye-diagram .fill-nerve { fill: var(--eye-nerve); }
+.eye-diagram .fill-ciliary { fill: var(--eye-ciliary); }
+.eye-diagram .fill-ciliary-muscle { fill: var(--eye-ciliary-muscle); }
+.eye-diagram .fill-conjunctiva { fill: var(--eye-conjunctiva); }
+.eye-diagram .fill-disc { fill: var(--eye-disc); }
+.eye-diagram .fill-macula { fill: var(--eye-macula); }
+.eye-diagram .fill-eyelid { fill: var(--eye-eyelid); }
+.eye-diagram .fill-hyaloid { fill: transparent; stroke-dasharray: 4 3 !important; }
+.eye-diagram .fill-gland { fill: var(--eye-gland); }
+.eye-diagram .fill-duct { fill: var(--eye-gland); }
+.eye-diagram .fill-sclera-front { fill: var(--eye-sclera); stroke: var(--color-text-secondary, #5b6676); }
+
+.eye-diagram .vessel { fill: none; stroke-width: 2.5 !important; }
+.eye-diagram .fill-artery { stroke: var(--eye-artery) !important; }
+.eye-diagram .fill-vein { stroke: var(--eye-vein) !important; }
+.eye-diagram .vessel-hit { fill: none; stroke: transparent !important; stroke-width: 12 !important; }
+.eye-diagram .brow { fill: none; stroke: var(--color-text-secondary, #5b6676); stroke-width: 3; stroke-linecap: round; }
+.eye-diagram .inset-frame { fill: var(--color-bg-primary, #ffffff); stroke: var(--color-border, #d8dee6); }
+.eye-diagram .axis-label { fill: var(--color-text-secondary, #5b6676); font-size: 14px; pointer-events: none; }
+
+.eye-diagram .structure.is-hover > * {
+  filter: brightness(1.12) saturate(1.15);
+  stroke: var(--eye-accent);
+  stroke-width: 2;
+}
+
+.eye-diagram .structure.is-selected > * {
+  stroke: var(--eye-accent) !important;
+  stroke-width: 3 !important;
+}
+
+.eye-diagram .structure.is-selected .vessel-hit {
+  stroke: transparent !important;
+}
+
+.eye-diagram .structure:focus-visible > * {
+  stroke: var(--eye-accent);
+  stroke-width: 2.5;
+}
+
+.eye-diagram .structure.has-record > :not(.vessel):not(.vessel-hit) {
+  fill: var(--eye-has-record) !important;
+}
+
+/* 整隻眼睛筆數徽章 */
+#eye-side-toggle button[data-record-count]:not([data-record-count="0"])::after {
+  content: " (" attr(data-record-count) ")";
+  font-size: 0.85em;
+  font-weight: bold;
+}

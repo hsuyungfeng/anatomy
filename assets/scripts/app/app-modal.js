@@ -126,7 +126,7 @@ defineAppMethods({
               <p class="structure-info__type">
                 結構類型: ${escapeHtml(structureInfo.type)}
               </p>
-              ${structureInfo.confidence < 0.5 ?
+              ${(!presetStructure && structureInfo.confidence < 0.5) ?
                 '<p class="structure-info__warning">⚠️ 檢測信心度較低，請點擊重試</p>' : ''}
             </div>
           `;
@@ -331,17 +331,24 @@ defineAppMethods({
         return;
       }
 
+      const side = this.currentEyeStructure.side;
+      const sidePrefix = side === 'right' ? '右眼' : side === 'left' ? '左眼' : '';
+      const rawName = this.currentEyeStructure.name || '';
+      const cleanName = rawName.replace(/^(左眼|右眼)\s*/, '');
+      const locationName = sidePrefix ? `${sidePrefix} ${cleanName}` : cleanName;
+
       annotation = {
         annotationId: generateUUID(),
         system: 'eye',
         position: this.currentClickPosition || { x: 0, y: 0 },
 
         // 眼睛結構資訊
-        locationName: this.currentEyeStructure.name,
+        locationName: locationName,
         locationNameEn: this.currentEyeStructure.nameEn,
         structureId: this.currentEyeStructure.structureId,
         structureType: this.currentEyeStructure.type,
         side: this.currentEyeStructure.side,
+        source: this.currentEyeStructure.source || 'eye-diagram',
 
         // 檢測元數據
         detectionConfidence: this.currentEyeStructure.confidence || 1.0,
@@ -410,6 +417,9 @@ defineAppMethods({
       this.closeDiseaseModal();
       if (this.refreshOdontogramRecords) {
         this.refreshOdontogramRecords();
+      }
+      if (this.refreshEyeDiagramRecords) {
+        this.refreshEyeDiagramRecords();
       }
       await this.loadAndDisplayRecords();
 

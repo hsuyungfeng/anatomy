@@ -83,9 +83,10 @@ def test_save_eye_record(browser, base_url: str):
             timeout=5000,
         )
 
-        # 點擊眼睛標籤按鈕開啟模態
-        page.wait_for_selector(".eye-label-btn", timeout=5000)
-        page.locator(".eye-label-btn").first.click()
+        # 透過眼睛結構圖開啟模態
+        page.wait_for_selector('#eye-diagram-view .structure[data-structure="cornea"][tabindex]', timeout=5000)
+        page.focus('#eye-diagram-view .structure[data-structure="cornea"][tabindex]')
+        page.keyboard.press("Enter")
         page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
         page.wait_for_selector(".disease-checkbox", timeout=5000)
 

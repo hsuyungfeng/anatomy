@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="assets/styles/modal.css">
   <link rel="stylesheet" href="assets/styles/body-operation-form.css">
   <link rel="stylesheet" href="assets/styles/odontogram.css">
+  <link rel="stylesheet" href="assets/styles/anatomy-diagrams.css">
 
   <!-- Font Awesome 圖標 (可選) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -202,10 +203,16 @@
                   aria-label="解剖圖像，點擊進行標註">
                 </canvas>
                 <div id="odontogram-view" class="odontogram-view" hidden></div>
+                <div id="eye-diagram-view" class="anatomy-view" hidden></div>
               </div>
 
               <!-- 圖像控制工具欄 -->
               <div class="image-toolbar">
+                <div id="eye-side-toggle" class="seg" role="group" aria-label="眼別" hidden>
+                  <button type="button" data-side="right" aria-pressed="true">右眼 OD</button>
+                  <button type="button" data-side="left" aria-pressed="false">左眼 OS</button>
+                </div>
+
                 <div class="image-toolbar__group">
                   <button
                     id="zoom-in-btn"
@@ -500,6 +507,7 @@
   <script src="assets/scripts/record-statistics.js"></script>
   <script src="assets/scripts/eye-structure-info.js"></script>
   <script src="assets/scripts/odontogram.js"></script>
+  <script src="assets/scripts/eye-diagram.js"></script>
   <script src="assets/scripts/svg-viewport.js"></script>
   <script src="assets/scripts/anatomy-mapping.js"></script>
   <script src="assets/scripts/app/app-core.js"></script>

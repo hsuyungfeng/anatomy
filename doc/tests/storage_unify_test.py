@@ -43,8 +43,9 @@ def _save_eye_record(page, checkbox_index: int = 0) -> str:
     """輔助函式：在眼睛系統透過標籤開啟模態勾選疾病並點擊儲存"""
     page.click('.system-tab[data-system="eye"]')
     page.wait_for_function("() => window.app && window.app.currentSystemId === 'eye'", timeout=5000)
-    page.wait_for_selector(".eye-label-btn", timeout=5000)
-    page.locator(".eye-label-btn").first.click()
+    page.wait_for_selector('#eye-diagram-view .structure[data-structure="cornea"][tabindex]', timeout=5000)
+    page.focus('#eye-diagram-view .structure[data-structure="cornea"][tabindex]')
+    page.keyboard.press("Enter")
     page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
     page.wait_for_selector(".disease-checkbox", timeout=5000)
     checkbox = page.locator(".disease-checkbox").nth(checkbox_index)

@@ -289,6 +289,15 @@ class MedicalRecordApp {
       });
     });
 
+    // 眼睛眼別切換 (OD/OS)
+    $$('#eye-side-toggle button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (typeof this.switchEyeSide === 'function') {
+          this.switchEyeSide(e.currentTarget.dataset.side);
+        }
+      });
+    });
+
     // 縮放按鈕：在 SVG 啟用時交由 SvgViewport 處理，阻止冒泡到 ImageAnnotator
     const zoomInBtn = $('#zoom-in-btn');
     const zoomOutBtn = $('#zoom-out-btn');
@@ -536,8 +545,13 @@ class MedicalRecordApp {
     try {
       this.currentSystemId = systemId;
 
-      // 控制眼睛標籤面板的可見性
-      this.toggleEyeLabelPanel(systemId === 'eye');
+      // 控制眼睛標籤面板的可見性（Phase 9 眼睛改用 SVG，舊標籤面板隱藏）
+      this.toggleEyeLabelPanel(false);
+
+      const eyeSideToggle = document.getElementById('eye-side-toggle');
+      if (eyeSideToggle) {
+        eyeSideToggle.hidden = (systemId !== 'eye');
+      }
 
       const isTeeth = systemId === 'teeth' || systemId === 'primary_teeth';
       const odontogramView = document.getElementById('odontogram-view');
@@ -631,24 +645,6 @@ class MedicalRecordApp {
       // 重置縮放
       this.annotator.resetZoom();
 
-      // 在眼睛系統加載後繪製標籤 [新增]
-      if (systemId === 'eye' && this.eyeLabelMapper) {
-        const c = document.getElementById('image-canvas');
-        if (c) {
-          setTimeout(() => {
-            // 延遲繪製以確保圖像已加載
-            this.eyeLabelMapper.drawLabels(c, {
-              showText: true,
-              textColor: '#333',
-              fontSize: 13,
-              backgroundColor: 'rgba(255, 255, 255, 0.85)',
-              borderColor: '#0066cc',
-              borderRadius: 4
-            });
-          }, 100);
-        }
-      }
-
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
@@ -671,6 +667,17 @@ class MedicalRecordApp {
       const annotations = this.recordManager.getAnnotationsBySystem(systemId);
       annotations.forEach(anno => this.annotator.annotations.push(anno));
       this.refreshOdontogramRecords();
+      this.updateRecordList(systemId);
+      return;
+    }
+
+    if (systemId === 'eye') {
+      this.annotator.clearAnnotations();
+      const annotations = this.recordManager.getAnnotationsBySystem(systemId);
+      annotations.forEach(anno => this.annotator.annotations.push(anno));
+      if (typeof this.refreshEyeDiagramRecords === 'function') {
+        this.refreshEyeDiagramRecords();
+      }
       this.updateRecordList(systemId);
       return;
     }

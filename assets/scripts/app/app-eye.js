@@ -4,6 +4,109 @@
 
 defineAppMethods({
   /**
+   * 渲染結構化 SVG 眼睛結構圖
+   */
+  async renderEyeDiagram() {
+    const container = document.getElementById('eye-diagram-view');
+    if (!container || typeof EyeDiagram === 'undefined') return;
+
+    this.eyeDiagram = EyeDiagram.render(container, {
+      side: this.selectedEye || 'right',
+      onSelect: s => this.openEyeModal(s)
+    });
+
+    const svg = container.querySelector('svg');
+    if (svg && typeof SvgViewport !== 'undefined') {
+      if (this.svgViewport) {
+        this.svgViewport.detach();
+      }
+      this.svgViewport = SvgViewport.attach(svg, {
+        maxZoom: 4,
+        onZoomChange: () => this.updateSvgZoomDisplay()
+      });
+      this.updateSvgZoomDisplay();
+    }
+
+    this.refreshEyeDiagramRecords();
+  },
+
+  /**
+   * 切換眼別 (OD / OS)
+   * @param {'right'|'left'} side
+   */
+  switchEyeSide(side) {
+    if (side !== 'right' && side !== 'left') return;
+    this.selectedEye = side;
+    const buttons = document.querySelectorAll('#eye-side-toggle button');
+    buttons.forEach(btn => {
+      btn.setAttribute('aria-pressed', btn.dataset.side === side ? 'true' : 'false');
+    });
+    this.renderEyeDiagram();
+  },
+
+  /**
+   * 刷新眼睛結構圖上的病歷標記與筆數
+   */
+  refreshEyeDiagramRecords() {
+    if (!this.eyeDiagram || !this.recordManager) return;
+    const records = this.recordManager.getAnnotationsBySystem('eye');
+    const counts = {};
+    let wholeEyeRight = 0;
+    let wholeEyeLeft = 0;
+
+    records.forEach(r => {
+      const resolved = AnatomyMapping.resolveEye(r);
+      if (resolved.wholeEye) {
+        if (resolved.side === 'right') wholeEyeRight++;
+        else if (resolved.side === 'left') wholeEyeLeft++;
+        else {
+          wholeEyeRight++;
+          wholeEyeLeft++;
+        }
+      } else if (resolved.key) {
+        if (resolved.side === null || resolved.side === this.selectedEye) {
+          counts[resolved.key] = (counts[resolved.key] || 0) + 1;
+        }
+      }
+    });
+
+    this.eyeDiagram.setRecords(counts);
+
+    const rightBtn = document.querySelector('#eye-side-toggle button[data-side="right"]');
+    const leftBtn = document.querySelector('#eye-side-toggle button[data-side="left"]');
+    if (rightBtn) {
+      if (wholeEyeRight > 0) rightBtn.setAttribute('data-record-count', String(wholeEyeRight));
+      else rightBtn.removeAttribute('data-record-count');
+    }
+    if (leftBtn) {
+      if (wholeEyeLeft > 0) leftBtn.setAttribute('data-record-count', String(wholeEyeLeft));
+      else leftBtn.removeAttribute('data-record-count');
+    }
+  },
+
+  /**
+   * 點選結構圖開啟眼睛疾病模態視窗
+   * @param {object} s - 結構物件
+   */
+  openEyeModal(s) {
+    if (!s) return;
+    this.currentEyeStructure = {
+      name: s.nameZh,
+      nameEn: s.nameEn,
+      structureId: s.recordId,
+      type: s.key,
+      side: s.side,
+      confidence: 1,
+      fromLabel: false,
+      source: 'eye-diagram'
+    };
+    if (typeof this.displayEyeStructureInfo === 'function') {
+      this.displayEyeStructureInfo(this.currentEyeStructure);
+    }
+    this.openDiseaseModal(null, this.currentEyeStructure);
+  },
+
+  /**
    * 設置眼睛標籤按鈕的事件監聽
    * 為所有 .eye-label-btn 按鈕添加點擊事件處理
    */
