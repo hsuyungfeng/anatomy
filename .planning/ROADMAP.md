@@ -96,6 +96,26 @@
 
 ---
 
+## Phase 6: 病歷儲存整併
+
+**Goal:** 將 recordManager（anatomy-record-*）與 localStorage['medicalRecords'] 整併為單一資料來源
+
+**Executor:** Antigravity (agy)，完成後由 Claude Code 審查
+
+**Design:** medicalRecords（扁平標註陣列）為唯一來源；RecordManager 為唯一存取層，並提供唯讀巢狀檢視給匯出／統計／PDF 使用；首次載入自動遷移舊資料並保留備份
+
+**Plans:** 2 plans（依序執行）
+- [ ] 6-01-PLAN.md — 整併行為的端到端測試（TDD 紅燈）
+- [ ] 6-02-PLAN.md — RecordManager 改寫、遷移、呼叫端改用單一儲存（STORE-01～04）
+
+**Success Criteria:**
+1. 病歷資料只在 record-manager.js 讀寫
+2. 清單、圖上標記、統計、備份、清除全部看到同一份資料
+3. 重新整理不會新增 localStorage key，也不會讓標記消失
+4. 舊資料自動遷移且不遺失；`run_all.py --with-snapshot` 0 失敗、0 跳過
+
+---
+
 ## Milestone v1.0 Coverage
 
 | Phase | Requirements | Status |
@@ -106,5 +126,6 @@
 | 3 | 用戶權限 | ✗ Not Needed |
 | 4 | 程式碼品質改善 | ✓ Complete |
 | 5 | 病歷流程 Bug 修復 | ✓ Complete |
+| 6 | 病歷儲存整併 | ◐ Planned |
 
 **Milestone:** Complete ✓
