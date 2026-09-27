@@ -182,6 +182,24 @@
 
 ---
 
+## Phase 10: 版面、時間戳與英文介面修正
+
+**Goal:** 修正常見解析度下工具列被裁切的問題；更新說明文字；處理缺少的時間；補齊英文介面
+
+**Executor:** Antigravity (agy)，完成後由 Claude Code 審查
+
+**Plans:** 3 plans（依序執行）
+- [ ] 10-01-PLAN.md — 測試（TDD 紅燈）
+- [ ] 10-02-PLAN.md — 版面、說明文字、時間戳（POL-01～03）
+- [ ] 10-03-PLAN.md — 英文介面（POL-04）
+
+**Success Criteria:**
+1. 四種常見視窗大小下，三個系統的工具列控制項都能點到
+2. 英文模式下除已存病歷內容外沒有中文
+3. `run_all.py --with-snapshot` 0 失敗、0 跳過
+
+---
+
 ## Milestone v1.0 Coverage
 
 | Phase | Requirements | Status |
@@ -196,5 +214,6 @@
 | 7 | PWA 更新／清單顯示／CI | ✓ Complete |
 | 8 | 牙齒 SVG 牙位圖 | ✓ Complete |
 | 9 | 眼睛、身體 SVG | ✓ Complete |
+| 10 | 版面／時間戳／英文介面 | ◐ Planned |
 
 **Milestone:** Complete ✓

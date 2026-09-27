@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** None — Phase 4～9 已完成
-**Known Minor Issues:** 無 createdAt 的舊記錄顯示「無效的時間戳」；眼睛工具列提示文字被截斷；英文模式仍有部分文字未翻譯（參考圖、象限標籤、空清單訊息等）
+**Current Phase:** 10 — 版面／時間戳／英文介面（已規劃，交由 agy 執行）
+**Known Minor Issues:** 已全部排入 Phase 10
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made
