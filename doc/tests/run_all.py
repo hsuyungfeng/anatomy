@@ -30,6 +30,7 @@ import storage_unify_test
 import storage_safety_test
 import sw_offline_test
 import cache_version_test
+import record_labels_test
 import snapshot_prototype
 from playwright.sync_api import sync_playwright
 
@@ -210,8 +211,28 @@ def main():
                         print(f"       錯誤訊息: {err}")
                         failed += 1
 
-                print("\n--- 執行 Phase 7-01 快取版本守門測試 ---")
+                print("\n--- 執行 Phase 7-01 快取版本守門測試 ---"
+                      f"")
                 for test_func in cache_version_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 7-02 病歷清單標籤與重複名稱測試 ---")
+                for test_func in record_labels_test.TESTS:
                     test_name = test_func.__name__
                     skip_reason = getattr(test_func, "SKIP_REASON", None)
 
