@@ -75,15 +75,6 @@ defineAppMethods({
     };
 
     if (this.bodyImageMapper.debug) {
-      console.log('[detectBodyRegion] 坐標轉換詳情：');
-      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}`);
-      console.log(`  顯示畫布: ${imageDisplayWidth}x${imageDisplayHeight}`);
-      console.log(`  實際顯示: ${displayedWidth.toFixed(1)}x${displayedHeight.toFixed(1)}`);
-      console.log(`  偏移: (${offsetX.toFixed(1)}, ${offsetY.toFixed(1)})`);
-      console.log(`  比例: scaleX=${scaleX.toFixed(3)}, scaleY=${scaleY.toFixed(3)}`);
-      console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
-      console.log(`  點擊座標 (顯示): position.x=${position.x.toFixed(1)}, position.y=${position.y.toFixed(1)}`);
-      console.log(`  轉換後座標 (原始圖像): adjustedPos.x=${adjustedPos.x.toFixed(1)}, adjustedPos.y=${adjustedPos.y.toFixed(1)}`);
     }
 
     // 使用 BodyImageMapper 識別身體部位
@@ -287,22 +278,13 @@ defineAppMethods({
         updatedAt: operationData.timestamp
       };
 
-      console.log('[saveBodyOperation] 身體系統操作記錄:', {
-        部位: annotation.locationName,
-        側邊: annotation.side,
-        操作: operationData.operationType,
-        信心度: `${(annotation.detectionConfidence * 100).toFixed(1)}%`
-      });
-
       // 保存到記錄管理器（內存）
       if (this.recordManager) {
         this.recordManager.addAnnotation('body', annotation);
-        console.log('[saveBodyOperation] 已保存到記錄管理器');
       }
 
       // 保存到本地存儲（持久化）
       this.saveMedicalRecord(annotation);
-      console.log('[saveBodyOperation] 已保存到本地存儲');
 
       // 添加視覺標註到圖像
       if (this.annotator) {
@@ -311,18 +293,15 @@ defineAppMethods({
           ...annotation,
           color: system?.color || '#ff0000'
         });
-        console.log('[saveBodyOperation] 已添加視覺標註到圖像');
       }
 
       // 關閉模態並重新加載病例列表
       this.closeDiseaseModal();
       await this.loadAndDisplayRecords();
-      console.log('[saveBodyOperation] 已關閉模態視窗並重新加載分組病例列表');
 
       // 顯示成功提示
       showNotification('✓ 身體系統操作記錄已成功保存', 'success');
 
-      console.log('[saveBodyOperation] 保存流程完成 ✓');
     } catch (error) {
       console.error('[saveBodyOperation] 保存失敗:', error);
       showNotification('保存失敗，請重試', 'error');
@@ -357,7 +336,6 @@ defineAppMethods({
       this.modalOverlay.classList.add('visible');
       this.diseaseModal.setAttribute('aria-hidden', 'false');
 
-      console.log('[openDiseaseModalWithBodyRegion] 已打開疾病模態，選擇:', regionInfo);
     } catch (error) {
       console.error('[openDiseaseModalWithBodyRegion] 打開失敗:', error);
     }
@@ -394,7 +372,6 @@ defineAppMethods({
       try {
         const response = await fetch('/data/body-systems.json');
         this.bodySystemsData = await response.json();
-        console.log('✓ 身體系統數據已預加載');
       } catch (error) {
         console.error('✗ 身體系統數據預加載失敗:', error);
       }
@@ -449,7 +426,6 @@ defineAppMethods({
         });
       }
 
-      console.log('[loadBodyRegionDiseases] 已加載', bodyPart, '的疾病列表');
     } catch (error) {
       console.error('[loadBodyRegionDiseases] 加載失敗:', error);
     }

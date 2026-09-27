@@ -70,11 +70,6 @@ defineAppMethods({
     };
 
     if (this.dentalMapper.debug) {
-      console.log('[detectToothPosition] 坐標轉換詳情：');
-      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}, Canvas: ${canvasDisplayWidth}x${canvasDisplayHeight}`);
-      console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
-      console.log(`  點擊座標 (原始): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
-      console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
     }
 
     // 根據當前牙齒類型選擇座標集

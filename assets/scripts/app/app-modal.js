@@ -113,8 +113,6 @@ defineAppMethods({
             </div>
           `;
 
-          console.log(`牙齒檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
-
           // 低信心度或備選方法時顯示手動選擇器
           if (structureInfo.fallback || structureInfo.confidence < 0.5) {
             locationText += this.renderManualToothSelector();
@@ -136,7 +134,6 @@ defineAppMethods({
             </div>
           `;
 
-          console.log(`眼睛結構檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
         }
         // 身體系統特定的顯示格式 [新增]
         else if (this.currentSystemId === 'body') {
@@ -152,7 +149,6 @@ defineAppMethods({
             ${this.renderManualBodySelector()}
           `;
 
-          console.log(`身體部位檢測: ${structureInfo.name}, 信心度: ${(structureInfo.confidence * 100).toFixed(1)}%`);
         }
       } else {
         // 無法識別 [修改]
@@ -368,7 +364,6 @@ defineAppMethods({
       // 顯示成功提示
       alert('✅ 身體系統病例已保存');
 
-      console.log('[saveDiseaseAnnotation] 身體系統記錄已保存:', fullAnnotation);
     } catch (error) {
       console.error('[saveDiseaseAnnotation] 保存失敗:', error);
       alert('❌ 保存失敗，請重試');

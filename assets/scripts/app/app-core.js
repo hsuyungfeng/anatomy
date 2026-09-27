@@ -29,7 +29,6 @@ class MedicalRecordApp {
    */
   async init() {
     try {
-      console.log('初始化應用...');
 
       // 設置語言
       this.setupLanguage();
@@ -55,7 +54,6 @@ class MedicalRecordApp {
       // 初始加載病例列表（分組顯示）
       await this.loadAndDisplayRecords();
 
-      console.log('應用初始化完成，病例列表已加載');
       dispatchEvent('app:ready');
     } catch (error) {
       console.error('應用初始化失敗:', error);
@@ -125,21 +123,18 @@ class MedicalRecordApp {
       // Ctrl/Cmd + S: 儲存
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        console.log('[Keyboard] Ctrl+S 儲存');
         showNotification('快捷鍵: 儲存', 'info');
       }
 
       // Ctrl/Cmd + E: 導出
       if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault();
-        console.log('[Keyboard] Ctrl+E 導出');
         this.exportRecord('text');
       }
 
       // Ctrl/Cmd + F: 搜尋
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault();
-        console.log('[Keyboard] Ctrl+F 搜尋');
         const searchInput = $('#search-input');
         if (searchInput) {
           searchInput.focus();
@@ -158,7 +153,6 @@ class MedicalRecordApp {
       // Ctrl/Cmd + D: 切換主題
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
-        console.log('[Keyboard] Ctrl+D 主題切換');
         const themeToggle = $('#theme-toggle');
         if (themeToggle) {
           themeToggle.click();
@@ -174,7 +168,6 @@ class MedicalRecordApp {
       }
     });
 
-    console.log('[Keyboard] 鍵盤快捷鍵已設置');
   }
   /**
    * 切換語言
@@ -194,7 +187,6 @@ class MedicalRecordApp {
     }
 
     // 記錄語言變更
-    console.log(`語言已切換為: ${lang === 'en' ? 'English' : '中文'}`);
   }
   /**
    * 加載資料檔案
@@ -202,7 +194,6 @@ class MedicalRecordApp {
   async loadData() {
     try {
       this.anatomicalSystems = await loadJSON('data/anatomical-systems.json');
-      console.log('已加載解剖系統資料');
     } catch (error) {
       console.error('加載資料失敗:', error);
       throw error;
@@ -227,9 +218,7 @@ class MedicalRecordApp {
 
     // 預加載座標數據
     this.dentalMapper.loadCoordinates().then(success => {
-      if (success) {
-        console.log('✓ 牙齒座標數據加載成功');
-      } else {
+      if (!success) {
         console.error('✗ 牙齒座標數據加載失敗');
       }
     });
@@ -242,9 +231,7 @@ class MedicalRecordApp {
 
     // 預加載眼睛座標數據
     this.eyeMapper.loadCoordinates().then(success => {
-      if (success) {
-        console.log('✓ 眼睛座標數據加載成功');
-      } else {
+      if (!success) {
         console.error('✗ 眼睛座標數據加載失敗');
       }
     });
@@ -254,7 +241,6 @@ class MedicalRecordApp {
       this.eyeLabelMapper = new EyeLabelMapper({
         debug: true
       });
-      console.log('✓ 眼睛標籤映射器已初始化');
     }
 
     // 身體圖像映射器 [新增] - 用於識別身體圖像中的部位點擊區域
@@ -266,9 +252,7 @@ class MedicalRecordApp {
 
       // 預加載座標數據
       this.bodyImageMapper.loadCoordinates().then(success => {
-        if (success) {
-          console.log('✓ 身體座標數據加載成功');
-        } else {
+        if (!success) {
           console.error('✗ 身體座標數據加載失敗');
         }
       });
@@ -302,7 +286,6 @@ class MedicalRecordApp {
     // OCR 處理器 (稍後初始化)
     // this.ocrHandler = new OCRHandler();
 
-    console.log('模組初始化完成');
   }
   /**
    * 設置事件監聽
@@ -511,7 +494,6 @@ class MedicalRecordApp {
       // 載入對應的系統圖像
       await this.loadSystemImage(systemId);
 
-      console.log(`已切換至${teethType === 'permanent' ? '永久齒' : '乳齒'}系統`);
     } catch (error) {
       console.error(`切換牙齒系統失敗: ${teethType}`, error);
       showNotification(`無法切換牙齒系統: ${error.message}`, 'error');
@@ -581,7 +563,6 @@ class MedicalRecordApp {
               borderColor: '#0066cc',
               borderRadius: 4
             });
-            console.log('✓ 眼睛標籤已繪製在 canvas 上');
           }, 100);
         }
       }
@@ -589,7 +570,6 @@ class MedicalRecordApp {
       // 加載已有的標註
       this.loadAnnotations(systemId);
 
-      console.log(`已加載系統: ${systemId} (${imageId})`);
     } catch (error) {
       console.error(`加載系統圖像失敗: ${systemId}`, error);
       showNotification(`無法加載圖像: ${error.message}`, 'error');

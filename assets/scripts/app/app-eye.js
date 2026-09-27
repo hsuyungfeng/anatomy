@@ -17,8 +17,6 @@ defineAppMethods({
         const structureId = button.dataset.structureId;
         const structureNameEn = button.dataset.structureNameEn;
 
-        console.log(`[setupEyeLabelButtonListeners] 點擊標籤: ${structureNameEn} (ID: ${structureId})`);
-
         // 創建結構信息對象
         const structureInfo = {
           structureId: structureId,
@@ -34,7 +32,6 @@ defineAppMethods({
       });
     });
 
-    console.log(`[setupEyeLabelButtonListeners] 已為 ${buttons.length} 個眼睛標籤按鈕添加點擊事件監聽`);
   },
 
   /**
@@ -201,7 +198,6 @@ defineAppMethods({
     }
     modal.setAttribute('aria-hidden', 'false');
 
-    console.log(`[openDiseaseModalWithStructure] 打開疾病記錄: ${structureInfo.name} (${englishName})`);
   },
 
 /**
@@ -274,10 +270,8 @@ defineAppMethods({
 
     if (visible) {
       panelContainer.style.display = 'block';
-      console.log('[toggleEyeLabelPanel] 眼睛標籤面板已顯示');
     } else {
       panelContainer.style.display = 'none';
-      console.log('[toggleEyeLabelPanel] 眼睛標籤面板已隱藏');
     }
   },
 
@@ -344,11 +338,6 @@ defineAppMethods({
     };
 
     if (this.eyeMapper.debug) {
-      console.log('[detectEyeStructure] 坐標轉換詳情：');
-      console.log(`  原始圖像: ${naturalWidth}x${naturalHeight}, Canvas: ${canvasDisplayWidth}x${canvasDisplayHeight}`);
-      console.log(`  Zoom: ${zoom.toFixed(2)}, Pan: (${panX.toFixed(1)}, ${panY.toFixed(1)})`);
-      console.log(`  點擊座標 (原始): ${position.x.toFixed(1)}, ${position.y.toFixed(1)}`);
-      console.log(`  轉換後座標 (原始圖像): ${adjustedPos.x.toFixed(1)}, ${adjustedPos.y.toFixed(1)}`);
     }
 
     // 首先嘗試檢測標籤點擊（標籤有更高的優先級） [新增]
@@ -356,7 +345,6 @@ defineAppMethods({
     if (this.eyeLabelMapper) {
       labelInfo = this.eyeLabelMapper.getLabelAtPosition(adjustedPos.x, adjustedPos.y, 40);
       if (labelInfo && this.eyeMapper.debug) {
-        console.log('[detectEyeStructure] 檢測到標籤點擊:', labelInfo.labelText);
       }
     }
 

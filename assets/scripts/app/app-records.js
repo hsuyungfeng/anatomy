@@ -397,7 +397,6 @@ defineAppMethods({
       container.appendChild(groupDiv);
     });
 
-    console.log(`[renderGroupedRecords] 已渲染 ${groupedRecords.length} 個結構群組的病例`);
   },
 
   /**
@@ -408,7 +407,6 @@ defineAppMethods({
       const records = this.loadMedicalRecords();
       records.push(record);
       localStorage.setItem('medicalRecords', JSON.stringify(records));
-      console.log('[saveMedicalRecord] 已保存到 localStorage');
       return true;
     } catch (error) {
       console.error('[saveMedicalRecord] 保存失敗:', error);
@@ -443,7 +441,6 @@ defineAppMethods({
       const groupedRecords = this.groupRecordsByBodyPart(bodyRecords);
 
       this.displayBodyRecords(groupedRecords);
-      console.log('[loadAndDisplayRecords] 身體系統病例已加載');
     } catch (error) {
       console.error('[loadAndDisplayRecords] 加載失敗:', error);
     }
