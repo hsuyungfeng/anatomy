@@ -166,12 +166,14 @@
 
 **Design:** 原型 doc/prototypes/（使用者已確認：眼睛剖面圖保留 5 個新結構；身體寫實輪廓版）；舊記錄 ID 讀取時對應、不改寫
 
+**Status:** ✓ Complete（2026-09-27，經 Claude Code 審查：63/63 測試；滑鼠實測眼睛 60、身體 165 個可點元素全部正確；舊版程式碼產生的舊記錄與三套歷史命名對應正確且未改寫。合併後另修正語言切換清除按鈕圖示的舊 bug）
+
 **Plans:** 5 plans（依序執行）
-- [ ] 9-01-PLAN.md — 端到端測試（TDD 紅燈）
-- [ ] 9-02-PLAN.md — 縮放平移、通用參考圖、舊記錄 ID 對應
-- [ ] 9-03-PLAN.md — 眼睛整合
-- [ ] 9-04-PLAN.md — 身體整合
-- [ ] 9-05-PLAN.md — 介面小問題與死碼清理
+- [x] 9-01-PLAN.md — 端到端測試（TDD 紅燈）
+- [x] 9-02-PLAN.md — 縮放平移、通用參考圖、舊記錄 ID 對應
+- [x] 9-03-PLAN.md — 眼睛整合
+- [x] 9-04-PLAN.md — 身體整合
+- [x] 9-05-PLAN.md — 介面小問題與死碼清理
 
 **Success Criteria:**
 1. 眼睛 22 個結構（OD／OS）、身體所有子部位（正背面、男女）點擊辨識 100% 正確
@@ -193,6 +195,6 @@
 | 6 | 病歷儲存整併 | ✓ Complete |
 | 7 | PWA 更新／清單顯示／CI | ✓ Complete |
 | 8 | 牙齒 SVG 牙位圖 | ✓ Complete |
-| 9 | 眼睛、身體 SVG | ◐ Planned |
+| 9 | 眼睛、身體 SVG | ✓ Complete |
 
 **Milestone:** Complete ✓
