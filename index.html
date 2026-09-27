@@ -156,16 +156,16 @@
               <!-- 圖像控制工具欄 -->
               <div class="image-toolbar">
                 <div id="eye-side-toggle" class="seg" role="group" aria-label="眼別" hidden>
-                  <button type="button" data-side="right" aria-pressed="true">右眼 OD</button>
-                  <button type="button" data-side="left" aria-pressed="false">左眼 OS</button>
+                  <button type="button" data-side="right" aria-pressed="true" data-en="Right Eye OD">右眼 OD</button>
+                  <button type="button" data-side="left" aria-pressed="false" data-en="Left Eye OS">左眼 OS</button>
                 </div>
 
                 <div id="body-sex-toggle" class="seg" role="group" aria-label="體型" hidden>
-                  <button type="button" data-sex="female" aria-pressed="true">女性</button>
-                  <button type="button" data-sex="male" aria-pressed="false">男性</button>
+                  <button type="button" data-sex="female" aria-pressed="true" data-en="Female">女性</button>
+                  <button type="button" data-sex="male" aria-pressed="false" data-en="Male">男性</button>
                 </div>
 
-                <button type="button" id="focus-face-btn" class="btn" title="放大臉部" hidden>放大臉部</button>
+                <button type="button" id="focus-face-btn" class="btn" title="放大臉部" data-en="Focus Face" hidden>放大臉部</button>
 
                 <div class="image-toolbar__group">
                   <button
@@ -198,7 +198,7 @@
 
                 <div class="image-toolbar__group">
                   <span class="zoom-level" id="zoom-level">100%</span>
-                  <button id="reference-image-toggle" class="btn" type="button" aria-pressed="false" hidden>參考圖</button>
+                  <button id="reference-image-toggle" class="btn" type="button" aria-pressed="false" data-en="Reference Image" hidden>參考圖</button>
                 </div>
               </div>
             </div>
@@ -256,9 +256,9 @@
           <div class="statistics-container">
             <!-- 搜尋功能 -->
             <div class="statistics-search">
-              <h3 class="statistics-search__title">搜尋病歷</h3>
+              <h3 class="statistics-search__title" data-en="Search Records">搜尋病歷</h3>
               <div class="statistics-search__input-wrapper">
-                <label for="search-input" class="visually-hidden">搜尋關鍵字</label>
+                <label for="search-input" class="visually-hidden" data-en="Search Keywords">搜尋關鍵字</label>
                 <input 
                   type="text" 
                   id="search-input" 
@@ -266,39 +266,39 @@
                   placeholder="輸入關鍵字搜尋..."
                   aria-label="搜尋關鍵字"
                   data-en="Search records...">
-                <button class="btn btn--primary" id="search-btn">
+                <button class="btn btn--primary" id="search-btn" data-en="Search">
                   搜尋
                 </button>
               </div>
-              <div class="statistics-search__hint">
+              <div class="statistics-search__hint" data-en="Search range: disease name, location, notes">
                 搜尋範圍：疾病名稱、位置、備註
               </div>
             </div>
 
             <!-- 時間範圍篩選 -->
             <div class="statistics-filter">
-              <h3 class="statistics-filter__title">篩選條件</h3>
+              <h3 class="statistics-filter__title" data-en="Filter Conditions">篩選條件</h3>
               <div class="statistics-filter__group">
-                <label for="system-filter">系統:</label>
+                <label for="system-filter" data-en="System:">系統:</label>
                 <select id="system-filter" class="statistics-filter__input">
-                  <option value="">全部</option>
-                  <option value="teeth">牙齒系統</option>
-                  <option value="eye">眼睛系統</option>
-                  <option value="body">身體系統</option>
+                  <option value="" data-en="All">全部</option>
+                  <option value="teeth" data-en="Teeth System">牙齒系統</option>
+                  <option value="eye" data-en="Eye System">眼睛系統</option>
+                  <option value="body" data-en="Body System">身體系統</option>
                 </select>
               </div>
               <div class="statistics-filter__group">
-                <label for="date-from">從:</label>
+                <label for="date-from" data-en="From:">從:</label>
                 <input type="date" id="date-from" class="statistics-filter__input">
               </div>
               <div class="statistics-filter__group">
-                <label for="date-to">到:</label>
+                <label for="date-to" data-en="To:">到:</label>
                 <input type="date" id="date-to" class="statistics-filter__input">
               </div>
-              <button class="btn btn--secondary" id="apply-filter-btn">
+              <button class="btn btn--secondary" id="apply-filter-btn" data-en="Apply Filter">
                 套用篩選
               </button>
-              <button class="btn btn--secondary" id="clear-filter-btn">
+              <button class="btn btn--secondary" id="clear-filter-btn" data-en="Clear">
                 清除
               </button>
             </div>
@@ -307,33 +307,33 @@
             <div class="statistics-summary">
               <div class="stat-card">
                 <div class="stat-card__value" id="total-records">0</div>
-                <div class="stat-card__label">總記錄數</div>
+                <div class="stat-card__label" data-en="Total Records">總記錄數</div>
               </div>
               <div class="stat-card">
                 <div class="stat-card__value" id="total-diseases">0</div>
-                <div class="stat-card__label">疾病種類</div>
+                <div class="stat-card__label" data-en="Disease Types">疾病種類</div>
               </div>
               <div class="stat-card">
                 <div class="stat-card__value" id="total-annotations">0</div>
-                <div class="stat-card__label">總標註數</div>
+                <div class="stat-card__label" data-en="Total Annotations">總標註數</div>
               </div>
             </div>
 
             <!-- 圖表區域 -->
             <div class="statistics-charts">
               <div class="chart-container">
-                <h4 class="chart-title">疾病發生頻率</h4>
+                <h4 class="chart-title" data-en="Disease Frequency">疾病發生頻率</h4>
                 <canvas id="disease-bar-chart"></canvas>
               </div>
               <div class="chart-container">
-                <h4 class="chart-title">疾病分佈</h4>
+                <h4 class="chart-title" data-en="Disease Distribution">疾病分佈</h4>
                 <canvas id="disease-pie-chart"></canvas>
               </div>
             </div>
 
             <!-- 搜尋結果 -->
             <div class="search-results" id="search-results" hidden>
-              <h4 class="search-results__title">搜尋結果</h4>
+              <h4 class="search-results__title" data-en="Search Results">搜尋結果</h4>
               <div class="search-results__list" id="search-results-list">
               </div>
             </div>
@@ -448,6 +448,7 @@
 
   <!-- JavaScript 模組 -->
   <script src="assets/scripts/utils.js"></script>
+  <script src="assets/scripts/i18n.js"></script>
   <script src="assets/scripts/eye-descriptions.js"></script>
   <script src="assets/scripts/image-annotator.js"></script>
   <script src="assets/scripts/disease-form.js"></script>

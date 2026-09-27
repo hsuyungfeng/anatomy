@@ -12,7 +12,7 @@ class DiseaseForm {
     this.diseaseData = options.diseaseData || null;
     this.selectedDiseases = [];
     this.treatmentNotes = '';
-    this.currentLanguage = getCurrentLanguage();
+    this.currentLanguage = (window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
     this.systemId = options.systemId || 'teeth'; // 預設系統 ID
     this.diseases = []; // 存儲當前系統的疾病列表
 
@@ -76,16 +76,22 @@ class DiseaseForm {
       await this.loadDiseases(this.systemId);
     }
 
+    this.currentLanguage = (window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
+    const isEn = this.currentLanguage === 'en';
+
     let html = '<div class="disease-form">';
 
     // 表單標題和提示
+    const titleText = isEn ? 'Select Diagnosis' : '選擇疾病診斷';
+    const hintText = isEn ? 'Multiple selections allowed' : '可複選多個疾病';
+    const errorMsg = isEn ? 'Failed to load disease list' : '無法加載疾病列表';
     html += `
       <div class="disease-form__header">
         <h3 class="disease-form__title" data-en="Select Diagnosis">
-          選擇疾病診斷
+          ${titleText}
         </h3>
         <p class="disease-form__hint" data-en="Multiple selections allowed">
-          可複選多個疾病
+          ${hintText}
         </p>
       </div>
     `;
@@ -96,19 +102,23 @@ class DiseaseForm {
     if (this.diseases && this.diseases.length > 0) {
       html += this.renderDiseaseList();
     } else {
-      html += '<p class="error-message">無法加載疾病列表</p>';
+      html += `<p class="error-message">${errorMsg}</p>`;
     }
 
     html += '</div>';
 
     // 療程摘要（其他備註）
+    const notesLabelText = isEn ? 'Treatment Summary' : '療程摘要';
+    const notesPlaceholder = isEn
+      ? 'Enter treatment summary or other notes...'
+      : '輸入療程摘要或其他備註...';
     html += `
       <div class="disease-form__notes">
-        <label for="treatment-notes">療程摘要</label>
+        <label for="treatment-notes">${notesLabelText}</label>
         <textarea
           id="treatment-notes"
           class="treatment-notes-input"
-          placeholder="輸入療程摘要或其他備註..."
+          placeholder="${notesPlaceholder}"
           rows="4"></textarea>
       </div>
     `;
@@ -130,7 +140,10 @@ class DiseaseForm {
       return html + '</div>';
     }
 
+    const isEn = this.currentLanguage === 'en';
+
     this.diseases.forEach((disease) => {
+      const displayName = isEn ? (disease.nameEn || disease.name) : disease.name;
       html += `
         <div class="disease-item">
           <input
@@ -139,10 +152,10 @@ class DiseaseForm {
             class="disease-checkbox"
             value="${escapeHtml(disease.id)}"
             data-name="${escapeHtml(disease.name)}"
-            data-name-en="${escapeHtml(disease.nameEn)}"
+            data-name-en="${escapeHtml(disease.nameEn || '')}"
             data-icd10="${escapeHtml(disease.icd10 || disease.id)}">
           <label for="disease-${escapeHtml(disease.id)}">
-            ${escapeHtml(disease.name)}
+            ${escapeHtml(displayName)}
           </label>
         </div>
       `;
@@ -311,9 +324,7 @@ class DiseaseForm {
     }
 
     // 更新療程摘要標籤
-    const notesLabel = $$('label').find(el =>
-      el.textContent.includes('療程摘要') || el.textContent.includes('Treatment Summary')
-    );
+    const notesLabel = $('label[for="treatment-notes"]');
     if (notesLabel) {
       notesLabel.textContent = this.currentLanguage === 'en' ? 'Treatment Summary' : '療程摘要';
     }
@@ -325,5 +336,16 @@ class DiseaseForm {
         ? 'Enter treatment summary or other notes...'
         : '輸入療程摘要或其他備註...';
     }
+
+    // 更新各疾病複選框標籤
+    $$('.disease-item').forEach(item => {
+      const checkbox = item.querySelector('.disease-checkbox');
+      const label = item.querySelector('label');
+      if (checkbox && label) {
+        label.textContent = this.currentLanguage === 'en'
+          ? (checkbox.dataset.nameEn || checkbox.dataset.name)
+          : checkbox.dataset.name;
+      }
+    });
   }
 }

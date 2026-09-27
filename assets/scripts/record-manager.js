@@ -860,7 +860,7 @@ class RecordManager {
   downloadBackup() {
     const backupData = this.backupAllData();
     if (!backupData) {
-      showNotification('備份失敗', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.backupFailed') : '備份失敗', 'error');
       return;
     }
 
@@ -869,7 +869,7 @@ class RecordManager {
     const filename = `anatomy-backup-v2-${timestamp}.json`;
 
     downloadFile(content, filename, 'application/json');
-    showNotification(`已備份 ${backupData.recordCount} 筆病歷`, 'success');
+    showNotification(window.I18N ? window.I18N.t('notify.backupSuccess', { count: backupData.recordCount }) : `已備份 ${backupData.recordCount} 筆病歷`, 'success');
   }
 
   /**
@@ -942,12 +942,12 @@ class RecordManager {
       }
 
       dispatchEvent('records:restored', { count: restoredAnnotations.length });
-      showNotification(`已成功還原 ${restoredAnnotations.length} 筆病歷記錄`, 'success');
+      showNotification(window.I18N ? window.I18N.t('notify.restoreSuccess', { count: restoredAnnotations.length }) : `已成功還原 ${restoredAnnotations.length} 筆病歷記錄`, 'success');
 
       return { success: true, count: restoredAnnotations.length };
     } catch (error) {
       console.error('[restoreFromBackup] 還原失敗:', error);
-      showNotification('還原失敗: ' + error.message, 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.restoreFailed', { error: error.message }) : '還原失敗: ' + error.message, 'error');
       return { success: false, error: error.message };
     }
   }

@@ -97,10 +97,13 @@ defineAppMethods({
 
       // 牙齒系統特定的顯示格式
       if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+        const displayName = (window.I18N && window.I18N.lang() === 'en' && structureInfo.nameEn)
+          ? structureInfo.nameEn
+          : structureInfo.name;
         locationText = `
           <div class="tooth-info">
             <p class="tooth-info__main">
-              <strong>${escapeHtml(structureInfo.name)}</strong>
+              <strong>${escapeHtml(displayName)}</strong>
               ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
             </p>
           </div>
@@ -108,25 +111,40 @@ defineAppMethods({
       }
       // 眼睛系統特定的顯示格式
       else if (this.currentSystemId === 'eye') {
+        const displayName = (window.I18N && window.I18N.lang() === 'en' && structureInfo.nameEn)
+          ? structureInfo.nameEn
+          : structureInfo.name;
+        const sideText = structureInfo.side === 'left'
+          ? (window.I18N ? window.I18N.t('modal.sideLeftEye') : '左眼')
+          : (window.I18N ? window.I18N.t('modal.sideRightEye') : '右眼');
+        const typeLabel = window.I18N ? window.I18N.t('modal.structureType') : '結構類型: ';
         locationText = `
           <div class="eye-structure-info">
             <p class="structure-info__main">
-              <strong>${escapeHtml(structureInfo.name)}</strong>
-              <span class="side-badge">${structureInfo.side === 'left' ? '左眼' : '右眼'}</span>
+              <strong>${escapeHtml(displayName)}</strong>
+              <span class="side-badge">${escapeHtml(sideText)}</span>
             </p>
             <p class="structure-info__type">
-              結構類型: ${escapeHtml(structureInfo.type)}
+              ${escapeHtml(typeLabel)}${escapeHtml(structureInfo.type)}
             </p>
           </div>
         `;
       }
       // 身體系統特定的顯示格式
       else if (this.currentSystemId === 'body') {
+        const displayName = (window.I18N && window.I18N.lang() === 'en' && structureInfo.name_en)
+          ? structureInfo.name_en
+          : structureInfo.name;
+        const sideText = structureInfo.side === 'left'
+          ? (window.I18N ? window.I18N.t('modal.sideLeft') : '左側')
+          : structureInfo.side === 'right'
+          ? (window.I18N ? window.I18N.t('modal.sideRight') : '右側')
+          : (window.I18N ? window.I18N.t('modal.sideMid') : '中線');
         locationText = `
           <div class="body-region-info">
             <p class="structure-info__main">
-              <strong>${escapeHtml(structureInfo.name)}</strong>
-              <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
+              <strong>${escapeHtml(displayName)}</strong>
+              <span class="side-badge">${escapeHtml(sideText)}</span>
             </p>
             ${structureInfo.id ? `<p class="structure-info__type">${escapeHtml(structureInfo.id)}</p>` : ''}
           </div>
@@ -149,11 +167,11 @@ defineAppMethods({
     const modalTitle = document.getElementById('modal-title');
     if (modalTitle) {
       if (this.currentSystemId === 'body') {
-        modalTitle.textContent = this.currentLanguage === 'zh' ? '記錄操作/治療' : 'Record Operation/Treatment';
+        modalTitle.textContent = window.I18N ? window.I18N.t('modal.recordOperation') : '記錄操作/治療';
       } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-        modalTitle.textContent = this.currentLanguage === 'zh' ? '新增疾病記錄' : 'Add Disease Record';
+        modalTitle.textContent = window.I18N ? window.I18N.t('modal.addDiseaseRecord') : '新增疾病記錄';
       } else if (this.currentSystemId === 'eye') {
-        modalTitle.textContent = this.currentLanguage === 'zh' ? '新增眼睛結構信息' : 'Add Eye Structure Info';
+        modalTitle.textContent = window.I18N ? window.I18N.t('modal.addEyeInfo') : '新增眼睛結構信息';
       }
     }
 
@@ -202,6 +220,9 @@ defineAppMethods({
           await this.diseaseForm.loadDiseases(diseaseSystemId);
         }
         await this.diseaseForm.render();
+      }
+      if (this.diseaseForm && typeof this.diseaseForm.updateLanguageDisplay === 'function') {
+        this.diseaseForm.updateLanguageDisplay();
       }
     }
 
@@ -254,7 +275,7 @@ defineAppMethods({
     // 收集表單資料
     if (!this.diseaseForm) {
       console.error('[saveDiseaseAnnotation] 表單未初始化');
-      showNotification('表單未初始化', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.formNotInit') : '表單未初始化', 'error');
       return;
     }
 
@@ -263,7 +284,7 @@ defineAppMethods({
     // 驗證是否選擇了疾病
     if (!formData.diseases || formData.diseases.length === 0) {
       console.warn('[saveDiseaseAnnotation] 未選擇疾病');
-      showNotification('請選擇至少一種疾病', 'warning');
+      showNotification(window.I18N ? window.I18N.t('notify.selectDisease') : '請選擇至少一種疾病', 'warning');
       return;
     }
 
@@ -274,7 +295,7 @@ defineAppMethods({
       // 眼睛系統的標註對象
       if (!this.currentEyeStructure) {
         console.error('[saveDiseaseAnnotation] 眼睛系統缺少結構信息');
-        showNotification('請先選擇眼睛結構', 'warning');
+        showNotification(window.I18N ? window.I18N.t('notify.selectEyeStructure') : '請先選擇眼睛結構', 'warning');
         return;
       }
 
@@ -372,13 +393,13 @@ defineAppMethods({
 
       // 顯示成功提示
       if (this.currentSystemId === 'eye') {
-        showNotification('眼睛病例已成功保存', 'success');
+        showNotification(window.I18N ? window.I18N.t('notify.eyeSaveSuccess') : '眼睛病例已成功保存', 'success');
       } else {
-        showNotification('疾病記錄已保存', 'success');
+        showNotification(window.I18N ? window.I18N.t('notify.saveSuccess') : '疾病記錄已保存', 'success');
       }
     } catch (error) {
       console.error('[saveDiseaseAnnotation] 保存失敗:', error);
-      showNotification('保存失敗，請重試', 'error');
+      showNotification(window.I18N ? window.I18N.t('notify.saveFailed') : '保存失敗，請重試', 'error');
     }
   },
 

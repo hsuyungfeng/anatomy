@@ -10,8 +10,18 @@ defineAppMethods({
     const container = document.getElementById('eye-diagram-view');
     if (!container || typeof EyeDiagram === 'undefined') return;
 
+    const lang = (window.I18N && window.I18N.lang()) || (document.documentElement.lang === 'en' ? 'en' : 'zh');
+    const labels = window.I18N ? {
+      anterior: window.I18N.t('eye.anterior'),
+      posterior: window.I18N.t('eye.posterior'),
+      frontOD: window.I18N.t('eye.frontOD'),
+      frontOS: window.I18N.t('eye.frontOS')
+    } : {};
+
     this.eyeDiagram = EyeDiagram.render(container, {
       side: this.selectedEye || 'right',
+      lang,
+      labels,
       onSelect: s => this.openEyeModal(s)
     });
 
@@ -116,7 +126,10 @@ defineAppMethods({
     if (!infoContent) return;
 
     if (!structure || !structure.structureId) {
-      infoContent.innerHTML = '<div class="eye-info-empty">點擊圖像上的結構以查看詳細信息</div>';
+      const emptyText = (window.I18N && window.I18N.lang() === 'en')
+        ? 'Click on a structure in the diagram to view details'
+        : '點擊圖像上的結構以查看詳細信息';
+      infoContent.innerHTML = `<div class="eye-info-empty">${escapeHtml(emptyText)}</div>`;
       return;
     }
 
