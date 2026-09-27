@@ -48,7 +48,7 @@ class RecordManager {
   }
 
   /**
-   * 初始化：執行舊版疾病資料遷移與 Phase 6 舊 key 自動遷移
+   * 初始化：執行舊版疾病資料遷移、Phase 6 舊 key 自動遷移與缺漏 system 欄位回填
    */
   init() {
     // 檢查是否需要舊版疾病數據遷移 (DiseaseDataMigration)
@@ -63,6 +63,58 @@ class RecordManager {
 
     // Phase 6 舊 key (anatomy-record-*) 自動遷移至 medicalRecords
     this.migrateLegacyData();
+
+    // 資料回填：補齊 medicalRecords 中缺少 system 的記錄
+    this.backfillMissingSystems();
+  }
+
+  /**
+   * 解析標註所屬系統（若缺少 system 則依序推斷，body 優先）
+   * @param {object} anno - 標註記錄
+   * @returns {string} 系統 ID（teeth, eye, body 或 unknown）
+   */
+  resolveSystem(anno) {
+    if (!anno || typeof anno !== 'object') return 'unknown';
+    if (anno.system) {
+      return RecordManager.normalizeSystem(anno.system);
+    }
+    // 依序用 matchesSystem 推斷，body 必須最先判斷避免被 eye 規則誤判
+    if (RecordManager.matchesSystem(anno, 'body')) return 'body';
+    if (RecordManager.matchesSystem(anno, 'eye')) return 'eye';
+    if (RecordManager.matchesSystem(anno, 'teeth')) return 'teeth';
+    return 'unknown';
+  }
+
+  /**
+   * 資料回填：補齊缺少 system 欄位的標註記錄
+   */
+  backfillMissingSystems() {
+    try {
+      const records = this.getAllAnnotations();
+      if (!Array.isArray(records) || records.length === 0) return;
+
+      let changed = false;
+      const updated = records.map(anno => {
+        if (!anno || typeof anno !== 'object') return anno;
+        if (!anno.system) {
+          const sys = this.resolveSystem(anno);
+          if (sys !== 'unknown') {
+            changed = true;
+            return {
+              ...anno,
+              system: sys
+            };
+          }
+        }
+        return anno;
+      });
+
+      if (changed) {
+        this.replaceAllAnnotations(updated);
+      }
+    } catch (e) {
+      console.error('[RecordManager] 回填 system 欄位失敗:', e);
+    }
   }
 
   /**
@@ -146,7 +198,10 @@ class RecordManager {
         }
       });
 
-      this.replaceAllAnnotations(currentRecords);
+      const writeSuccess = this.replaceAllAnnotations(currentRecords);
+      if (!writeSuccess) {
+        return;
+      }
 
       // 4. 清理舊 key（不刪除備份 key）
       legacyKeys.forEach(k => {
@@ -297,11 +352,11 @@ class RecordManager {
         latestUpdated = uTime;
       }
 
-      const sysId = RecordManager.normalizeSystem(anno.system) || 'teeth';
+      const sysId = this.resolveSystem(anno);
       if (!systemsMap[sysId]) {
         systemsMap[sysId] = {
           systemId: sysId,
-          systemName: sysId === 'teeth' ? '牙齒系統' : sysId === 'eye' ? '眼睛系統' : sysId === 'body' ? '身體系統' : sysId,
+          systemName: sysId === 'teeth' ? '牙齒系統' : sysId === 'eye' ? '眼睛系統' : sysId === 'body' ? '身體系統' : (sysId === 'unknown' ? '未分類' : sysId),
           imageId: '',
           annotations: []
         };
@@ -872,8 +927,16 @@ class RecordManager {
         throw new Error('未知的備份版本');
       }
 
+      if (restoredAnnotations.length === 0 && backupData.records.length > 0) {
+        throw new Error('備份檔中沒有任何有效的病歷記錄');
+      }
+
       // 取代寫入
-      this.replaceAllAnnotations(restoredAnnotations);
+      const writeSuccess = this.replaceAllAnnotations(restoredAnnotations);
+      if (!writeSuccess) {
+        throw new Error('寫入本機存儲失敗');
+      }
+
       dispatchEvent('records:restored', { count: restoredAnnotations.length });
       showNotification(`已成功還原 ${restoredAnnotations.length} 筆病歷記錄`, 'success');
 
