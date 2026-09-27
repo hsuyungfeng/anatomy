@@ -11,7 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** 8 — 牙齒 SVG 牙位圖（已規劃，交由 agy 執行）
+**Current Phase:** None — Phase 4～8 已完成
+**Known Minor Issues:** 牙位圖模式仍顯示 canvas 縮放按鈕；儲存通知顯示「高信心度」；載入時「永久齒／乳齒」子分頁隱藏；深色模式病歷卡片為淺色；眼睛清單標題「左眼 左眼」
 **Next Candidate:** 眼睛、身體系統比照改用 SVG（Phase 8 完成後，先畫原型給使用者確認）
 **Progress:** Existing features complete, roadmap created
 

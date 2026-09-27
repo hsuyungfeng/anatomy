@@ -144,10 +144,12 @@
 
 **Design:** 原型 doc/prototypes/odontogram/（使用者已確認）；SVG 為主，點陣圖保留為只能看的參考圖；只動牙齒系統，眼睛、身體之後比照辦理
 
+**Status:** ✓ Complete（2026-09-27，經 Claude Code 審查：44/44 測試；52 顆牙在多種縮放與手機寬度下 100% 辨識；舊病歷標示演練通過）
+
 **Plans:** 3 plans（依序執行）
-- [ ] 8-01-PLAN.md — 端到端測試（TDD 紅燈，含螢幕縮放 1／1.25／2）
-- [ ] 8-02-PLAN.md — 牙位圖模組、整合、病歷標示、參考圖切換（SVG-01～04）
-- [ ] 8-03-PLAN.md — 移除牙齒座標辨識死碼（SVG-05）
+- [x] 8-01-PLAN.md — 端到端測試（TDD 紅燈，含螢幕縮放 1／1.25／2）
+- [x] 8-02-PLAN.md — 牙位圖模組、整合、病歷標示、參考圖切換（SVG-01～04）
+- [x] 8-03-PLAN.md — 移除牙齒座標辨識死碼（SVG-05）
 
 **Success Criteria:**
 1. 52 顆牙（永久 32＋乳牙 20）點擊辨識 100% 正確，與螢幕縮放無關
@@ -168,6 +170,6 @@
 | 5 | 病歷流程 Bug 修復 | ✓ Complete |
 | 6 | 病歷儲存整併 | ✓ Complete |
 | 7 | PWA 更新／清單顯示／CI | ✓ Complete |
-| 8 | 牙齒 SVG 牙位圖 | ◐ Planned |
+| 8 | 牙齒 SVG 牙位圖 | ✓ Complete |
 
 **Milestone:** Complete ✓
