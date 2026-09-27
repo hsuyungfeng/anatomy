@@ -32,6 +32,11 @@ import sw_offline_test
 import cache_version_test
 import record_labels_test
 import odontogram_test
+import eye_diagram_test
+import body_map_test
+import legacy_mapping_test
+import svg_viewport_test
+import ui_polish_test
 import snapshot_prototype
 from playwright.sync_api import sync_playwright
 
@@ -253,6 +258,101 @@ def main():
 
                 print("\n--- 執行 Phase 8-01 結構化 SVG 牙位圖端到端測試 ---")
                 for test_func in odontogram_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-01 眼睛 SVG 結構圖端到端測試 ---")
+                for test_func in eye_diagram_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-01 身體寫實輪廓 SVG 端到端測試 ---")
+                for test_func in body_map_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-01 舊記錄 ID 對應端到端測試 ---")
+                for test_func in legacy_mapping_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-01 SVG 視口縮放與平移測試 ---")
+                for test_func in svg_viewport_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行 Phase 9-01 介面細節與體驗優化測試 ---")
+                for test_func in ui_polish_test.TESTS:
                     test_name = test_func.__name__
                     skip_reason = getattr(test_func, "SKIP_REASON", None)
 
