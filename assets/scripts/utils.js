@@ -33,9 +33,9 @@ function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss') {
   };
 
   let result = format;
-  Object.forEach((key, value) => {
-    result = result.replace(key, value);
-  }, replacements);
+  Object.keys(replacements).forEach(key => {
+    result = result.replace(key, replacements[key]);
+  });
 
   return result;
 }
@@ -237,6 +237,21 @@ function dispatchEvent(eventName, detail = {}, target = document) {
 }
 
 /**
+ * 跳脫 HTML 特殊字元，用於將不可信資料插入 innerHTML 模板
+ * @param {*} value
+ * @returns {string}
+ */
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
  * 顯示通知訊息
  * @param {string} message - 訊息文本
  * @param {string} type - 訊息類型 ('success', 'error', 'info', 'warning')
@@ -300,7 +315,7 @@ function showNotification(message, type = 'info', duration = 3000) {
 
   notification.innerHTML = `
     <span style="flex-shrink: 0; font-size: 16px; font-weight: bold;">${icon}</span>
-    <span style="flex: 1;">${message}</span>
+    <span style="flex: 1;">${escapeHtml(message)}</span>
   `;
 
   // 添加到容器
@@ -455,6 +470,7 @@ function downloadFile(content, filename, mimeType = 'text/plain') {
 
 // 導出所有函數
 const Utils = {
+  escapeHtml,
   generateUUID,
   formatDateTime,
   deepClone,

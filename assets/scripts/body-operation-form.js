@@ -39,7 +39,7 @@ class BodyOperationForm {
         <!-- 部位信息和側邊選擇 -->
         <div class="operation-form__header">
           <h3 class="operation-form__title">
-            ${regionName}
+            ${escapeHtml(regionName)}
             <span class="operation-form__side">${sideDisplay}</span>
           </h3>
 

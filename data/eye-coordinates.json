@@ -20,7 +20,7 @@
       "y": 412,
       "radius": 100,
       "confidence": "high",
-      "notes": "已通過 eye-calibration.html 工具精確校正（2026-01-12）"
+      "notes": "已通過 doc/tools/eye-calibration.html 工具精確校正（2026-01-12）"
     },
     "right-eye-cornea": {
       "id": "right-eye-cornea",
@@ -89,7 +89,7 @@
       "y": 313,
       "radius": 100,
       "confidence": "high",
-      "notes": "已通過 eye-calibration.html 工具精確校正（2026-01-12）"
+      "notes": "已通過 doc/tools/eye-calibration.html 工具精確校正（2026-01-12）"
     },
     "left-eye-cornea": {
       "id": "left-eye-cornea",
@@ -150,9 +150,9 @@
   },
   "calibrationNotes": {
     "title": "座標校正指南",
-    "description": "本檔案中的座標已通過 eye-calibration.html 工具進行精確校正（2026-01-12），所有 10 個眼睛結構座標均已驗證。",
+    "description": "本檔案中的座標已通過 doc/tools/eye-calibration.html 工具進行精確校正（2026-01-12），所有 10 個眼睛結構座標均已驗證。",
     "steps": [
-      "1. 在瀏覽器開啟 eye-calibration.html",
+      "1. 在瀏覽器開啟 doc/tools/eye-calibration.html",
       "2. 選擇眼睛結構（從下拉選單）",
       "3. 點擊 3Deye.png 圖像上該結構的中心位置",
       "4. 系統記錄點擊座標",

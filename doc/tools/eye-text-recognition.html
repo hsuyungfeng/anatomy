@@ -331,7 +331,7 @@
       <div class="image-section">
         <h3>眼睛圖像</h3>
         <div class="image-container">
-          <img id="eyeImage" src="assets/images/eye/3Deye.png" alt="眼睛3D圖像">
+          <img id="eyeImage" src="../../assets/images/eye/3Deye.png" alt="眼睛3D圖像">
         </div>
         <div class="controls">
           <button id="recognizeBtn" onclick="startRecognition()">開始識別文字</button>
@@ -405,7 +405,7 @@
         console.log('開始識別圖像中的文字...');
 
         const { data: { text, confidence } } = await Tesseract.recognize(
-          'assets/images/eye/3Deye.png',
+          '../../assets/images/eye/3Deye.png',
           'eng',
           {
             logger: m => {
