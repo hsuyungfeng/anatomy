@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Status
 
 **Milestone:** v1.0
-**Current Phase:** 7 — PWA 更新／清單顯示／CI（已規劃，交由 agy 執行）
-**Next Candidate:** 結構化 SVG 解剖圖（取代點陣圖，從根本解決點擊辨識；待使用者確認方向）
+**Current Phase:** None — Phase 4～7 已完成
+**Next Candidate:** 結構化 SVG 解剖圖（使用者已同意方向：SVG 為主、原圖可切換參考；牙位圖原型 doc/prototypes/odontogram/ 待使用者確認）
 **Progress:** Existing features complete, roadmap created
 
 ## Decisions Made

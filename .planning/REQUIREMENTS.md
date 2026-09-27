@@ -46,12 +46,12 @@
 
 ## Phase 7 Requirements（PWA 更新、清單顯示、CI）
 
-- [ ] **PWA-01**: 程式碼更新能送達已安裝 Service Worker 的瀏覽器（network-first）
-- [ ] **PWA-02**: 首次載入後可離線使用，包含 CDN 資源
-- [ ] **PWA-03**: assets 變動但快取未升版時，測試會失敗
-- [ ] **UI-01**: 病歷清單側別標籤依系統正確顯示
-- [ ] **UI-02**: 病歷清單位置名稱不重複
-- [ ] **CI-01**: push／PR 自動執行完整測試
+- [x] **PWA-01**: 程式碼更新能送達已安裝 Service Worker 的瀏覽器（network-first）
+- [x] **PWA-02**: 首次載入後可離線使用，包含 CDN 資源
+- [x] **PWA-03**: assets 變動但快取未升版時，測試會失敗
+- [x] **UI-01**: 病歷清單側別標籤依系統正確顯示
+- [x] **UI-02**: 病歷清單位置名稱不重複
+- [x] **CI-01**: push／PR 自動執行完整測試
 
 ## Out of Scope
 
@@ -86,12 +86,12 @@
 | STORE-02 | Phase 6 | Complete |
 | STORE-03 | Phase 6 | Complete |
 | STORE-04 | Phase 6 | Complete |
-| PWA-01 | Phase 7 | Planned |
-| PWA-02 | Phase 7 | Planned |
-| PWA-03 | Phase 7 | Planned |
-| UI-01 | Phase 7 | Planned |
-| UI-02 | Phase 7 | Planned |
-| CI-01 | Phase 7 | Planned |
+| PWA-01 | Phase 7 | Complete |
+| PWA-02 | Phase 7 | Complete |
+| PWA-03 | Phase 7 | Complete |
+| UI-01 | Phase 7 | Complete |
+| UI-02 | Phase 7 | Complete |
+| CI-01 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total
@@ -100,4 +100,4 @@
 
 ---
 *Requirements defined: 2026-02-25*
-*Last updated: 2026-09-27 — Phase 4～6 完成，新增 Phase 7 需求*
+*Last updated: 2026-09-27 — Phase 4～7 完成*

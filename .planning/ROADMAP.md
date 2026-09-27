@@ -127,10 +127,12 @@
 
 **Why urgent:** sw.js 為 cache-first，CACHE_NAME 自 Phase 4 後未升版，Phase 5／6 的修正可能從未送達已開過網站的瀏覽器
 
+**Status:** ✓ Complete（2026-09-27，經 Claude Code 審查：35/35 測試、舊版 SW v2 → v4 升級演練通過）
+
 **Plans:** 3 plans（依序執行）
-- [ ] 7-01-PLAN.md — Service Worker 策略與快取版本守門（PWA-01～03）
-- [ ] 7-02-PLAN.md — 清單側別標籤與重複名稱（UI-01～02）
-- [ ] 7-03-PLAN.md — GitHub Actions CI（CI-01）
+- [x] 7-01-PLAN.md — Service Worker 策略與快取版本守門（PWA-01～03）
+- [x] 7-02-PLAN.md — 清單側別標籤與重複名稱（UI-01～02）
+- [x] 7-03-PLAN.md — GitHub Actions CI（CI-01）
 
 ---
 
@@ -145,6 +147,6 @@
 | 4 | 程式碼品質改善 | ✓ Complete |
 | 5 | 病歷流程 Bug 修復 | ✓ Complete |
 | 6 | 病歷儲存整併 | ✓ Complete |
-| 7 | PWA 更新／清單顯示／CI | ◐ Planned |
+| 7 | PWA 更新／清單顯示／CI | ✓ Complete |
 
 **Milestone:** Complete ✓
