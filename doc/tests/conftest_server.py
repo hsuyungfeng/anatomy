@@ -29,14 +29,16 @@ def get_base_url() -> str:
     return f"http://127.0.0.1:{get_port()}"
 
 
-def start_server(port: int = None) -> subprocess.Popen:
+def start_server(port: int = None, cwd: Path = None) -> subprocess.Popen:
     """啟動本機 HTTP 伺服器並輪詢直到就緒"""
     if port is None:
         port = get_port()
+    if cwd is None:
+        cwd = _PROJECT_ROOT
 
     server_proc = subprocess.Popen(
         [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
-        cwd=str(_PROJECT_ROOT),
+        cwd=str(cwd),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )

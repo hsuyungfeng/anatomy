@@ -108,13 +108,20 @@ defineAppMethods({
         structureSide = 'other';
       }
 
+      const recordSystem = (typeof RecordManager !== 'undefined' && RecordManager.resolveSystem)
+        ? RecordManager.resolveSystem(record)
+        : (record.system ? (typeof RecordManager !== 'undefined' ? RecordManager.normalizeSystem(record.system) : record.system) : 'unknown');
+
       if (!grouped[groupKey]) {
         grouped[groupKey] = {
           structureId,
           structureName,
           structureSide,
+          system: recordSystem,
           records: []
         };
+      } else if (grouped[groupKey].system === 'unknown' && recordSystem !== 'unknown') {
+        grouped[groupKey].system = recordSystem;
       }
 
       grouped[groupKey].records.push(record);
@@ -197,6 +204,30 @@ defineAppMethods({
   },
 
   /**
+   * 取得側別顯示標籤
+   * @param {string} system - 系統 ID (eye, body, teeth 等)
+   * @param {string} side - 側別 (left, right, bilateral, mid, center, midline 等)
+   * @returns {string} 側別文字
+   */
+  getSideLabel(system, side) {
+    if (!side) return '';
+    const normSys = typeof RecordManager !== 'undefined' ? RecordManager.normalizeSystem(system) : system;
+    if (normSys === 'eye') {
+      if (side === 'left' || side === '左眼') return '左眼';
+      if (side === 'right' || side === '右眼') return '右眼';
+      if (side === 'bilateral' || side === '雙眼') return '雙眼';
+      return '';
+    }
+    if (normSys === 'body') {
+      if (side === 'left' || side === '左側') return '左側';
+      if (side === 'right' || side === '右側') return '右側';
+      if (['mid', 'center', 'midline', '中線'].includes(side)) return '中線';
+      return '';
+    }
+    return '';
+  },
+
+  /**
    * 渲染分組的病例列表
    * @param {Array} groupedRecords - 分組後的病例陣列
    */
@@ -224,29 +255,11 @@ defineAppMethods({
       const headerDiv = document.createElement('h4');
       headerDiv.className = 'record-group__header';
 
-      let sideText = '';
-      if (group.structureSide === 'left') {
-        sideText = '左眼';
-      } else if (group.structureSide === 'right') {
-        sideText = '右眼';
-      } else if (group.structureSide === 'bilateral') {
-        sideText = '雙眼';
-      } else if (group.structureSide === 'tooth') {
-        sideText = '';
-      } else if (group.structureSide === 'mid') {
-        sideText = '中線';
-      } else if (group.structureSide === 'left') {
-        sideText = '左側';
-      } else if (group.structureSide === 'right') {
-        sideText = '右側';
-      } else {
-        sideText = '';
-      }
-
-      const sideBadge = sideText ? `<span class="structure-location">${sideText}</span>` : '';
+      const sideText = this.getSideLabel(group.system, group.structureSide);
+      const sideBadge = sideText ? `<span class="structure-location">${escapeHtml(sideText)}</span>` : '';
 
       headerDiv.innerHTML = `
-        <span class="structure-name">${escapeHtml(group.structureName)}</span>
+        <span class="structure-name">${escapeHtml(group.structureName || '')}</span>
         ${sideBadge}
       `;
       groupDiv.appendChild(headerDiv);
@@ -262,29 +275,12 @@ defineAppMethods({
 
         const timestamp = this.formatTimestamp(record.createdAt || record.timestamp);
 
-        // 構建 HTML
-        let html = `<div class="record-item__title">${escapeHtml(record.locationName)}`;
+        // 每筆記錄的標題：不要再顯示位置名稱，只顯示時間與側別（如果跟群組的側別不同才顯示）
+        const recordSideLabel = this.getSideLabel(group.system, record.side);
+        const showSide = recordSideLabel && record.side !== group.structureSide;
+        const sideBadge = showSide ? ` <span class="record-item__side">(${escapeHtml(recordSideLabel)})</span>` : '';
 
-        // 為眼睛和身體系統添加側邊信息
-        if (record.side && record.side !== 'tooth') {
-          let sideLabel = '';
-          if (['left', 'right', 'bilateral'].includes(record.side)) {
-            // 眼睛系統
-            sideLabel = record.side === 'left' ? '左眼' :
-                       record.side === 'right' ? '右眼' :
-                       record.side === 'bilateral' ? '雙眼' : '';
-          } else if (['mid', 'left', 'right'].includes(record.side)) {
-            // 身體系統
-            sideLabel = record.side === 'mid' ? '中線' :
-                       record.side === 'left' ? '左側' :
-                       record.side === 'right' ? '右側' : '';
-          }
-          if (sideLabel) {
-            html += ` <span class="record-item__side">(${sideLabel})</span>`;
-          }
-        }
-        html += `</div>`;
-        html += `<div class="record-item__timestamp">⏰ ${timestamp}</div>`;
+        let html = `<div class="record-item__title">⏰ ${escapeHtml(timestamp)}${sideBadge}</div>`;
 
         // 處理疾病信息或操作類型
         if (record.operationType) {

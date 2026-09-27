@@ -73,7 +73,7 @@ class RecordManager {
    * @param {object} anno - 標註記錄
    * @returns {string} 系統 ID（teeth, eye, body 或 unknown）
    */
-  resolveSystem(anno) {
+  static resolveSystem(anno) {
     if (!anno || typeof anno !== 'object') return 'unknown';
     if (anno.system) {
       return RecordManager.normalizeSystem(anno.system);
@@ -83,6 +83,10 @@ class RecordManager {
     if (RecordManager.matchesSystem(anno, 'eye')) return 'eye';
     if (RecordManager.matchesSystem(anno, 'teeth')) return 'teeth';
     return 'unknown';
+  }
+
+  resolveSystem(anno) {
+    return RecordManager.resolveSystem(anno);
   }
 
   /**
