@@ -105,8 +105,8 @@ defineAppMethods({
           locationText = `
             <div class="tooth-info">
               <p class="tooth-info__main">
-                <strong>${structureInfo.name}</strong>
-                ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${structureInfo.fdi}</span>` : ''}
+                <strong>${escapeHtml(structureInfo.name)}</strong>
+                ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
               </p>
               ${structureInfo.confidence < 0.5 ?
                 '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
@@ -123,11 +123,11 @@ defineAppMethods({
           locationText = `
             <div class="eye-structure-info">
               <p class="structure-info__main">
-                <strong>${structureInfo.name}</strong>
+                <strong>${escapeHtml(structureInfo.name)}</strong>
                 <span class="side-badge">${structureInfo.side === 'left' ? '左眼' : '右眼'}</span>
               </p>
               <p class="structure-info__type">
-                結構類型: ${structureInfo.type}
+                結構類型: ${escapeHtml(structureInfo.type)}
               </p>
               ${structureInfo.confidence < 0.5 ?
                 '<p class="structure-info__warning">⚠️ 檢測信心度較低，請點擊重試</p>' : ''}
@@ -140,7 +140,7 @@ defineAppMethods({
           locationText = `
             <div class="body-region-info">
               <p class="structure-info__main">
-                <strong>${structureInfo.name}</strong>
+                <strong>${escapeHtml(structureInfo.name)}</strong>
                 <span class="side-badge">${structureInfo.side === 'left' ? '左側' : structureInfo.side === 'right' ? '右側' : '中線'}</span>
               </p>
               ${structureInfo.confidence < 0.5 ?

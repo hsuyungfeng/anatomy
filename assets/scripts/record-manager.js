@@ -571,8 +571,8 @@ class RecordManager {
     let html = `<h1>醫療結構化病歷報告</h1>`;
     
     html += `<div class="info-grid">`;
-    html += `<div class="info-item"><span class="info-label">病歷ID:</span> ${record.recordId}</div>`;
-    html += `<div class="info-item"><span class="info-label">患者ID:</span> ${record.patientId || '未指定'}</div>`;
+    html += `<div class="info-item"><span class="info-label">病歷ID:</span> ${escapeHtml(record.recordId)}</div>`;
+    html += `<div class="info-item"><span class="info-label">患者ID:</span> ${escapeHtml(record.patientId || '未指定')}</div>`;
     html += `<div class="info-item"><span class="info-label">創建時間:</span> ${formatDateTime(new Date(record.createdAt))}</div>`;
     html += `<div class="info-item"><span class="info-label">更新時間:</span> ${formatDateTime(new Date(record.updatedAt))}</div>`;
     html += `</div>`;
@@ -613,15 +613,15 @@ class RecordManager {
         const timestamp = formatDateTime(new Date(anno.createdAt), 'YYYY-MM-DD HH:mm');
         html += `<div class="timeline-item">`;
         html += `<div class="timeline-date">${timestamp}</div>`;
-        html += `<div class="timeline-location">${anno.systemName} - ${anno.locationName || '未知位置'}</div>`;
+        html += `<div class="timeline-location">${escapeHtml(anno.systemName)} - ${escapeHtml(anno.locationName || '未知位置')}</div>`;
         
         if (anno.diseases && anno.diseases.length > 0) {
-          const diseaseList = anno.diseases.map(d => `${d.id} ${d.name}`).join(', ');
+          const diseaseList = anno.diseases.map(d => `${escapeHtml(d.id)} ${escapeHtml(d.name)}`).join(', ');
           html += `<div class="timeline-diseases">疾病: ${diseaseList}</div>`;
         }
         
         if (anno.treatmentNotes) {
-          html += `<div class="timeline-notes">摘要: ${anno.treatmentNotes}</div>`;
+          html += `<div class="timeline-notes">摘要: ${escapeHtml(anno.treatmentNotes)}</div>`;
         }
         html += `</div>`;
       });

@@ -135,14 +135,14 @@ class DiseaseForm {
         <div class="disease-item">
           <input
             type="checkbox"
-            id="disease-${disease.id}"
+            id="disease-${escapeHtml(disease.id)}"
             class="disease-checkbox"
-            value="${disease.id}"
-            data-name="${disease.name}"
-            data-name-en="${disease.nameEn}"
-            data-icd10="${disease.icd10 || disease.id}">
-          <label for="disease-${disease.id}">
-            ${disease.name}
+            value="${escapeHtml(disease.id)}"
+            data-name="${escapeHtml(disease.name)}"
+            data-name-en="${escapeHtml(disease.nameEn)}"
+            data-icd10="${escapeHtml(disease.icd10 || disease.id)}">
+          <label for="disease-${escapeHtml(disease.id)}">
+            ${escapeHtml(disease.name)}
           </label>
         </div>
       `;
@@ -181,14 +181,14 @@ class DiseaseForm {
           <div class="disease-item">
             <input
               type="checkbox"
-              id="disease-${disease.id}"
+              id="disease-${escapeHtml(disease.id)}"
               class="disease-checkbox"
-              value="${disease.id}"
-              data-name="${disease.name}"
-              data-name-en="${disease.nameEn}"
-              data-icd10="${disease.icd10 || disease.id}">
-            <label for="disease-${disease.id}">
-              ${disease.name}
+              value="${escapeHtml(disease.id)}"
+              data-name="${escapeHtml(disease.name)}"
+              data-name-en="${escapeHtml(disease.nameEn)}"
+              data-icd10="${escapeHtml(disease.icd10 || disease.id)}">
+            <label for="disease-${escapeHtml(disease.id)}">
+              ${escapeHtml(disease.name)}
             </label>
           </div>
         `;

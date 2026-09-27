@@ -153,8 +153,8 @@ defineAppMethods({
         html += `<optgroup label="${name}">`;
         quadrantTeeth.forEach(tooth => {
           html += `
-            <option value="${tooth.toothId}" data-name="${tooth.nameCh}" data-fdi="${tooth.fdi}">
-              ${tooth.nameCh} (FDI: ${tooth.fdi})
+            <option value="${escapeHtml(tooth.toothId)}" data-name="${escapeHtml(tooth.nameCh)}" data-fdi="${escapeHtml(tooth.fdi)}">
+              ${escapeHtml(tooth.nameCh)} (FDI: ${escapeHtml(tooth.fdi)})
             </option>
           `;
         });
@@ -193,8 +193,8 @@ defineAppMethods({
         const mainInfo = document.querySelector('.tooth-info__main');
         if (mainInfo) {
           mainInfo.innerHTML = `
-            <strong>${toothInfo.nameCh}</strong>
-            <span class="fdi-badge">FDI: ${toothInfo.fdi}</span>
+            <strong>${escapeHtml(toothInfo.nameCh)}</strong>
+            <span class="fdi-badge">FDI: ${escapeHtml(toothInfo.fdi)}</span>
             <span class="manual-badge">手動選擇</span>
           `;
         }

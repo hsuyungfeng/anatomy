@@ -33,7 +33,7 @@ defineAppMethods({
 
     sortedAnnotations.forEach((anno, index) => {
       const diseaseList = (anno.diseases || [])
-        .map(d => `<span class="disease-tag">${d.name} (${d.id})</span>`)
+        .map(d => `<span class="disease-tag">${escapeHtml(d.name)} (${escapeHtml(d.id)})</span>`)
         .join('');
 
       const date = anno.createdAt ? new Date(anno.createdAt) : new Date();
@@ -47,8 +47,8 @@ defineAppMethods({
 
       // 顯示牙齒名稱和 FDI 編號
       const locationDisplay = anno.fdiNumber ?
-        `${anno.locationName} <span class="fdi-badge">FDI: ${anno.fdiNumber}</span>` :
-        anno.locationName || '未知位置';
+        `${escapeHtml(anno.locationName)} <span class="fdi-badge">FDI: ${escapeHtml(anno.fdiNumber)}</span>` :
+        escapeHtml(anno.locationName || '未知位置');
 
       html += `
         <div class="timeline-item ${index === 0 ? 'timeline-item--latest' : ''}">
@@ -64,7 +64,7 @@ defineAppMethods({
             ${anno.treatmentNotes ? `
               <div class="timeline-notes">
                 <strong>療程摘要：</strong>
-                <p>${anno.treatmentNotes}</p>
+                <p>${escapeHtml(anno.treatmentNotes)}</p>
               </div>
             ` : ''}
           </div>
@@ -308,7 +308,7 @@ defineAppMethods({
       const sideBadge = sideText ? `<span class="structure-location">${sideText}</span>` : '';
 
       headerDiv.innerHTML = `
-        <span class="structure-name">${group.structureName}</span>
+        <span class="structure-name">${escapeHtml(group.structureName)}</span>
         ${sideBadge}
       `;
       groupDiv.appendChild(headerDiv);
@@ -325,7 +325,7 @@ defineAppMethods({
         const timestamp = this.formatTimestamp(record.createdAt || record.timestamp);
 
         // 構建 HTML
-        let html = `<div class="record-item__title">${record.locationName}`;
+        let html = `<div class="record-item__title">${escapeHtml(record.locationName)}`;
 
         // 為眼睛和身體系統添加側邊信息
         if (record.side && record.side !== 'tooth') {
@@ -360,9 +360,9 @@ defineAppMethods({
             'other': '其他'
           };
           const operationName = operationTypes[record.operationType] || record.operationType;
-          html += `<div class="record-item__disease">🏥 ${operationName}</div>`;
+          html += `<div class="record-item__disease">🏥 ${escapeHtml(operationName)}</div>`;
           if (record.description) {
-            html += `<div class="record-item__description">📋 ${record.description}</div>`;
+            html += `<div class="record-item__description">📋 ${escapeHtml(record.description)}</div>`;
           }
         } else if (record.diseases && Array.isArray(record.diseases)) {
           // 牙齒和眼睛系統疾病記錄
@@ -370,12 +370,12 @@ defineAppMethods({
             const disease = record.diseases[0];  // 只取第一個疾病
             let diseaseText = '';
             if (typeof disease === 'object' && disease.name) {
-              diseaseText = disease.name;
+              diseaseText = escapeHtml(disease.name);
               if (disease.id) {
-                diseaseText += ` (${disease.id})`;
+                diseaseText += ` (${escapeHtml(disease.id)})`;
               }
             } else if (typeof disease === 'string') {
-              diseaseText = disease;
+              diseaseText = escapeHtml(disease);
             }
             if (diseaseText) {
               html += `<div class="record-item__disease">🏥 ${diseaseText}</div>`;
@@ -386,7 +386,7 @@ defineAppMethods({
         // 顯示備註（疾病系統使用 treatmentNotes，操作系統使用 notes）
         const notes = record.treatmentNotes || record.notes || '';
         if (notes) {
-          html += `<div class="record-item__notes">📝 ${notes}</div>`;
+          html += `<div class="record-item__notes">📝 ${escapeHtml(notes)}</div>`;
         }
 
         itemDiv.innerHTML = html;

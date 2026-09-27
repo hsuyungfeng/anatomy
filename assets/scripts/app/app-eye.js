@@ -125,7 +125,7 @@ defineAppMethods({
     // 設置位置資訊
     const locationDiv = $('#modal-location');
     if (locationDiv) {
-      const englishName = structureInfo.nameEn.toLowerCase();
+      const englishName = (structureInfo.nameEn || '').toLowerCase();
       const sideBadge = structureInfo.side === 'left' ? '左眼' :
                         structureInfo.side === 'right' ? '右眼' :
                         '雙眼';
@@ -133,14 +133,14 @@ defineAppMethods({
       let locationText = `
         <div class="eye-structure-info">
           <p class="structure-info__main">
-            <strong>${structureInfo.name}</strong>
+            <strong>${escapeHtml(structureInfo.name)}</strong>
             <span class="side-badge">${sideBadge}</span>
           </p>
           <p class="structure-info__english">
-            <em>English: ${englishName}</em>
+            <em>English: ${escapeHtml(englishName)}</em>
           </p>
           <p class="structure-info__type">
-            結構類型: ${structureInfo.type}
+            結構類型: ${escapeHtml(structureInfo.type)}
           </p>
       `;
 
@@ -148,13 +148,13 @@ defineAppMethods({
       if (detailedInfo) {
         locationText += `
           <div class="structure-info__details">
-            <p class="structure-info__desc">${detailedInfo.description}</p>
+            <p class="structure-info__desc">${escapeHtml(detailedInfo.description)}</p>
             <p class="structure-info__func">
-              <strong>功能：</strong>${detailedInfo.function}
+              <strong>功能：</strong>${escapeHtml(detailedInfo.function)}
             </p>
             ${detailedInfo.diseases && detailedInfo.diseases.length > 0 ? `
               <p class="structure-info__diseases">
-                <strong>常見疾病：</strong>${detailedInfo.diseases.join('、')}
+                <strong>常見疾病：</strong>${detailedInfo.diseases.map(d => escapeHtml(d)).join('、')}
               </p>
             ` : ''}
           </div>
@@ -220,7 +220,7 @@ defineAppMethods({
     if (!description) {
       infoContent.innerHTML = `
             <div class="eye-info-content">
-                <div class="name">${structure.name || structure.structureId}</div>
+                <div class="name">${escapeHtml(structure.name || structure.structureId)}</div>
             </div>
         `;
       return;
@@ -228,10 +228,10 @@ defineAppMethods({
 
     infoContent.innerHTML = `
         <div class="eye-info-content">
-            <div class="name">${description.name}</div>
-            <div class="name-en">${description.nameEn}</div>
-            <div class="description">${description.description}</div>
-            <div class="description-en">${description.descriptionEn}</div>
+            <div class="name">${escapeHtml(description.name)}</div>
+            <div class="name-en">${escapeHtml(description.nameEn)}</div>
+            <div class="description">${escapeHtml(description.description)}</div>
+            <div class="description-en">${escapeHtml(description.descriptionEn)}</div>
         </div>
     `;
   },

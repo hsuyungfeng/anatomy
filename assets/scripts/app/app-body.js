@@ -116,22 +116,22 @@ defineAppMethods({
       const regionName = region.nameZh || region.nameEn;
       
       // 主區域
-      html += `<optgroup label="${sideName}${regionName}">`;
+      html += `<optgroup label="${escapeHtml(sideName + regionName)}">`;
       
       // 子區域
       if (region.subRegions && region.subRegions.length > 0) {
         region.subRegions.forEach(sub => {
           html += `
-            <option value="${sub.id}" data-region-id="${region.id}" data-name-zh="${sub.nameZh}" data-name-en="${sub.nameEn}" data-side="${region.side}">
-              ${sub.nameZh} (${sub.nameEn})
+            <option value="${escapeHtml(sub.id)}" data-region-id="${escapeHtml(region.id)}" data-name-zh="${escapeHtml(sub.nameZh)}" data-name-en="${escapeHtml(sub.nameEn)}" data-side="${escapeHtml(region.side)}">
+              ${escapeHtml(sub.nameZh)} (${escapeHtml(sub.nameEn)})
             </option>
           `;
         });
       } else {
         // 沒有子區域時，選擇主區域
         html += `
-          <option value="${region.id}" data-region-id="${region.id}" data-name-zh="${region.nameZh}" data-name-en="${region.nameEn}" data-side="${region.side}">
-            ${region.nameZh} (${region.nameEn})
+          <option value="${escapeHtml(region.id)}" data-region-id="${escapeHtml(region.id)}" data-name-zh="${escapeHtml(region.nameZh)}" data-name-en="${escapeHtml(region.nameEn)}" data-side="${escapeHtml(region.side)}">
+            ${escapeHtml(region.nameZh)} (${escapeHtml(region.nameEn)})
           </option>
         `;
       }
@@ -177,7 +177,7 @@ defineAppMethods({
         locationDiv.innerHTML = `
           <div class="body-region-info">
             <p class="structure-info__main">
-              <strong>${bodyRegionInfo.name}</strong>
+              <strong>${escapeHtml(bodyRegionInfo.name)}</strong>
               <span class="side-badge">${sideBadge}</span>
               <span class="manual-badge">手動選擇</span>
             </p>
@@ -352,10 +352,10 @@ defineAppMethods({
       <div class="body-structure-info">
         <div class="info-title">身體位置</div>
         <div class="info-item">
-          <strong>部位：</strong> ${regionInfo.nameZh}
+          <strong>部位：</strong> ${escapeHtml(regionInfo.nameZh)}
         </div>
         <div class="info-item">
-          <strong>English：</strong> ${regionInfo.nameEn}
+          <strong>English：</strong> ${escapeHtml(regionInfo.nameEn)}
         </div>
         <div class="info-item">
           <strong>側邊：</strong> ${regionInfo.side === 'mid' ? '中線' : (regionInfo.side === 'left' ? '左側' : '右側')}
@@ -409,7 +409,7 @@ defineAppMethods({
         region.commonDiseases.skin.forEach(disease => {
           skinContainer.innerHTML += `
             <label>
-              <input type="checkbox" value="${disease}"> ${disease}
+              <input type="checkbox" value="${escapeHtml(disease)}"> ${escapeHtml(disease)}
             </label><br>
           `;
         });
@@ -420,7 +420,7 @@ defineAppMethods({
         region.commonDiseases.subcutaneous.forEach(disease => {
           subContainer.innerHTML += `
             <label>
-              <input type="checkbox" value="${disease}"> ${disease}
+              <input type="checkbox" value="${escapeHtml(disease)}"> ${escapeHtml(disease)}
             </label><br>
           `;
         });
@@ -505,13 +505,13 @@ defineAppMethods({
       const group = groupedRecords[key];
       html += `
         <div class="record-group">
-          <h4 class="record-group-title">${group.location}</h4>
+          <h4 class="record-group-title">${escapeHtml(group.location)}</h4>
           <div class="record-group-content">
       `;
 
       group.records.forEach(record => {
-        const diseaseList = record.diseases
-          .map(d => `${d.name} <span class="icd-code">[${d.icd10}]</span>`)
+        const diseaseList = (record.diseases || [])
+          .map(d => `${escapeHtml(d.name)} <span class="icd-code">[${escapeHtml(d.icd10)}]</span>`)
           .join('、');
 
         html += `
@@ -521,7 +521,7 @@ defineAppMethods({
             </div>
             <div class="record-details">
               <strong>疾病：</strong> ${diseaseList || '無'}<br>
-              <strong>備註：</strong> ${record.treatmentNotes || '—'}
+              <strong>備註：</strong> ${record.treatmentNotes ? escapeHtml(record.treatmentNotes) : '—'}
             </div>
           </div>
         `;

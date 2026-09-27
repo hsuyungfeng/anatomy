@@ -23,6 +23,7 @@ sys.path.insert(0, str(_TESTS_DIR))
 import conftest_server as server
 import smoke_test
 import tools_load_test
+import xss_test
 import snapshot_prototype
 from playwright.sync_api import sync_playwright
 
@@ -90,6 +91,23 @@ def main():
                         print(f"[FAIL] {test_name}")
                         print(f"       錯誤訊息: {err}")
                         traceback.print_exc()
+                print("\n--- 執行 XSS 安全性測試 ---")
+                for test_func in xss_test.TESTS:
+                    test_name = test_func.__name__
+                    skip_reason = getattr(test_func, "SKIP_REASON", None)
+
+                    if skip_reason:
+                        print(f"[SKIP] {test_name}\n       原因: {skip_reason}")
+                        skipped += 1
+                        continue
+
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
                         failed += 1
 
                 if args.with_snapshot:

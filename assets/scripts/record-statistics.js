@@ -360,17 +360,23 @@ class RecordStatistics {
     results.forEach(result => {
       const record = result.record;
       const annotations = result.matchedAnnotations;
-      
+      const patientIdDisplay = escapeHtml(record.patientId || '未命名病歷');
+      const diseaseText = annotations.map(a => {
+        const loc = escapeHtml(a.locationName || '');
+        const dis = a.diseases?.map(d => escapeHtml(d.name)).join(', ') || '無疾病';
+        return `${loc}: ${dis}`;
+      }).join(' | ');
+
       html += `
         <div class="search-result-item">
           <div class="search-result-item__title">
-            ${record.patientId || '未命名病歷'} (${annotations.length} 筆匹配)
+            ${patientIdDisplay} (${annotations.length} 筆匹配)
           </div>
           <div class="search-result-item__info">
             建立時間: ${formatDateTime(new Date(record.createdAt))}
           </div>
           <div class="search-result-item__diseases">
-            ${annotations.map(a => a.locationName + ': ' + (a.diseases?.map(d => d.name).join(', ') || '無疾病')).join(' | ')}
+            ${diseaseText}
           </div>
         </div>
       `;
