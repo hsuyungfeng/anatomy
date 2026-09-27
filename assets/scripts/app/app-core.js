@@ -11,8 +11,6 @@ class MedicalRecordApp {
     this.recordManager = null;
     this.diseaseForm = null;
     this.ocrHandler = null;
-    this.diseaseVisualizer = null; // 疾病可視化管理器
-    this.dentalMapper = null; // 牙齒圖像映射器
     this.eyeMapper = null; // 眼睛圖像映射器 [新增]
     this.bodyImageMapper = null; // 身體圖像映射器 [新增]
 
@@ -213,19 +211,6 @@ class MedicalRecordApp {
       systemId: this.currentSystemId
     });
 
-    // 牙齒圖像映射器
-    this.dentalMapper = new DentalImageMapper({
-      coordinatesUrl: '/data/dental-coordinates.json',
-      debug: true  // 開發階段啟用，生產環境改為 false
-    });
-
-    // 預加載座標數據
-    this.dentalMapper.loadCoordinates().then(success => {
-      if (!success) {
-        console.error('✗ 牙齒座標數據加載失敗');
-      }
-    });
-
     // 眼睛圖像映射器 [新增區塊]
     this.eyeMapper = new EyeImageMapper({
       coordinatesUrl: '/data/eye-coordinates.json',
@@ -263,11 +248,6 @@ class MedicalRecordApp {
 
     // 病歷管理器
     this.recordManager = new RecordManager();
-
-    // 疾病可視化管理器
-    if (typeof DiseaseVisualizationManager !== 'undefined') {
-      this.diseaseVisualizer = new DiseaseVisualizationManager($('#image-canvas'));
-    }
 
     // 病歷統計管理器
     if (typeof RecordStatistics !== 'undefined') {

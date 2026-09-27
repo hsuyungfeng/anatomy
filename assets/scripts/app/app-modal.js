@@ -88,8 +88,8 @@ defineAppMethods({
     if (presetStructure) {
       structureInfo = presetStructure;
     } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-      // 牙齒系統：使用 DentalImageMapper 識別
-      structureInfo = this.detectToothPosition(position);
+      // 牙齒系統已改用牙位圖，無 preset 時直接 return
+      return;
     } else if (this.currentSystemId === 'eye') {
       // 眼睛系統 [新增] 使用 EyeImageMapper 識別
       structureInfo = this.detectEyeStructure(position);
@@ -106,23 +106,14 @@ defineAppMethods({
       if (structureInfo) {
         // 牙齒系統特定的顯示格式
         if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-          const showWarning = !presetStructure && structureInfo.confidence < 0.5;
-          const showManual = !presetStructure && (structureInfo.fallback || structureInfo.confidence < 0.5);
-
           locationText = `
             <div class="tooth-info">
               <p class="tooth-info__main">
                 <strong>${escapeHtml(structureInfo.name)}</strong>
                 ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
               </p>
-              ${showWarning ? '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
             </div>
           `;
-
-          // 低信心度或備選方法時顯示手動選擇器
-          if (showManual) {
-            locationText += this.renderManualToothSelector();
-          }
         }
         // 眼睛系統特定的顯示格式 [新增]
         else if (this.currentSystemId === 'eye') {
@@ -158,12 +149,7 @@ defineAppMethods({
         }
       } else {
         // 無法識別 [修改]
-        if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
-          locationText = `
-            <p class="tooth-info__error">無法自動識別牙齒位置</p>
-            ${this.renderManualToothSelector()}
-          `;
-        } else if (this.currentSystemId === 'eye') {
+        if (this.currentSystemId === 'eye') {
           locationText = `
             <p class="structure-info__error">無法自動識別眼睛結構位置，請重新點擊</p>
           `;
@@ -176,9 +162,7 @@ defineAppMethods({
       }
 
       locationDiv.innerHTML = locationText;
-      if (!presetStructure && (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth')) {
-        this.setupManualToothSelector();
-      } else if (this.currentSystemId === 'body') {
+      if (this.currentSystemId === 'body') {
         this.setupManualBodySelector();
       }
     }
@@ -301,9 +285,7 @@ defineAppMethods({
     // 根據系統類型返回更具體的位置信息
     switch (this.currentSystemId) {
       case 'teeth':
-        // 牙齒系統：返回牙齒編號範圍
-        const toothLocation = this.estimateToothLocation(position);
-        return toothLocation ? `牙齒位置: ${toothLocation}` : `位置: 牙齒區域`;
+        return '位置: 牙齒區域';
 
       case 'eye':
         const eyeLocation = this.estimateEyeLocation(position);
