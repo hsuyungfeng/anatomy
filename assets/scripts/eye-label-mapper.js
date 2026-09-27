@@ -433,7 +433,7 @@ class EyeLabelMapper {
 
   /**
    * 從外部 JSON 數據加載自定義標籤映射
-   * 用於導入用戶通過 eye-label-mapping-tool.html 完成的配對結果
+   * 用於導入用戶通過 doc/tools/eye-label-mapping-tool.html 完成的配對結果
    * @param {Object|string} mappingData 映射數據（對象或 JSON 字串）
    * @returns {boolean} 是否成功加載
    */
