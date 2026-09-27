@@ -151,11 +151,16 @@ defineAppMethods({
    * @returns {string} 格式化後的時間字符串 (如 "2026-01-15 10:30:45")
    */
   formatTimestamp(isoString) {
+    if (!isoString) {
+      // TODO(10-03): 改用 t('time.unknown')
+      return '時間不明';
+    }
     try {
       const date = new Date(isoString);
 
       if (isNaN(date.getTime())) {
-        return '無效的時間戳';
+        // TODO(10-03): 改用 t('time.unknown')
+        return '時間不明';
       }
 
       const year = date.getFullYear();
@@ -168,7 +173,8 @@ defineAppMethods({
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     } catch (error) {
       console.error('[formatTimestamp] 格式化失敗:', error);
-      return '時間戳格式化錯誤';
+      // TODO(10-03): 改用 t('time.unknown')
+      return '時間不明';
     }
   },
 
