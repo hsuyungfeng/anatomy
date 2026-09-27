@@ -21,6 +21,9 @@ class MedicalRecordApp {
     this.currentImageId = null;
     this.anatomicalSystems = null;
     this.selectedEye = 'right'; // 追蹤選擇的眼睛（左眼或右眼）
+    this.odontogram = null;
+    this.isReferenceImageMode = false;
+    this.toothNames = null;
 
     this.init();
   }
@@ -425,6 +428,14 @@ class MedicalRecordApp {
 
     // 設置眼睛標籤按鈕事件監聽
     this.setupEyeLabelButtonListeners();
+
+    // 設置參考圖切換按鈕事件監聽
+    const refToggleBtn = $('#reference-image-toggle');
+    if (refToggleBtn) {
+      refToggleBtn.addEventListener('click', () => {
+        this.toggleReferenceImage();
+      });
+    }
   }
   /**
    * 處理系統標籤頁點擊
@@ -509,37 +520,69 @@ class MedicalRecordApp {
       this.currentSystemId = systemId;
 
       // 控制眼睛標籤面板的可見性
-      // 只有在眼睛系統時才顯示面板
       this.toggleEyeLabelPanel(systemId === 'eye');
 
-      // 找到系統配置
-      const system = this.anatomicalSystems.systems.find(
-        s => s.id === systemId
-      );
+      const isTeeth = systemId === 'teeth' || systemId === 'primary_teeth';
+      const odontogramView = document.getElementById('odontogram-view');
+      const canvas = document.getElementById('image-canvas');
+      const toggleBtn = document.getElementById('reference-image-toggle');
 
-      if (!system) {
-        throw new Error(`System not found: ${systemId}`);
+      if (isTeeth) {
+        this.isReferenceImageMode = false;
+        if (odontogramView) odontogramView.hidden = false;
+        if (canvas) canvas.style.display = 'none';
+        if (toggleBtn) {
+          toggleBtn.hidden = false;
+          toggleBtn.setAttribute('aria-pressed', 'false');
+          toggleBtn.textContent = '參考圖';
+          if (systemId === 'primary_teeth') {
+            toggleBtn.disabled = true;
+            toggleBtn.setAttribute('title', '乳牙沒有參考圖');
+          } else {
+            toggleBtn.disabled = false;
+            toggleBtn.setAttribute('title', '切換參考圖');
+          }
+        }
+        await this.renderOdontogram();
+      } else {
+        this.isReferenceImageMode = false;
+        if (odontogramView) odontogramView.hidden = true;
+        if (canvas) {
+          canvas.style.display = 'block';
+          if (canvas.width === 0 || canvas.height === 0) {
+            canvas.width = 800;
+            canvas.height = 600;
+          }
+        }
+        if (toggleBtn) {
+          toggleBtn.hidden = true;
+          toggleBtn.setAttribute('aria-pressed', 'false');
+          toggleBtn.textContent = '參考圖';
+        }
       }
 
-      // 使用第一張圖像
-      const imageId = system.imageIds[0];
-      this.currentImageId = imageId;
+      // 載入底層圖像（乳牙無底層圖檔，跳過）
+      if (systemId !== 'primary_teeth') {
+        const system = this.anatomicalSystems.systems.find(
+          s => s.id === systemId
+        );
 
-      // 構建圖像路徑
-      // 牙齒系統統一使用 teeth 資料夾
-      const imageFolder = (systemId === 'teeth' || systemId === 'primary_teeth') ? 'teeth' : systemId;
+        if (!system) {
+          throw new Error(`System not found: ${systemId}`);
+        }
 
-      // 特殊映射：某些 imageId 需要映射到實際的文件名
-      const imageFileMap = {
-        'eye-3d': '3Deye',        // eye-3d imageId 對應 3Deye.png 文件
-        'eyefunctions': '3Deye'   // eyefunctions imageId 也對應 3Deye.png 文件
-      };
+        const imageId = system.imageIds[0];
+        this.currentImageId = imageId;
+        const imageFolder = systemId === 'teeth' ? 'teeth' : systemId;
+        const imageFileMap = {
+          'eye-3d': '3Deye',
+          'eyefunctions': '3Deye'
+        };
 
-      const imageFileName = imageFileMap[imageId] || imageId;
-      const imagePath = `assets/images/${imageFolder}/${imageFileName}.png`;
-
-      // 加載圖像
-      await this.annotator.loadImage(imagePath);
+        const imageFileName = imageFileMap[imageId] || imageId;
+        const imagePath = `assets/images/${imageFolder}/${imageFileName}.png`;
+        await this.annotator.loadImage(imagePath);
+      }
 
       // 更新標題
       const modal = $('#disease-modal');
@@ -552,11 +595,11 @@ class MedicalRecordApp {
 
       // 在眼睛系統加載後繪製標籤 [新增]
       if (systemId === 'eye' && this.eyeLabelMapper) {
-        const canvas = document.getElementById('image-canvas');
-        if (canvas) {
+        const c = document.getElementById('image-canvas');
+        if (c) {
           setTimeout(() => {
             // 延遲繪製以確保圖像已加載
-            this.eyeLabelMapper.drawLabels(canvas, {
+            this.eyeLabelMapper.drawLabels(c, {
               showText: true,
               textColor: '#333',
               fontSize: 13,
@@ -584,6 +627,16 @@ class MedicalRecordApp {
    * @param {string} systemId - 系統 ID
    */
   loadAnnotations(systemId) {
+    const isTeeth = systemId === 'teeth' || systemId === 'primary_teeth';
+    if (isTeeth) {
+      this.annotator.clearAnnotations();
+      const annotations = this.recordManager.getAnnotationsBySystem(systemId);
+      annotations.forEach(anno => this.annotator.annotations.push(anno));
+      this.refreshOdontogramRecords();
+      this.updateRecordList(systemId);
+      return;
+    }
+
     const annotations = this.recordManager.getAnnotationsBySystem(systemId);
 
     // 清除舊標註
@@ -600,11 +653,6 @@ class MedicalRecordApp {
       });
     });
 
-    // 更新疾病可視化（僅限牙齒系統）
-    if (this.diseaseVisualizer && systemId === 'teeth') {
-      this.diseaseVisualizer.render(annotations);
-    }
-
     // 更新列表
     this.updateRecordList(systemId);
   }
@@ -613,6 +661,12 @@ class MedicalRecordApp {
    * @param {Event} e - 事件
    */
   handleAnnotationClick(e) {
+    // 牙齒系統：參考圖僅供檢視，不開啟模態
+    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      showNotification('參考圖僅供檢視，請切回牙位圖點選牙齒', 'info');
+      return;
+    }
+
     const { position } = e.detail;
 
     // 如果是眼睛系統，顯示結構資訊

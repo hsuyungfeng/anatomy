@@ -139,7 +139,7 @@ def test_every_tooth_opens_correct_modal(browser, base_url: str):
                     f"[scale={scale}] 點擊 FDI {fdi} 後，#modal-location 應包含 '{fdi}'，實際為 '{location_text}'"
                 )
                 page.click("#modal-cancel-btn")
-                page.wait_for_selector("#disease-modal[aria-hidden='true']", timeout=3000)
+                page.wait_for_selector("#disease-modal[aria-hidden='true']", state="attached", timeout=3000)
         finally:
             context.close()
 
@@ -162,7 +162,7 @@ def test_every_tooth_opens_correct_modal(browser, base_url: str):
                 f"[乳牙] 點擊 FDI {fdi} 後，#modal-location 應包含 '{fdi}'，實際為 '{location_text}'"
             )
             page.click("#modal-cancel-btn")
-            page.wait_for_selector("#disease-modal[aria-hidden='true']", timeout=3000)
+            page.wait_for_selector("#disease-modal[aria-hidden='true']", state="attached", timeout=3000)
     finally:
         context.close()
 

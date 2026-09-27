@@ -27,7 +27,7 @@ if os.path.isdir(_SNAP_LIB):
 
 def _save_teeth_record(page, checkbox_index: int = 0) -> str:
     """輔助函式：在牙齒系統透過 DOM 勾選疾病並點擊儲存"""
-    page.evaluate("() => window.app.openDiseaseModal({x: 200, y: 150})")
+    page.click('.tooth[data-fdi="16"] .crown')
     page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
     page.wait_for_selector(".disease-checkbox", timeout=5000)
     checkbox = page.locator(".disease-checkbox").nth(checkbox_index)

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anatomy-v4';
+const CACHE_NAME = 'anatomy-v7';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   '/assets/styles/annotator.css',
   '/assets/styles/modal.css',
   '/assets/styles/body-operation-form.css',
+  '/assets/styles/odontogram.css',
   '/assets/scripts/utils.js',
   '/assets/scripts/dental-image-mapper.js',
   '/assets/scripts/eye-image-mapper.js',
@@ -22,6 +23,7 @@ const ASSETS_TO_CACHE = [
   '/assets/scripts/record-statistics.js',
   '/assets/scripts/eye-structure-info.js',
   '/assets/scripts/disease-visualization.js',
+  '/assets/scripts/odontogram.js',
   '/assets/scripts/app/app-core.js',
   '/assets/scripts/app/app-eye.js',
   '/assets/scripts/app/app-tooth.js',

@@ -75,15 +75,19 @@ defineAppMethods({
   /**
    * 打開疾病記錄模態視窗
    * @param {object} position - 點擊位置
+   * @param {object} [presetStructure=null] - 預先指定的結構資訊（例如來自牙位圖）
    */
-  async openDiseaseModal(position) {
+  async openDiseaseModal(position, presetStructure = null) {
     const modal = $('#disease-modal');
     if (!modal) return;
 
-    // 根據系統類型進行適當的結構檢測 [修改]
-    let structureInfo = null;
+    this.currentClickPosition = position;
 
-    if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+    // 根據系統類型進行適當的結構檢測
+    let structureInfo = null;
+    if (presetStructure) {
+      structureInfo = presetStructure;
+    } else if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
       // 牙齒系統：使用 DentalImageMapper 識別
       structureInfo = this.detectToothPosition(position);
     } else if (this.currentSystemId === 'eye') {
@@ -102,19 +106,21 @@ defineAppMethods({
       if (structureInfo) {
         // 牙齒系統特定的顯示格式
         if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+          const showWarning = !presetStructure && structureInfo.confidence < 0.5;
+          const showManual = !presetStructure && (structureInfo.fallback || structureInfo.confidence < 0.5);
+
           locationText = `
             <div class="tooth-info">
               <p class="tooth-info__main">
                 <strong>${escapeHtml(structureInfo.name)}</strong>
                 ${structureInfo.fdi ? `<span class="fdi-badge">FDI: ${escapeHtml(structureInfo.fdi)}</span>` : ''}
               </p>
-              ${structureInfo.confidence < 0.5 ?
-                '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
+              ${showWarning ? '<p class="tooth-info__warning">⚠️ 檢測信心度較低，請確認選擇</p>' : ''}
             </div>
           `;
 
           // 低信心度或備選方法時顯示手動選擇器
-          if (structureInfo.fallback || structureInfo.confidence < 0.5) {
+          if (showManual) {
             locationText += this.renderManualToothSelector();
           }
         }
@@ -170,7 +176,7 @@ defineAppMethods({
       }
 
       locationDiv.innerHTML = locationText;
-      if (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth') {
+      if (!presetStructure && (this.currentSystemId === 'teeth' || this.currentSystemId === 'primary_teeth')) {
         this.setupManualToothSelector();
       } else if (this.currentSystemId === 'body') {
         this.setupManualBodySelector();
@@ -367,15 +373,15 @@ defineAppMethods({
         updatedAt: new Date().toISOString()
       };
     } else {
-      // 牙齒系統的標註對象（原有邏輯）
+      // 牙齒系統的標註對象
       annotation = {
         annotationId: generateUUID(),
         system: 'teeth',
-        position: this.currentClickPosition,
+        position: this.currentClickPosition || null,
 
         // 使用檢測到的牙齒資訊
         locationName: this.currentToothInfo ? this.currentToothInfo.name :
-                      this.getLocationName(this.currentClickPosition),
+                      (this.currentClickPosition ? this.getLocationName(this.currentClickPosition) : ''),
         locationNameEn: this.currentToothInfo ? this.currentToothInfo.nameEn : '',
 
         // 編號系統
@@ -389,6 +395,7 @@ defineAppMethods({
         // 檢測元數據
         detectionConfidence: this.currentToothInfo ? this.currentToothInfo.confidence : null,
         manualSelection: this.currentToothInfo ? (this.currentToothInfo.manualSelection || false) : false,
+        source: this.currentToothInfo ? (this.currentToothInfo.source || null) : null,
 
         // 疾病和療程
         diseases: formData.diseases,
@@ -403,24 +410,25 @@ defineAppMethods({
       // 保存到記錄管理器
       this.recordManager.addAnnotation(this.currentSystemId, annotation);
 
-      // 添加視覺標註到圖像
-      const system = this.anatomicalSystems.systems.find(
-        s => s.id === this.currentSystemId
-      );
+      // 添加視覺標註到圖像（僅非牙齒系統，牙齒系統改由牙位圖標示）
+      if (this.currentSystemId !== 'teeth' && this.currentSystemId !== 'primary_teeth') {
+        const system = this.anatomicalSystems.systems.find(
+          s => s.id === this.currentSystemId
+        );
 
-      this.annotator.addAnnotation({
-        ...annotation,
-        color: system?.color || '#ff0000'
-      });
-
-      // 更新疾病可視化（僅限牙齒系統）
-      if (this.diseaseVisualizer && this.currentSystemId === 'teeth') {
-        const annotations = this.recordManager.getAnnotationsBySystem(this.currentSystemId);
-        this.diseaseVisualizer.render(annotations);
+        this.annotator.addAnnotation({
+          ...annotation,
+          color: system?.color || '#ff0000'
+        });
+      } else {
+        this.annotator.annotations.push(annotation);
       }
 
       // 關閉模態並重新加載病例列表（使用分組功能）
       this.closeDiseaseModal();
+      if (this.refreshOdontogramRecords) {
+        this.refreshOdontogramRecords();
+      }
       await this.loadAndDisplayRecords();
 
       // 顯示成功提示
