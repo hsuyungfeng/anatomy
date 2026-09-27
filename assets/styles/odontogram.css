@@ -1,0 +1,174 @@
+/* ================================================
+   結構化 SVG 牙位圖樣式 (Odontogram)
+   ================================================ */
+
+:root {
+  --tooth-crown: #fbfaf5;
+  --tooth-crown-stroke: #8a8f99;
+  --tooth-root: #efe6d2;
+  --tooth-root-stroke: #a39578;
+  --tooth-hover: #dbe9ff;
+  --tooth-accent: var(--color-primary, #0066cc);
+  --tooth-guide: #c9ced8;
+  --tooth-has-record-crown: #ffe57f;
+  --tooth-has-record-stroke: #c49000;
+  --tooth-caries: #dc4a3d;
+  --tooth-root-canal: #8b5cf6;
+}
+
+[data-theme="dark"] {
+  --tooth-crown: #e9e6dc;
+  --tooth-crown-stroke: #6f7580;
+  --tooth-root: #b9ab8c;
+  --tooth-root-stroke: #8c7e62;
+  --tooth-hover: #29406b;
+  --tooth-accent: var(--color-primary, #4dabf7);
+  --tooth-guide: #3a4150;
+  --tooth-has-record-crown: #b28900;
+  --tooth-has-record-stroke: #ffd700;
+  --tooth-caries: #f06b5f;
+  --tooth-root-canal: #a98bfa;
+}
+
+.odontogram-view {
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 16px;
+  background-color: var(--color-bg-primary, #ffffff);
+}
+
+.odontogram-view[hidden],
+#reference-image-toggle[hidden] {
+  display: none !important;
+}
+
+.image-viewer {
+  min-height: 480px;
+}
+
+.odontogram {
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+  display: block;
+}
+
+.odontogram .guide {
+  stroke: var(--tooth-guide);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.odontogram .guide--mid {
+  stroke-dasharray: none;
+}
+
+.odontogram .quadrant-label {
+  fill: var(--color-text-secondary, #6c757d);
+  font-size: 14px;
+}
+
+.odontogram .tooth-label {
+  fill: var(--color-text-secondary, #6c757d);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.odontogram .tooth-record-badge {
+  fill: var(--color-danger, #dc3545);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.odontogram .tooth {
+  cursor: pointer;
+  outline: none;
+}
+
+.odontogram .tooth .hit {
+  fill: transparent;
+}
+
+.odontogram .tooth .crown {
+  fill: var(--tooth-crown);
+  stroke: var(--tooth-crown-stroke);
+  stroke-width: 1.4;
+  transition: fill .12s, stroke .12s;
+}
+
+.odontogram .tooth .root {
+  fill: var(--tooth-root);
+  stroke: var(--tooth-root-stroke);
+  stroke-width: 1.2;
+  transition: fill .12s, stroke .12s;
+}
+
+.odontogram .tooth .missing-mark {
+  stroke: var(--tooth-caries);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+  display: none;
+}
+
+.odontogram .tooth:hover .crown,
+.odontogram .tooth:hover .root {
+  fill: var(--tooth-hover);
+}
+
+.odontogram .tooth:focus-visible .crown,
+.odontogram .tooth:focus-visible .root {
+  stroke: var(--tooth-accent);
+  stroke-width: 2.5;
+}
+
+.odontogram .tooth.is-selected .crown,
+.odontogram .tooth.is-selected .root {
+  stroke: var(--tooth-accent);
+  stroke-width: 3;
+}
+
+.odontogram .tooth.is-selected .tooth-label {
+  fill: var(--tooth-accent);
+  font-weight: 700;
+}
+
+/* 有病歷的牙齒標示 */
+.odontogram .tooth.has-record .crown {
+  fill: var(--tooth-has-record-crown);
+  stroke: var(--tooth-has-record-stroke);
+  stroke-width: 1.8;
+}
+
+.odontogram .tooth.has-record .tooth-label {
+  fill: var(--color-primary, #0066cc);
+  font-weight: bold;
+}
+
+/* 狀態示範 */
+.odontogram .tooth.has-caries .crown {
+  fill: var(--tooth-caries);
+}
+
+.odontogram .tooth.has-root-canal .root {
+  fill: var(--tooth-root-canal);
+}
+
+.odontogram .tooth.is-missing .crown,
+.odontogram .tooth.is-missing .root {
+  opacity: .25;
+  stroke-dasharray: 3 3;
+}
+
+.odontogram .tooth.is-missing .missing-mark {
+  display: inline;
+}

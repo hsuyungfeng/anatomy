@@ -34,8 +34,8 @@ def test_save_teeth_record(browser, base_url: str):
         page.goto(f"{base_url}/index.html")
         page.wait_for_function("() => window.app !== undefined && window.app !== null", timeout=10000)
 
-        # 透過 openDiseaseModal 開啟牙齒模態
-        page.evaluate("() => window.app.openDiseaseModal({x: 200, y: 150})")
+        # 點擊牙位圖上的一顆牙開啟模態
+        page.click('.tooth[data-fdi="16"] .crown')
         page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
         page.wait_for_selector(".disease-checkbox", timeout=5000)
 
@@ -278,7 +278,7 @@ def test_records_persist_after_reload(browser, base_url: str):
         page.wait_for_function("() => window.app !== undefined && window.app !== null", timeout=10000)
 
         # 開啟牙齒模態並勾選儲存
-        page.evaluate("() => window.app.openDiseaseModal({x: 200, y: 150})")
+        page.click('.tooth[data-fdi="16"] .crown')
         page.wait_for_selector("#disease-modal[aria-hidden='false']", timeout=5000)
         page.wait_for_selector(".disease-checkbox", timeout=5000)
 
