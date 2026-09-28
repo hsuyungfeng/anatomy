@@ -44,6 +44,7 @@ python3 doc/tests/run_all.py --with-snapshot
 - 必須 0 失敗、0 跳過。
 - `doc/tests/baseline/prototype-methods.json` 是 `MedicalRecordApp` 每個方法的原始碼雜湊。刻意改變方法時，先 `snapshot_prototype.py --check` 確認差異只出現在你改過的方法，才可以 `--write`；**純重構時不可以更新基準**。
 - 修 bug 或加功能時採用 TDD：先寫測試，並證明它在修改前會失敗。
+- 點擊類的互動（開啟模態、選取結構）**至少要有一項測試用真實滑鼠點擊**（`page.mouse.click` 或 `locator.click`），不可只用鍵盤或 `page.evaluate` 呼叫方法：縮放後點擊失效的 bug 就是因為測試全用鍵盤而沒被發現。
 - 不可以為了讓測試通過而放寬斷言、跳過測試，或修改計畫規定不能動的測試。
 
 ## 執行 `.planning` 計畫時

@@ -65,6 +65,7 @@
       this.dragStartViewBox = { ...this.currentViewBox };
       this.dragMoved = 0;
       this.shouldBlockClick = false;
+      this.pointerCaptured = false;
 
       // 綁定事件處理函數
       this._onPointerDown = this._onPointerDown.bind(this);
@@ -228,15 +229,13 @@
       if (this.zoom <= 1) return;
       if (e.button !== undefined && e.button !== 0) return;
 
+      // 按下時只記錄起點，不立即 setPointerCapture：
+      // 若在此鎖定指標，之後的 click 目標會變成 <svg> 本身，結構圖便無法得知點到哪個結構
       this.isDragging = true;
+      this.pointerCaptured = false;
       this.dragStart = { x: e.clientX, y: e.clientY };
       this.dragStartViewBox = { ...this.currentViewBox };
       this.dragMoved = 0;
-      this.svg.style.cursor = 'grabbing';
-
-      try {
-        this.svg.setPointerCapture(e.pointerId);
-      } catch (_) {}
     }
 
     _onPointerMove(e) {
@@ -246,9 +245,18 @@
       const dy = e.clientY - this.dragStart.y;
       const dist = Math.hypot(dx, dy);
 
-      if (dist > 4) {
-        this.dragMoved = dist;
-        this.shouldBlockClick = true;
+      // 移動未超過 4px 視為點擊，不平移
+      if (dist <= 4 && !this.pointerCaptured) return;
+
+      this.dragMoved = dist;
+      this.shouldBlockClick = true;
+      if (!this.pointerCaptured) {
+        // 確定是拖曳後才鎖定指標，讓游標移出 SVG 時仍可繼續拖曳
+        this.pointerCaptured = true;
+        this.svg.style.cursor = 'grabbing';
+        try {
+          this.svg.setPointerCapture(e.pointerId);
+        } catch (_) {}
       }
 
       const rect = this.svg.getBoundingClientRect();
@@ -276,9 +284,12 @@
       this.isDragging = false;
       this.svg.style.cursor = '';
 
-      try {
-        this.svg.releasePointerCapture(e.pointerId);
-      } catch (_) {}
+      if (this.pointerCaptured) {
+        this.pointerCaptured = false;
+        try {
+          this.svg.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }
 
       // 如果有發生拖曳，在稍後的點擊事件攔截後清除旗標
       if (this.shouldBlockClick) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anatomy-v21';
+const CACHE_NAME = 'anatomy-v22';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

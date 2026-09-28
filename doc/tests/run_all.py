@@ -32,6 +32,7 @@ import sw_offline_test
 import cache_version_test
 import record_labels_test
 import language_ui_test
+import zoom_click_test
 import odontogram_test
 import eye_diagram_test
 import body_map_test
@@ -232,6 +233,18 @@ def main():
                         skipped += 1
                         continue
 
+                    try:
+                        test_func(browser, base_url)
+                        print(f"[PASS] {test_name}")
+                        passed += 1
+                    except Exception as err:
+                        print(f"[FAIL] {test_name}")
+                        print(f"       錯誤訊息: {err}")
+                        failed += 1
+
+                print("\n--- 執行放大後滑鼠點擊測試 ---")
+                for test_func in zoom_click_test.TESTS:
+                    test_name = test_func.__name__
                     try:
                         test_func(browser, base_url)
                         print(f"[PASS] {test_name}")
